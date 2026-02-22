@@ -1,0 +1,97 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  db:
+    image: postgres:16-alpine
+    container_name: eventcarbon-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: eventcarbon
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "8085:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d eventcarbon"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: eventcarbon-redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+    ports:
+      - "8095:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Backend API
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: eventcarbon-backend
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      PORT: 8075
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: eventcarbon
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      DB_SSL: "false"
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET:-change-this-in-production-access-secret}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:-change-this-in-production-refresh-secret}
+      FRONTEND_URL: ${FRONTEND_URL:-http://localhost:8065}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-}
+      GITHUB_CLIENT_ID: ${GITHUB_CLIENT_ID:-}
+      GITHUB_CLIENT_SECRET: ${GITHUB_CLIENT_SECRET:-}
+      RUN_SEEDS: "true"
+    ports:
+      - "8075:8075"
+    volumes:
+      - backend_logs:/app/logs
+
+  # Frontend (Nginx serving React app)
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: eventcarbon-frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "8065:80"
+    environment:
+      VITE_API_URL: ${VITE_API_URL:-http://localhost:8075/api}
+
+volumes:
+  postgres_data:
+  redis_data:
+  backend_logs:
+
+networks:
+  default:
+    name: eventcarbon-network
+
