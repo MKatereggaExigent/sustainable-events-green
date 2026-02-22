@@ -1,6 +1,6 @@
 // API Client for EventCarbon Backend
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8075/api';
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8035/api';
 
 interface ApiResponse<T> {
   data?: T;

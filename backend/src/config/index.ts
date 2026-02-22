@@ -4,7 +4,7 @@ dotenv.config();
 
 export const config = {
   env: process.env.NODE_ENV || 'development',
-  port: parseInt(process.env.PORT || '8075', 10),
+  port: parseInt(process.env.PORT || '8035', 10),
   
   // Database
   database: {
@@ -36,12 +36,12 @@ export const config = {
     google: {
       clientId: process.env.GOOGLE_CLIENT_ID || '',
       clientSecret: process.env.GOOGLE_CLIENT_SECRET || '',
-      callbackUrl: process.env.GOOGLE_CALLBACK_URL || 'http://localhost:8075/api/auth/google/callback',
+      callbackUrl: process.env.GOOGLE_CALLBACK_URL || 'http://localhost:8035/api/auth/google/callback',
     },
     github: {
       clientId: process.env.GITHUB_CLIENT_ID || '',
       clientSecret: process.env.GITHUB_CLIENT_SECRET || '',
-      callbackUrl: process.env.GITHUB_CALLBACK_URL || 'http://localhost:8075/api/auth/github/callback',
+      callbackUrl: process.env.GITHUB_CALLBACK_URL || 'http://localhost:8035/api/auth/github/callback',
     },
   },
   

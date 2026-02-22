@@ -2,7 +2,7 @@
 
 # EventCarbon CapRover Deployment Script
 # This builds the frontend and deploys it to CapRover
-# Port options available: 8065, 8075, 8085, 8095
+# Port options available: 8065, 8035, 8055, 8095
 
 set -e
 
@@ -11,7 +11,7 @@ set -e
 # ============================================
 CAPROVER_NAME="aidoc-server"           # Your CapRover server name (run: caprover list)
 CAPROVER_APP="eventcarbon"              # CapRover app name
-APP_PORT="8065"                         # Local Docker port (options: 8065, 8075, 8085, 8095)
+APP_PORT="8065"                         # Local Docker port (options: 8065, 8035, 8055, 8095)
 TAR_FILE="eventcarbon-frontend.tar.gz"  # Deployment artifact name
 
 # Colors for output

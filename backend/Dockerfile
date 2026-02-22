@@ -36,9 +36,9 @@ RUN mkdir -p logs
 
 # Set environment
 ENV NODE_ENV=production
-ENV PORT=8075
+ENV PORT=8035
 
-EXPOSE 8075
+EXPOSE 8035
 
 # Use entrypoint script
 ENTRYPOINT ["./scripts/entrypoint.sh"]
