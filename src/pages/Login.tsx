@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Leaf, Loader2 } from 'lucide-react';
+import { Leaf, Loader2, Home, ArrowLeft } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 export default function Login() {
@@ -37,12 +37,21 @@ export default function Login() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-50 to-emerald-100 dark:from-gray-900 dark:to-gray-800 p-4">
+      {/* Home Button - Fixed Top Left */}
+      <Link
+        to="/"
+        className="fixed top-4 left-4 z-50 flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-800 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 border border-green-200 dark:border-green-800 group"
+      >
+        <Home className="h-5 w-5 text-green-600 group-hover:text-green-700" />
+        <span className="text-sm font-medium text-gray-700 dark:text-gray-200 group-hover:text-green-700">Home</span>
+      </Link>
+
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <div className="flex justify-center mb-4">
-            <div className="p-3 bg-green-100 dark:bg-green-900 rounded-full">
+            <Link to="/" className="p-3 bg-green-100 dark:bg-green-900 rounded-full hover:bg-green-200 dark:hover:bg-green-800 transition-colors cursor-pointer">
               <Leaf className="h-8 w-8 text-green-600 dark:text-green-400" />
-            </div>
+            </Link>
           </div>
           <CardTitle className="text-2xl">Welcome to EventCarbon</CardTitle>
           <CardDescription>Sign in to manage your sustainable events</CardDescription>
@@ -84,8 +93,8 @@ export default function Login() {
                 Create one
               </Link>
             </p>
-            <Link to="/" className="text-sm text-muted-foreground hover:underline text-center">
-              ← Back to Calculator
+            <Link to="/" className="text-sm text-muted-foreground hover:text-green-600 hover:underline text-center flex items-center justify-center gap-1">
+              <ArrowLeft className="h-4 w-4" /> Back to Home
             </Link>
           </CardFooter>
         </form>
