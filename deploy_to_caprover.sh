@@ -11,7 +11,8 @@ set -e
 # ============================================
 CAPROVER_NAME="aidoc-server"           # Your CapRover server name (run: caprover list)
 CAPROVER_APP="eventcarbon"              # CapRover app name
-APP_PORT="8065"                         # Local Docker port (options: 8065, 8035, 8055, 8095)
+BACKEND_HOST="41.76.109.131"            # Server's public IP (for API proxy)
+BACKEND_PORT="8035"                     # Backend port on host
 TAR_FILE="eventcarbon-frontend.tar.gz"  # Deployment artifact name
 
 # Colors for output
@@ -79,9 +80,9 @@ EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
 EOF
 
-# Step 8: Create nginx configuration for SPA
+# Step 8: Create nginx configuration for SPA with API proxy
 echo -e "${YELLOW}📝 Creating nginx.conf...${NC}"
-cat <<'EOF' > nginx.conf
+cat <<EOF > nginx.conf
 server {
     listen 80;
     server_name localhost;
@@ -91,11 +92,23 @@ server {
 
     # Frontend - React SPA with client-side routing
     location / {
-        try_files $uri $uri/ /index.html;
+        try_files \$uri \$uri/ /index.html;
+    }
+
+    # API Proxy to backend
+    location /api/ {
+        proxy_pass http://${BACKEND_HOST}:${BACKEND_PORT};
+        proxy_http_version 1.1;
+        proxy_set_header Host \$host;
+        proxy_set_header X-Real-IP \$remote_addr;
+        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto \$scheme;
+        proxy_read_timeout 300;
+        proxy_connect_timeout 300;
     }
 
     # Static file caching
-    location ~* \.(?:ico|css|js|gif|jpe?g|png|woff2?|eot|ttf|svg|webp|avif)$ {
+    location ~* \.(?:ico|css|js|gif|jpe?g|png|woff2?|eot|ttf|svg|webp|avif)\$ {
         expires 6M;
         access_log off;
         add_header Cache-Control "public, immutable";
