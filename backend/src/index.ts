@@ -15,8 +15,28 @@ const app = express();
 
 // Security middleware
 app.use(helmet());
+
+// CORS - Allow multiple origins
+const allowedOrigins = [
+  config.frontendUrl,
+  'http://localhost:8065',
+  'http://localhost:5173',
+  'http://localhost:8080',
+  'https://eventcarbon.aidocumines.com',
+].filter(Boolean);
+
 app.use(cors({
-  origin: config.frontendUrl,
+  origin: (origin, callback) => {
+    // Allow requests with no origin (like mobile apps or curl)
+    if (!origin) return callback(null, true);
+
+    if (allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      logger.warn(`CORS blocked origin: ${origin}`);
+      callback(null, false);
+    }
+  },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Organization-Id'],
