@@ -7,6 +7,7 @@ import {
   VenueData, VenueType, EnergySource, calculateVenueEmissions,
   ENERGY_EMISSION_FACTORS, VENUE_ENERGY_INTENSITY
 } from '@/lib/preAssessmentData';
+import { useSettings } from '@/contexts/SettingsContext';
 
 interface VenueSustainabilityProps {
   sqMeters?: number;
@@ -46,6 +47,7 @@ const VenueSustainability: React.FC<VenueSustainabilityProps> = ({
   onComplete,
   onDataChange
 }) => {
+  const { convertValue, getUnit, maskValue } = useSettings();
   const [data, setData] = useState<VenueData>({
     venueType: 'convention-center',
     energySource: 'grid-standard',
@@ -322,15 +324,15 @@ const VenueSustainability: React.FC<VenueSustainabilityProps> = ({
               </div>
             </div>
             <h3 className="text-center font-semibold mb-2">Sustainability Score</h3>
-            <div className="text-center text-4xl font-bold mb-4">{analysis.score}/100</div>
+            <div className="text-center text-4xl font-bold mb-4">{maskValue(analysis.score)}/100</div>
             <div className="bg-white/10 rounded-xl p-4 mb-4">
               <div className="flex justify-between text-sm mb-1">
                 <span>Venue Emissions</span>
-                <span className="font-bold">{analysis.emissions} kg CO₂e</span>
+                <span className="font-bold">{maskValue(Math.round(convertValue(analysis.emissions, 'weight')))} {getUnit('weight')} CO₂e</span>
               </div>
               <div className="flex justify-between text-sm">
                 <span>Best Case</span>
-                <span className="text-emerald-300">{analysis.bestCaseEmissions} kg</span>
+                <span className="text-emerald-300">{maskValue(Math.round(convertValue(analysis.bestCaseEmissions, 'weight')))} {getUnit('weight')}</span>
               </div>
             </div>
             <button

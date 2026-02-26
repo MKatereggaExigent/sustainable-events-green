@@ -6,6 +6,7 @@ import {
   RefreshCw, AlertCircle, X, ArrowLeftRight, TreePine, Droplets, LogIn
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useSettings } from '@/contexts/SettingsContext';
 
 interface SavedEvent {
   id: string;
@@ -28,6 +29,7 @@ interface MyEventsProps {
 }
 
 const MyEvents: React.FC<MyEventsProps> = ({ onLoadEvent, onNavigate }) => {
+  const { convertValue, getUnit, maskValue } = useSettings();
   const [events, setEvents] = useState<SavedEvent[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -266,18 +268,18 @@ const MyEvents: React.FC<MyEventsProps> = ({ onLoadEvent, onNavigate }) => {
                       <div className="flex-1 grid grid-cols-3 gap-2">
                         <div className="text-center">
                           <TreePine className="w-4 h-4 text-red-400 mx-auto mb-0.5" />
-                          <div className="text-xs font-bold text-gray-900">{event.carbon_kg.toLocaleString()}</div>
-                          <div className="text-[10px] text-gray-400">kg CO₂</div>
+                          <div className="text-xs font-bold text-gray-900">{maskValue(Math.round(convertValue(event.carbon_kg, 'weight')).toLocaleString())}</div>
+                          <div className="text-[10px] text-gray-400">{getUnit('weight')} CO₂</div>
                         </div>
                         <div className="text-center">
                           <Droplets className="w-4 h-4 text-blue-400 mx-auto mb-0.5" />
-                          <div className="text-xs font-bold text-gray-900">{event.water_liters.toLocaleString()}</div>
-                          <div className="text-[10px] text-gray-400">liters</div>
+                          <div className="text-xs font-bold text-gray-900">{maskValue(Math.round(convertValue(event.water_liters, 'volume')).toLocaleString())}</div>
+                          <div className="text-[10px] text-gray-400">{getUnit('volume')}</div>
                         </div>
                         <div className="text-center">
                           <Trash2 className="w-4 h-4 text-amber-400 mx-auto mb-0.5" />
-                          <div className="text-xs font-bold text-gray-900">{event.waste_kg}</div>
-                          <div className="text-[10px] text-gray-400">kg waste</div>
+                          <div className="text-xs font-bold text-gray-900">{maskValue(Math.round(convertValue(event.waste_kg, 'weight')))}</div>
+                          <div className="text-[10px] text-gray-400">{getUnit('weight')} waste</div>
                         </div>
                       </div>
                     </div>
@@ -339,24 +341,24 @@ const MyEvents: React.FC<MyEventsProps> = ({ onLoadEvent, onNavigate }) => {
           <div className="mt-10 bg-gradient-to-r from-violet-600 to-purple-600 rounded-3xl p-8 text-white">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
               <div>
-                <div className="text-3xl font-bold">{events.length}</div>
+                <div className="text-3xl font-bold">{maskValue(events.length)}</div>
                 <div className="text-violet-200 text-sm mt-1">Events Saved</div>
               </div>
               <div>
                 <div className="text-3xl font-bold">
-                  {events.reduce((a, e) => a + e.carbon_kg, 0).toLocaleString()}
+                  {maskValue(Math.round(convertValue(events.reduce((a, e) => a + e.carbon_kg, 0), 'weight')).toLocaleString())}
                 </div>
-                <div className="text-violet-200 text-sm mt-1">Total kg CO₂</div>
+                <div className="text-violet-200 text-sm mt-1">Total {getUnit('weight')} CO₂</div>
               </div>
               <div>
                 <div className="text-3xl font-bold">
-                  {events.length > 0 ? Math.round(events.reduce((a, e) => a + e.green_score, 0) / events.length) : 0}
+                  {maskValue(events.length > 0 ? Math.round(events.reduce((a, e) => a + e.green_score, 0) / events.length) : 0)}
                 </div>
                 <div className="text-violet-200 text-sm mt-1">Avg Green Score</div>
               </div>
               <div>
                 <div className="text-3xl font-bold">
-                  {events.length > 0 ? Math.max(...events.map(e => e.green_score)) : 0}
+                  {maskValue(events.length > 0 ? Math.max(...events.map(e => e.green_score)) : 0)}
                 </div>
                 <div className="text-violet-200 text-sm mt-1">Best Score</div>
               </div>
@@ -418,10 +420,10 @@ const MyEvents: React.FC<MyEventsProps> = ({ onLoadEvent, onNavigate }) => {
                   </thead>
                   <tbody className="divide-y divide-gray-50">
                     {[
-                      { label: 'Green Score', key: 'green_score', unit: '/100', best: 'max' },
-                      { label: 'Carbon', key: 'carbon_kg', unit: ' kg CO₂', best: 'min' },
-                      { label: 'Water', key: 'water_liters', unit: ' L', best: 'min' },
-                      { label: 'Waste', key: 'waste_kg', unit: ' kg', best: 'min' },
+                      { label: 'Green Score', key: 'green_score', unit: '/100', best: 'max', convType: null },
+                      { label: 'Carbon', key: 'carbon_kg', unit: ` ${getUnit('weight')} CO₂`, best: 'min', convType: 'weight' as const },
+                      { label: 'Water', key: 'water_liters', unit: ` ${getUnit('volume')}`, best: 'min', convType: 'volume' as const },
+                      { label: 'Waste', key: 'waste_kg', unit: ` ${getUnit('weight')}`, best: 'min', convType: 'weight' as const },
                     ].map(metric => {
                       const values = compareEvents.map(e => (e as any)[metric.key] as number);
                       const bestVal = metric.best === 'max' ? Math.max(...values) : Math.min(...values);
@@ -431,10 +433,11 @@ const MyEvents: React.FC<MyEventsProps> = ({ onLoadEvent, onNavigate }) => {
                           {compareEvents.map(e => {
                             const val = (e as any)[metric.key] as number;
                             const isBest = val === bestVal;
+                            const displayVal = metric.convType ? Math.round(convertValue(val, metric.convType)) : val;
                             return (
                               <td key={e.id} className="py-3 px-4 text-center">
                                 <span className={`text-sm font-bold ${isBest ? 'text-emerald-600' : 'text-gray-900'}`}>
-                                  {val.toLocaleString()}{metric.unit}
+                                  {maskValue(displayVal.toLocaleString())}{metric.unit}
                                 </span>
                                 {isBest && <span className="ml-1.5 text-[10px] bg-emerald-100 text-emerald-700 px-1.5 py-0.5 rounded-full font-medium">Best</span>}
                               </td>

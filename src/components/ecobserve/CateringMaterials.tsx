@@ -8,6 +8,7 @@ import {
   calculateCateringEmissions, calculateMaterialsEmissions,
   MEAL_EMISSION_FACTORS, MATERIAL_WASTE_FACTORS
 } from '@/lib/preAssessmentData';
+import { useSettings } from '@/contexts/SettingsContext';
 
 interface CateringMaterialsProps {
   attendees: number;
@@ -38,6 +39,7 @@ const CateringMaterials: React.FC<CateringMaterialsProps> = ({
   onComplete,
   onDataChange
 }) => {
+  const { convertValue, getUnit, maskValue } = useSettings();
   const [catering, setCatering] = useState<CateringData>({
     mealType: 'mixed-meat-veg',
     mealsPerDay: 2,
@@ -265,16 +267,16 @@ const CateringMaterials: React.FC<CateringMaterialsProps> = ({
                 Total Impact
               </h3>
               <div className="text-4xl font-bold mb-1">
-                {analysis.totalEmissions}
-                <span className="text-lg font-normal opacity-80 ml-1">kg CO₂e</span>
+                {maskValue(Math.round(convertValue(analysis.totalEmissions, 'weight')))}
+                <span className="text-lg font-normal opacity-80 ml-1">{getUnit('weight')} CO₂e</span>
               </div>
-              <p className="text-amber-200 text-sm mb-4">{analysis.perAttendee} kg per attendee</p>
+              <p className="text-amber-200 text-sm mb-4">{maskValue(Math.round(convertValue(analysis.perAttendee, 'weight')))} {getUnit('weight')} per attendee</p>
 
               <div className="space-y-2 mb-4">
                 <div className="bg-white/10 rounded-lg p-3">
                   <div className="flex justify-between text-sm">
                     <span>Catering</span>
-                    <span className="font-medium">{analysis.cateringEmissions} kg</span>
+                    <span className="font-medium">{maskValue(Math.round(convertValue(analysis.cateringEmissions, 'weight')))} {getUnit('weight')}</span>
                   </div>
                   <div className="w-full bg-white/20 rounded-full h-1.5 mt-1">
                     <div
@@ -286,7 +288,7 @@ const CateringMaterials: React.FC<CateringMaterialsProps> = ({
                 <div className="bg-white/10 rounded-lg p-3">
                   <div className="flex justify-between text-sm">
                     <span>Materials</span>
-                    <span className="font-medium">{analysis.materialsEmissions} kg</span>
+                    <span className="font-medium">{maskValue(Math.round(convertValue(analysis.materialsEmissions, 'weight')))} {getUnit('weight')}</span>
                   </div>
                   <div className="w-full bg-white/20 rounded-full h-1.5 mt-1">
                     <div
@@ -301,7 +303,7 @@ const CateringMaterials: React.FC<CateringMaterialsProps> = ({
                 <div className="bg-white/10 rounded-xl p-3 mb-4">
                   <div className="flex items-center gap-2 text-sm">
                     <TrendingDown className="w-4 h-4" />
-                    <span>Potential savings: <strong>{analysis.potentialCateringSavings + analysis.potentialMaterialsSavings} kg</strong></span>
+                    <span>Potential savings: <strong>{maskValue(Math.round(convertValue(analysis.potentialCateringSavings + analysis.potentialMaterialsSavings, 'weight')))} {getUnit('weight')}</strong></span>
                   </div>
                 </div>
               )}
@@ -329,7 +331,7 @@ const CateringMaterials: React.FC<CateringMaterialsProps> = ({
                   >
                     <span className="text-sm text-gray-700">{meal.type}</span>
                     <span className={`text-sm font-medium ${meal.current ? 'text-amber-700' : 'text-gray-500'}`}>
-                      {Math.round(meal.emissions)} kg
+                      {maskValue(Math.round(convertValue(meal.emissions, 'weight')))} {getUnit('weight')}
                     </span>
                   </div>
                 ))}

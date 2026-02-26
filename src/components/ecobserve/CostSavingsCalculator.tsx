@@ -15,9 +15,9 @@ import {
   CostSavingsResult,
   TaxIncentive,
   getApplicableTaxIncentives,
-  formatCurrency,
   REGION_OPTIONS
 } from '@/lib/costData';
+import { useSettings } from '@/contexts/SettingsContext';
 
 interface CostSavingsCalculatorProps {
   carbonInputs: EventInputs;
@@ -84,6 +84,7 @@ const CostSavingsCalculator: React.FC<CostSavingsCalculatorProps> = ({
   carbonInputs,
   carbonResult
 }) => {
+  const { formatCurrency, maskValue } = useSettings();
   const [costInputs, setCostInputs] = useState<CostInputs>(defaultCostInputs);
   const [activeTab, setActiveTab] = useState<'calculator' | 'incentives' | 'comparison'>('calculator');
   const [isVisible, setIsVisible] = useState(false);
@@ -160,10 +161,10 @@ const CostSavingsCalculator: React.FC<CostSavingsCalculatorProps> = ({
         {/* Quick Stats Bar */}
         <div className={`grid grid-cols-2 md:grid-cols-4 gap-4 mb-10 transition-all duration-700 delay-100 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
           {[
-            { label: 'Total Benefit', value: formatCurrency(Math.round(animatedTotalBenefit)), icon: Target, color: 'emerald', gradient: 'from-emerald-500 to-teal-500' },
-            { label: 'Direct Savings', value: formatCurrency(Math.round(animatedSavings)), icon: PiggyBank, color: 'blue', gradient: 'from-blue-500 to-cyan-500' },
-            { label: 'ROI', value: `${Math.round(animatedROI)}%`, icon: TrendingUp, color: 'purple', gradient: 'from-purple-500 to-pink-500' },
-            { label: 'Tax Credits', value: formatCurrency(Math.round(animatedIncentives)), icon: BadgePercent, color: 'amber', gradient: 'from-amber-500 to-orange-500' },
+            { label: 'Total Benefit', value: maskValue(formatCurrency(Math.round(animatedTotalBenefit))), icon: Target, color: 'emerald', gradient: 'from-emerald-500 to-teal-500' },
+            { label: 'Direct Savings', value: maskValue(formatCurrency(Math.round(animatedSavings))), icon: PiggyBank, color: 'blue', gradient: 'from-blue-500 to-cyan-500' },
+            { label: 'ROI', value: `${maskValue(Math.round(animatedROI))}%`, icon: TrendingUp, color: 'purple', gradient: 'from-purple-500 to-pink-500' },
+            { label: 'Tax Credits', value: maskValue(formatCurrency(Math.round(animatedIncentives))), icon: BadgePercent, color: 'amber', gradient: 'from-amber-500 to-orange-500' },
           ].map((stat, index) => (
             <div
               key={stat.label}
@@ -274,7 +275,7 @@ const CostSavingsCalculator: React.FC<CostSavingsCalculatorProps> = ({
                               <span className="text-gray-500">Potential savings</span>
                               <span className="font-bold text-emerald-600 flex items-center gap-1">
                                 <TrendingDown className="w-3 h-3" />
-                                {formatCurrency(saving.savings)} ({saving.savingsPercent}%)
+                                {maskValue(formatCurrency(saving.savings))} ({maskValue(saving.savingsPercent)}%)
                               </span>
                             </div>
                           )}
@@ -382,7 +383,7 @@ const CostSavingsCalculator: React.FC<CostSavingsCalculatorProps> = ({
                     </h3>
                   </div>
                   <div className="text-4xl sm:text-5xl font-black mb-3 tracking-tight">
-                    {formatCurrency(Math.round(animatedTotalBenefit))}
+                    {maskValue(formatCurrency(Math.round(animatedTotalBenefit)))}
                   </div>
                   <div className="flex items-center gap-2 text-emerald-100 text-sm mb-4">
                     <TrendingUp className="w-4 h-4" />
@@ -391,11 +392,11 @@ const CostSavingsCalculator: React.FC<CostSavingsCalculatorProps> = ({
                   <div className="grid grid-cols-2 gap-3 pt-4 border-t border-white/20">
                     <div className="bg-white/10 backdrop-blur-sm rounded-xl p-3">
                       <div className="text-xs text-emerald-200 mb-1">Direct Savings</div>
-                      <div className="text-lg font-bold">{formatCurrency(savingsResult.totalSavings)}</div>
+                      <div className="text-lg font-bold">{maskValue(formatCurrency(savingsResult.totalSavings))}</div>
                     </div>
                     <div className="bg-white/10 backdrop-blur-sm rounded-xl p-3">
                       <div className="text-xs text-emerald-200 mb-1">Indirect Value</div>
-                      <div className="text-lg font-bold">{formatCurrency(savingsResult.totalEconomicBenefit - savingsResult.totalSavings)}</div>
+                      <div className="text-lg font-bold">{maskValue(formatCurrency(savingsResult.totalEconomicBenefit - savingsResult.totalSavings))}</div>
                     </div>
                   </div>
                 </div>
@@ -404,10 +405,10 @@ const CostSavingsCalculator: React.FC<CostSavingsCalculatorProps> = ({
               {/* Financial Metrics Grid */}
               <div className="grid grid-cols-2 gap-4">
                 {[
-                  { label: 'ROI', value: `${savingsResult.roiPercentage}%`, icon: Percent, color: 'emerald', description: 'Return on Investment' },
-                  { label: 'NPV', value: formatCurrency(savingsResult.netPresentValue), icon: Banknote, color: 'blue', description: '3-Year Net Present Value' },
-                  { label: 'IRR', value: `${savingsResult.internalRateOfReturn}%`, icon: TrendingUp, color: 'purple', description: 'Internal Rate of Return' },
-                  { label: 'Payback', value: `${savingsResult.paybackMonths} mo`, icon: Clock, color: 'amber', description: 'Payback Period' },
+                  { label: 'ROI', value: `${maskValue(savingsResult.roiPercentage)}%`, icon: Percent, color: 'emerald', description: 'Return on Investment' },
+                  { label: 'NPV', value: maskValue(formatCurrency(savingsResult.netPresentValue)), icon: Banknote, color: 'blue', description: '3-Year Net Present Value' },
+                  { label: 'IRR', value: `${maskValue(savingsResult.internalRateOfReturn)}%`, icon: TrendingUp, color: 'purple', description: 'Internal Rate of Return' },
+                  { label: 'Payback', value: `${maskValue(savingsResult.paybackMonths)} mo`, icon: Clock, color: 'amber', description: 'Payback Period' },
                 ].map((metric, index) => (
                   <div
                     key={metric.label}
@@ -447,7 +448,7 @@ const CostSavingsCalculator: React.FC<CostSavingsCalculatorProps> = ({
                           </div>
                           <span className="font-semibold text-gray-700">{item.label}</span>
                         </div>
-                        <span className="text-lg font-bold text-gray-900">{formatCurrency(item.value)}</span>
+                        <span className="text-lg font-bold text-gray-900">{maskValue(formatCurrency(item.value))}</span>
                       </div>
                       <AnimatedProgressBar percentage={item.percent || 0} color={`bg-${item.color}-500`} delay={index * 100} />
                     </div>
@@ -464,7 +465,7 @@ const CostSavingsCalculator: React.FC<CostSavingsCalculatorProps> = ({
                   </div>
                   <div className="flex-1">
                     <h3 className="text-sm font-bold text-amber-900 mb-1">Tax Incentives Available</h3>
-                    <div className="text-3xl font-black text-amber-700 mb-2">{formatCurrency(Math.round(animatedIncentives))}</div>
+                    <div className="text-3xl font-black text-amber-700 mb-2">{maskValue(formatCurrency(Math.round(animatedIncentives)))}</div>
                     <button
                       onClick={() => setActiveTab('incentives')}
                       className="inline-flex items-center gap-2 text-sm font-semibold text-amber-600 hover:text-amber-700 group-hover:gap-3 transition-all duration-300"
@@ -499,7 +500,7 @@ const CostSavingsCalculator: React.FC<CostSavingsCalculatorProps> = ({
                 </div>
                 <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
                   <div className="bg-white/20 backdrop-blur-sm rounded-2xl px-6 py-4 text-center">
-                    <div className="text-4xl font-black text-white">{formatCurrency(totalIncentives)}</div>
+                    <div className="text-4xl font-black text-white">{maskValue(formatCurrency(totalIncentives))}</div>
                     <div className="text-amber-100 text-sm mt-1">Total Estimated Credits</div>
                   </div>
                   <select
@@ -544,7 +545,7 @@ const CostSavingsCalculator: React.FC<CostSavingsCalculatorProps> = ({
                             </span>
                           </div>
                           <div className="bg-white/20 backdrop-blur-sm rounded-lg px-3 py-1">
-                            <span className="text-lg font-bold">{formatCurrency(incentive.estimatedValue)}</span>
+                            <span className="text-lg font-bold">{maskValue(formatCurrency(incentive.estimatedValue))}</span>
                           </div>
                         </div>
                       </div>
@@ -608,7 +609,7 @@ const CostSavingsCalculator: React.FC<CostSavingsCalculatorProps> = ({
                   </div>
                 </div>
                 <div className="bg-white/20 backdrop-blur-sm rounded-2xl px-8 py-5 text-center">
-                  <div className="text-4xl sm:text-5xl font-black">{formatCurrency(totalIncentives)}</div>
+                  <div className="text-4xl sm:text-5xl font-black">{maskValue(formatCurrency(totalIncentives))}</div>
                   <div className="text-emerald-100 text-sm mt-1">estimated annual value</div>
                 </div>
               </div>
@@ -644,7 +645,7 @@ const CostSavingsCalculator: React.FC<CostSavingsCalculatorProps> = ({
                       <span className="text-sm font-semibold text-gray-400 uppercase tracking-wide">Traditional</span>
                     </div>
                     <div className="text-3xl font-black text-white mb-1">
-                      {formatCurrency(savingsResult.traditionalTotal)}
+                      {maskValue(formatCurrency(savingsResult.traditionalTotal))}
                     </div>
                     <div className="text-sm text-gray-500">Base event costs</div>
                   </div>
@@ -658,7 +659,7 @@ const CostSavingsCalculator: React.FC<CostSavingsCalculatorProps> = ({
                       <span className="text-sm font-semibold text-emerald-400 uppercase tracking-wide">Sustainable</span>
                     </div>
                     <div className="text-3xl font-black text-emerald-400 mb-1">
-                      {formatCurrency(savingsResult.sustainableTotal)}
+                      {maskValue(formatCurrency(savingsResult.sustainableTotal))}
                     </div>
                     <div className="text-sm text-emerald-500/70">With green initiatives</div>
                   </div>
@@ -674,11 +675,11 @@ const CostSavingsCalculator: React.FC<CostSavingsCalculatorProps> = ({
                         <span className="text-sm font-semibold text-emerald-100 uppercase tracking-wide">You Save</span>
                       </div>
                       <div className="text-3xl font-black text-white mb-1">
-                        {formatCurrency(savingsResult.totalSavings)}
+                        {maskValue(formatCurrency(savingsResult.totalSavings))}
                       </div>
                       <div className="flex items-center gap-1 text-sm text-emerald-100">
                         <ArrowDown className="w-4 h-4" />
-                        {Math.round((savingsResult.totalSavings / savingsResult.traditionalTotal) * 100)}% reduction
+                        {maskValue(Math.round((savingsResult.totalSavings / savingsResult.traditionalTotal) * 100))}% reduction
                       </div>
                     </div>
                   </div>
@@ -734,10 +735,10 @@ const CostSavingsCalculator: React.FC<CostSavingsCalculatorProps> = ({
                         <div className="flex items-center gap-3">
                           <div className="bg-emerald-100 text-emerald-700 px-3 py-1.5 rounded-full text-sm font-bold flex items-center gap-1">
                             <TrendingDown className="w-4 h-4" />
-                            {values.savingsPercent}%
+                            {maskValue(values.savingsPercent)}%
                           </div>
                           <div className="text-right">
-                            <div className="text-lg font-bold text-emerald-600">{formatCurrency(values.savings)}</div>
+                            <div className="text-lg font-bold text-emerald-600">{maskValue(formatCurrency(values.savings))}</div>
                             <div className="text-xs text-gray-500">saved</div>
                           </div>
                         </div>
@@ -753,7 +754,7 @@ const CostSavingsCalculator: React.FC<CostSavingsCalculatorProps> = ({
                               style={{ width: `${Math.max((values.traditional / maxValue) * 100, 15)}%` }}
                             >
                               <span className="text-xs font-semibold text-white drop-shadow-sm">
-                                {formatCurrency(values.traditional)}
+                                {maskValue(formatCurrency(values.traditional))}
                               </span>
                             </div>
                           </div>
@@ -766,7 +767,7 @@ const CostSavingsCalculator: React.FC<CostSavingsCalculatorProps> = ({
                               style={{ width: `${Math.max((values.sustainable / maxValue) * 100, 10)}%` }}
                             >
                               <span className="text-xs font-semibold text-white drop-shadow-sm">
-                                {formatCurrency(values.sustainable)}
+                                {maskValue(formatCurrency(values.sustainable))}
                               </span>
                             </div>
                           </div>
@@ -789,10 +790,10 @@ const CostSavingsCalculator: React.FC<CostSavingsCalculatorProps> = ({
 
                 <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
                   {[
-                    { label: 'Total ROI', value: `${savingsResult.roiPercentage}%`, icon: Percent, color: 'bg-white/20' },
-                    { label: 'NPV (3-Year)', value: formatCurrency(savingsResult.netPresentValue), icon: TrendingUp, color: 'bg-white/20' },
-                    { label: 'Economic Benefit', value: formatCurrency(savingsResult.totalEconomicBenefit), icon: DollarSign, color: 'bg-white/20' },
-                    { label: 'With Incentives', value: formatCurrency(savingsResult.totalEconomicBenefit + totalIncentives), icon: Sparkles, color: 'bg-amber-400/30' },
+                    { label: 'Total ROI', value: `${maskValue(savingsResult.roiPercentage)}%`, icon: Percent, color: 'bg-white/20' },
+                    { label: 'NPV (3-Year)', value: maskValue(formatCurrency(savingsResult.netPresentValue)), icon: TrendingUp, color: 'bg-white/20' },
+                    { label: 'Economic Benefit', value: maskValue(formatCurrency(savingsResult.totalEconomicBenefit)), icon: DollarSign, color: 'bg-white/20' },
+                    { label: 'With Incentives', value: maskValue(formatCurrency(savingsResult.totalEconomicBenefit + totalIncentives)), icon: Sparkles, color: 'bg-amber-400/30' },
                   ].map((metric, index) => (
                     <div
                       key={metric.label}
@@ -810,7 +811,7 @@ const CostSavingsCalculator: React.FC<CostSavingsCalculatorProps> = ({
                 {/* Call to Action */}
                 <div className="mt-6 pt-6 border-t border-white/20 text-center">
                   <p className="text-emerald-100 mb-3">
-                    🌱 Going sustainable saves you <span className="font-bold text-white">{formatCurrency(savingsResult.totalSavings)}</span> per event
+                    🌱 Going sustainable saves you <span className="font-bold text-white">{maskValue(formatCurrency(savingsResult.totalSavings))}</span> per event
                   </p>
                   <button
                     onClick={() => setActiveTab('calculator')}

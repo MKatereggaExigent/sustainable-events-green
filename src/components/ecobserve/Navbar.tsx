@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Leaf, Menu, X, User, FolderOpen, DollarSign, LogOut, LayoutDashboard, Sparkles, Award, Calculator, HelpCircle, RotateCcw } from 'lucide-react';
+import { Leaf, Menu, X, User, FolderOpen, DollarSign, LogOut, LayoutDashboard, Sparkles, Award, Calculator, HelpCircle, RotateCcw, Settings as SettingsIcon } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTour } from '@/contexts/TourContext';
 import BrandLogo from './BrandLogo';
+import Settings from './Settings';
 
 interface NavbarProps {
   onNavigate: (section: string) => void;
@@ -13,6 +14,7 @@ interface NavbarProps {
 const Navbar: React.FC<NavbarProps> = ({ onNavigate, activeSection }) => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
   const { user, isAuthenticated, logout, isLoading } = useAuth();
   const { restartTour, hasCompletedTour } = useTour();
   const navigate = useNavigate();
@@ -144,6 +146,13 @@ const Navbar: React.FC<NavbarProps> = ({ onNavigate, activeSection }) => {
                         <p className="text-xs text-emerald-600">Premium Member</p>
                       </div>
                       <button
+                        onClick={() => { setShowSettings(true); setShowUserMenu(false); }}
+                        className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-emerald-50 flex items-center gap-2"
+                      >
+                        <SettingsIcon className="w-4 h-4" />
+                        Settings
+                      </button>
+                      <button
                         onClick={handleLogout}
                         className="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50 flex items-center gap-2"
                       >
@@ -235,6 +244,13 @@ const Navbar: React.FC<NavbarProps> = ({ onNavigate, activeSection }) => {
                     </div>
                   </div>
                   <button
+                    onClick={() => { setShowSettings(true); setMobileOpen(false); }}
+                    className="w-full mt-2 px-4 py-2.5 text-gray-700 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 hover:bg-emerald-50"
+                  >
+                    <SettingsIcon className="w-4 h-4" />
+                    Settings
+                  </button>
+                  <button
                     onClick={() => { handleLogout(); setMobileOpen(false); }}
                     className="w-full mt-2 px-4 py-2.5 text-red-600 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 hover:bg-red-50"
                   >
@@ -261,6 +277,21 @@ const Navbar: React.FC<NavbarProps> = ({ onNavigate, activeSection }) => {
           className="fixed inset-0 z-40"
           onClick={() => setShowUserMenu(false)}
         />
+      )}
+
+      {/* Settings Modal */}
+      {showSettings && (
+        <>
+          <div
+            className="fixed inset-0 z-[60] bg-black/50 backdrop-blur-sm"
+            onClick={() => setShowSettings(false)}
+          />
+          <div className="fixed inset-0 z-[70] flex items-center justify-center p-4 pointer-events-none">
+            <div className="pointer-events-auto">
+              <Settings onClose={() => setShowSettings(false)} />
+            </div>
+          </div>
+        </>
       )}
     </>
   );

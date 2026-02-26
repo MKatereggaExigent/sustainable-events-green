@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import { FootprintResult, EventInputs } from '@/lib/carbonData';
 import { eventsApi, isAuthenticated } from '@/services/api';
+import { useSettings } from '@/contexts/SettingsContext';
 
 interface DashboardMetricsProps {
   result: FootprintResult;
@@ -77,6 +78,7 @@ const SDG_GOALS = [
 ];
 
 const DashboardMetrics: React.FC<DashboardMetricsProps> = ({ result, inputs, onShare, onSaveSuccess }) => {
+  const { convertValue, getUnit, formatCurrency, maskValue } = useSettings();
   const [activeChart, setActiveChart] = useState<'pie' | 'bar'>('pie');
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -354,10 +356,10 @@ const DashboardMetrics: React.FC<DashboardMetricsProps> = ({ result, inputs, onS
         {/* Hero Metrics Cards - Total Impact */}
         <div className={`grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8 transition-all duration-700 delay-200 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
           {[
-            { label: 'Total Carbon', value: Math.round(animatedCarbon).toLocaleString(), unit: 'kg CO₂', icon: Factory, gradient: 'from-red-500 to-rose-500', bg: 'bg-red-50', border: 'border-red-200' },
-            { label: 'Water Usage', value: Math.round(animatedWater).toLocaleString(), unit: 'liters', icon: Droplets, gradient: 'from-blue-500 to-cyan-500', bg: 'bg-blue-50', border: 'border-blue-200' },
-            { label: 'Waste Output', value: Math.round(animatedWaste).toLocaleString(), unit: 'kg', icon: Trash2, gradient: 'from-amber-500 to-orange-500', bg: 'bg-amber-50', border: 'border-amber-200' },
-            { label: 'Green Score', value: Math.round(animatedScore), unit: '/100', icon: Award, gradient: 'from-emerald-500 to-teal-500', bg: 'bg-emerald-50', border: 'border-emerald-200' },
+            { label: 'Total Carbon', value: maskValue(Math.round(convertValue(animatedCarbon, 'weight')).toLocaleString()), unit: `${getUnit('weight')} CO₂`, icon: Factory, gradient: 'from-red-500 to-rose-500', bg: 'bg-red-50', border: 'border-red-200' },
+            { label: 'Water Usage', value: maskValue(Math.round(convertValue(animatedWater, 'volume')).toLocaleString()), unit: getUnit('volume'), icon: Droplets, gradient: 'from-blue-500 to-cyan-500', bg: 'bg-blue-50', border: 'border-blue-200' },
+            { label: 'Waste Output', value: maskValue(Math.round(convertValue(animatedWaste, 'weight')).toLocaleString()), unit: getUnit('weight'), icon: Trash2, gradient: 'from-amber-500 to-orange-500', bg: 'bg-amber-50', border: 'border-amber-200' },
+            { label: 'Green Score', value: maskValue(Math.round(animatedScore)), unit: '/100', icon: Award, gradient: 'from-emerald-500 to-teal-500', bg: 'bg-emerald-50', border: 'border-emerald-200' },
           ].map((metric, i) => (
             <div
               key={i}
@@ -390,16 +392,16 @@ const DashboardMetrics: React.FC<DashboardMetricsProps> = ({ result, inputs, onS
               </div>
               <div>
                 <h3 className="text-xl font-bold text-white">Per-Attendee Impact</h3>
-                <p className="text-slate-400 text-sm">Based on {attendeeCount} attendees • Industry benchmark comparison</p>
+                <p className="text-slate-400 text-sm">Based on {maskValue(attendeeCount)} attendees • Industry benchmark comparison</p>
               </div>
             </div>
 
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {[
-                { label: 'Carbon/Person', value: perAttendee.carbon.toFixed(1), unit: 'kg CO₂', benchmark: benchmark.average, isBetter: perAttendee.carbon < benchmark.average, icon: Factory },
-                { label: 'Water/Person', value: perAttendee.water.toFixed(0), unit: 'liters', benchmark: 75, isBetter: perAttendee.water < 75, icon: Droplets },
-                { label: 'Waste/Person', value: perAttendee.waste.toFixed(1), unit: 'kg', benchmark: 2.5, isBetter: perAttendee.waste < 2.5, icon: Trash2 },
-                { label: 'Industry Rank', value: Math.round(animatedPercentile), unit: '%ile', benchmark: 50, isBetter: percentile > 50, icon: TrendingUp },
+                { label: 'Carbon/Person', value: maskValue(convertValue(perAttendee.carbon, 'weight').toFixed(1)), unit: `${getUnit('weight')} CO₂`, benchmark: convertValue(benchmark.average, 'weight').toFixed(1), isBetter: perAttendee.carbon < benchmark.average, icon: Factory },
+                { label: 'Water/Person', value: maskValue(convertValue(perAttendee.water, 'volume').toFixed(0)), unit: getUnit('volume'), benchmark: convertValue(75, 'volume').toFixed(0), isBetter: perAttendee.water < 75, icon: Droplets },
+                { label: 'Waste/Person', value: maskValue(convertValue(perAttendee.waste, 'weight').toFixed(1)), unit: getUnit('weight'), benchmark: convertValue(2.5, 'weight').toFixed(1), isBetter: perAttendee.waste < 2.5, icon: Trash2 },
+                { label: 'Industry Rank', value: maskValue(Math.round(animatedPercentile)), unit: '%ile', benchmark: '50', isBetter: percentile > 50, icon: TrendingUp },
               ].map((item, i) => (
                 <div key={i} className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-4 hover:bg-white/10 transition-all duration-300">
                   <div className="flex items-center justify-between mb-2">
@@ -445,13 +447,13 @@ const DashboardMetrics: React.FC<DashboardMetricsProps> = ({ result, inputs, onS
                     <Pie data={pieData} cx="50%" cy="50%" innerRadius={55} outerRadius={95} paddingAngle={3} dataKey="value">
                       {pieData.map((entry, index) => (<Cell key={index} fill={entry.color} stroke="white" strokeWidth={2} />))}
                     </Pie>
-                    <Tooltip formatter={(value: number) => [`${value} kg CO₂`, '']} contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 40px rgba(0,0,0,0.1)' }} />
+                    <Tooltip formatter={(value: number) => [`${maskValue(Math.round(convertValue(value, 'weight')))} ${getUnit('weight')} CO₂`, '']} contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 40px rgba(0,0,0,0.1)' }} />
                   </PieChart>
                 ) : (
                   <BarChart data={pieData}>
                     <XAxis dataKey="name" tick={{ fontSize: 11, fill: '#6b7280' }} axisLine={false} tickLine={false} />
                     <YAxis tick={{ fontSize: 11, fill: '#6b7280' }} axisLine={false} tickLine={false} />
-                    <Tooltip formatter={(value: number) => [`${value} kg CO₂`, '']} contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 40px rgba(0,0,0,0.1)' }} />
+                    <Tooltip formatter={(value: number) => [`${maskValue(Math.round(convertValue(value, 'weight')))} ${getUnit('weight')} CO₂`, '']} contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 40px rgba(0,0,0,0.1)' }} />
                     <Bar dataKey="value" radius={[8, 8, 0, 0]}>
                       {pieData.map((entry, index) => (<Cell key={index} fill={entry.color} />))}
                     </Bar>
@@ -464,7 +466,7 @@ const DashboardMetrics: React.FC<DashboardMetricsProps> = ({ result, inputs, onS
                 <div key={i} className="flex items-center gap-2 px-3 py-1.5 bg-gray-50 rounded-full text-sm">
                   <div className="w-3 h-3 rounded-full shadow-sm" style={{ backgroundColor: item.color }} />
                   <span className="text-gray-700 font-medium">{item.name}:</span>
-                  <span className="text-gray-900 font-bold">{item.value} kg</span>
+                  <span className="text-gray-900 font-bold">{maskValue(Math.round(convertValue(item.value, 'weight')))} {getUnit('weight')}</span>
                 </div>
               ))}
             </div>
@@ -482,7 +484,7 @@ const DashboardMetrics: React.FC<DashboardMetricsProps> = ({ result, inputs, onS
                 <BarChart data={barData} layout="vertical">
                   <XAxis type="number" tick={{ fontSize: 11, fill: '#6b7280' }} axisLine={false} tickLine={false} />
                   <YAxis dataKey="name" type="category" tick={{ fontSize: 11, fill: '#6b7280' }} width={90} axisLine={false} tickLine={false} />
-                  <Tooltip formatter={(value: number) => [`${value.toLocaleString()} kg CO₂`, '']} contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 40px rgba(0,0,0,0.1)' }} />
+                  <Tooltip formatter={(value: number) => [`${maskValue(Math.round(convertValue(value, 'weight')).toLocaleString())} ${getUnit('weight')} CO₂`, '']} contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 40px rgba(0,0,0,0.1)' }} />
                   <Bar dataKey="carbon" radius={[0, 8, 8, 0]} barSize={28}>
                     {barData.map((entry, index) => (<Cell key={index} fill={entry.fill} />))}
                   </Bar>
@@ -493,10 +495,10 @@ const DashboardMetrics: React.FC<DashboardMetricsProps> = ({ result, inputs, onS
               <div className="flex items-center gap-2 mb-1">
                 <CheckCircle2 className="w-5 h-5 text-emerald-600" />
                 <span className="text-sm font-bold text-emerald-700">
-                  {barData[1].carbon > result.carbonKg ? `${Math.round(((barData[1].carbon - result.carbonKg) / barData[1].carbon) * 100)}% below industry average` : 'At industry average'}
+                  {barData[1].carbon > result.carbonKg ? `${maskValue(Math.round(((barData[1].carbon - result.carbonKg) / barData[1].carbon) * 100))}% below industry average` : 'At industry average'}
                 </span>
               </div>
-              <p className="text-xs text-emerald-600">Top {100 - percentile}% of sustainable events in this category.</p>
+              <p className="text-xs text-emerald-600">Top {maskValue(100 - percentile)}% of sustainable events in this category.</p>
             </div>
           </div>
         </div>
@@ -510,7 +512,7 @@ const DashboardMetrics: React.FC<DashboardMetricsProps> = ({ result, inputs, onS
               </div>
               <div>
                 <h3 className="text-xl font-bold text-gray-900">Carbon Offset Valuation</h3>
-                <p className="text-sm text-gray-500">{carbonTonnes.toFixed(2)} tonnes CO₂ • Choose your offset quality</p>
+                <p className="text-sm text-gray-500">{maskValue(carbonTonnes.toFixed(2))} tonnes CO₂ • Choose your offset quality</p>
               </div>
             </div>
             <div className="flex items-center gap-2 px-4 py-2 bg-white/80 rounded-xl border border-amber-200">
@@ -534,9 +536,9 @@ const DashboardMetrics: React.FC<DashboardMetricsProps> = ({ result, inputs, onS
                 )}
                 <div className="flex items-center justify-between mb-3">
                   <item.icon className={`w-6 h-6 ${item.text}`} />
-                  <span className="text-xs font-semibold text-gray-500">${item.price}/tonne</span>
+                  <span className="text-xs font-semibold text-gray-500">{formatCurrency(item.price)}/tonne</span>
                 </div>
-                <div className={`text-2xl sm:text-3xl font-black ${item.text} mb-1`}>${item.cost.toFixed(2)}</div>
+                <div className={`text-2xl sm:text-3xl font-black ${item.text} mb-1`}>{maskValue(formatCurrency(item.cost))}</div>
                 <div className="text-xs font-semibold text-gray-700">{item.tier}</div>
                 <div className="text-xs text-gray-500 mt-1">{item.desc}</div>
               </div>
@@ -588,7 +590,7 @@ const DashboardMetrics: React.FC<DashboardMetricsProps> = ({ result, inputs, onS
             </div>
             <div className="flex items-center gap-2 px-4 py-2 bg-white/80 rounded-xl border border-violet-200">
               <Target className="w-4 h-4 text-violet-600" />
-              <span className="text-sm font-semibold text-violet-700">Save up to {actionPriorities.reduce((sum, a) => sum + a.potential, 0).toLocaleString()} kg CO₂</span>
+              <span className="text-sm font-semibold text-violet-700">Save up to {maskValue(Math.round(convertValue(actionPriorities.reduce((sum, a) => sum + a.potential, 0), 'weight')).toLocaleString())} {getUnit('weight')} CO₂</span>
             </div>
           </div>
 
@@ -611,12 +613,12 @@ const DashboardMetrics: React.FC<DashboardMetricsProps> = ({ result, inputs, onS
                   <div className="flex items-center gap-6 sm:gap-8">
                     <div className="text-center">
                       <div className="text-xs text-gray-500 mb-1">Current</div>
-                      <div className="text-lg font-bold text-gray-700">{item.impact} kg</div>
+                      <div className="text-lg font-bold text-gray-700">{maskValue(Math.round(convertValue(item.impact, 'weight')))} {getUnit('weight')}</div>
                     </div>
                     <ArrowRight className="w-5 h-5 text-violet-400" />
                     <div className="text-center">
                       <div className="text-xs text-gray-500 mb-1">Savings</div>
-                      <div className="text-lg font-bold text-emerald-600">-{item.potential} kg</div>
+                      <div className="text-lg font-bold text-emerald-600">-{maskValue(Math.round(convertValue(item.potential, 'weight')))} {getUnit('weight')}</div>
                     </div>
                     <div className="flex gap-1">
                       {[1, 2, 3].map((level) => (
@@ -644,10 +646,10 @@ const DashboardMetrics: React.FC<DashboardMetricsProps> = ({ result, inputs, onS
             </div>
             <div className="grid grid-cols-2 gap-4">
               {[
-                { label: 'Annual Carbon', value: (yearlyProjection.carbon / 1000).toFixed(1), unit: 'tonnes CO₂', color: 'text-red-600', bg: 'bg-red-50' },
-                { label: 'Annual Water', value: (yearlyProjection.water / 1000).toFixed(1), unit: 'kL water', color: 'text-blue-600', bg: 'bg-blue-50' },
-                { label: 'Annual Waste', value: yearlyProjection.waste.toLocaleString(), unit: 'kg waste', color: 'text-amber-600', bg: 'bg-amber-50' },
-                { label: 'Annual Offset Cost', value: `$${yearlyProjection.offsetCost.toFixed(0)}`, unit: 'Gold Standard', color: 'text-emerald-600', bg: 'bg-emerald-50' },
+                { label: 'Annual Carbon', value: maskValue((convertValue(yearlyProjection.carbon, 'weight') / 1000).toFixed(1)), unit: `tonnes CO₂`, color: 'text-red-600', bg: 'bg-red-50' },
+                { label: 'Annual Water', value: maskValue((convertValue(yearlyProjection.water, 'volume') / 1000).toFixed(1)), unit: `k${getUnit('volume')} water`, color: 'text-blue-600', bg: 'bg-blue-50' },
+                { label: 'Annual Waste', value: maskValue(Math.round(convertValue(yearlyProjection.waste, 'weight')).toLocaleString()), unit: `${getUnit('weight')} waste`, color: 'text-amber-600', bg: 'bg-amber-50' },
+                { label: 'Annual Offset Cost', value: maskValue(formatCurrency(yearlyProjection.offsetCost)), unit: 'Gold Standard', color: 'text-emerald-600', bg: 'bg-emerald-50' },
               ].map((item, i) => (
                 <div key={i} className={`${item.bg} rounded-xl p-4`}>
                   <div className="text-xs text-gray-500 font-medium mb-1">{item.label}</div>
@@ -714,7 +716,7 @@ const DashboardMetrics: React.FC<DashboardMetricsProps> = ({ result, inputs, onS
                 </ResponsiveContainer>
               </div>
               <div className="text-center -mt-10">
-                <div className="text-5xl font-black">{Math.round(animatedScore)}</div>
+                <div className="text-5xl font-black">{maskValue(Math.round(animatedScore))}</div>
                 <div className="text-emerald-200 text-sm mt-1 font-medium">out of 100 • {result.greenScore >= 80 ? 'Excellent' : result.greenScore >= 60 ? 'Good' : 'Fair'}</div>
               </div>
             </div>
@@ -729,7 +731,7 @@ const DashboardMetrics: React.FC<DashboardMetricsProps> = ({ result, inputs, onS
               <h3 className="text-lg font-bold text-gray-900">Reduction Potential</h3>
             </div>
             <div className="text-center py-3">
-              <div className="text-4xl font-black bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent mb-1">-{reductionPotential.toLocaleString()} kg</div>
+              <div className="text-4xl font-black bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent mb-1">-{maskValue(Math.round(convertValue(reductionPotential, 'weight')).toLocaleString())} {getUnit('weight')}</div>
               <div className="text-sm text-gray-500 mb-4">CO₂ you can save with optimizations</div>
             </div>
             <div className="space-y-3">
@@ -737,7 +739,7 @@ const DashboardMetrics: React.FC<DashboardMetricsProps> = ({ result, inputs, onS
                 <div key={i}>
                   <div className="flex justify-between text-xs mb-1">
                     <span className="text-gray-700 font-semibold">{item.category}</span>
-                    <span className="text-emerald-600 font-bold">-{item.potential} kg</span>
+                    <span className="text-emerald-600 font-bold">-{maskValue(Math.round(convertValue(item.potential, 'weight')))} {getUnit('weight')}</span>
                   </div>
                   <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
                     <div
@@ -760,10 +762,10 @@ const DashboardMetrics: React.FC<DashboardMetricsProps> = ({ result, inputs, onS
             </div>
             <div className="space-y-3">
               {[
-                { Icon: TreePine, label: 'Trees to offset', value: Math.round(result.carbonKg / 22), unit: 'trees/year', gradient: 'from-emerald-500 to-green-500' },
-                { Icon: Car, label: 'Car distance', value: Math.round(result.carbonKg / 0.21).toLocaleString(), unit: 'km driven', gradient: 'from-blue-500 to-cyan-500' },
-                { Icon: Plane, label: 'Flights', value: Math.round(result.carbonKg / 900), unit: 'round trips', gradient: 'from-purple-500 to-violet-500' },
-                { Icon: Home, label: 'Home energy', value: Math.round(result.carbonKg / 4000 * 12), unit: 'months', gradient: 'from-amber-500 to-orange-500' },
+                { Icon: TreePine, label: 'Trees to offset', value: maskValue(Math.round(result.carbonKg / 22)), unit: 'trees/year', gradient: 'from-emerald-500 to-green-500' },
+                { Icon: Car, label: 'Car distance', value: maskValue(Math.round(convertValue(result.carbonKg / 0.21, 'distance')).toLocaleString()), unit: `${getUnit('distance')} driven`, gradient: 'from-blue-500 to-cyan-500' },
+                { Icon: Plane, label: 'Flights', value: maskValue(Math.round(result.carbonKg / 900)), unit: 'round trips', gradient: 'from-purple-500 to-violet-500' },
+                { Icon: Home, label: 'Home energy', value: maskValue(Math.round(result.carbonKg / 4000 * 12)), unit: 'months', gradient: 'from-amber-500 to-orange-500' },
               ].map((item, i) => (
                 <div key={i} className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors">
                   <div className={`w-9 h-9 rounded-lg bg-gradient-to-br ${item.gradient} flex items-center justify-center shadow-md`}>
@@ -808,10 +810,10 @@ const DashboardMetrics: React.FC<DashboardMetricsProps> = ({ result, inputs, onS
             </div>
 
             <div className="bg-gray-50 rounded-xl p-4 mb-6 grid grid-cols-2 gap-3">
-              <div><span className="text-xs text-gray-500">Carbon</span><div className="text-sm font-bold text-gray-900">{result.carbonKg.toLocaleString()} kg</div></div>
-              <div><span className="text-xs text-gray-500">Water</span><div className="text-sm font-bold text-gray-900">{result.waterLiters.toLocaleString()} L</div></div>
-              <div><span className="text-xs text-gray-500">Waste</span><div className="text-sm font-bold text-gray-900">{result.wasteKg.toLocaleString()} kg</div></div>
-              <div><span className="text-xs text-gray-500">Green Score</span><div className="text-sm font-bold text-emerald-600">{result.greenScore}/100</div></div>
+              <div><span className="text-xs text-gray-500">Carbon</span><div className="text-sm font-bold text-gray-900">{maskValue(Math.round(convertValue(result.carbonKg, 'weight')).toLocaleString())} {getUnit('weight')}</div></div>
+              <div><span className="text-xs text-gray-500">Water</span><div className="text-sm font-bold text-gray-900">{maskValue(Math.round(convertValue(result.waterLiters, 'volume')).toLocaleString())} {getUnit('volume')}</div></div>
+              <div><span className="text-xs text-gray-500">Waste</span><div className="text-sm font-bold text-gray-900">{maskValue(Math.round(convertValue(result.wasteKg, 'weight')).toLocaleString())} {getUnit('weight')}</div></div>
+              <div><span className="text-xs text-gray-500">Green Score</span><div className="text-sm font-bold text-emerald-600">{maskValue(result.greenScore)}/100</div></div>
             </div>
 
             <div className="flex gap-3">

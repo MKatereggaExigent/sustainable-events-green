@@ -252,6 +252,39 @@ export const tourApi = {
     }),
 };
 
+// Settings API
+export interface UserSettings {
+  id: string;
+  userId: string;
+  metricSystem: 'metric' | 'imperial' | 'uk';
+  currencyCode: string;
+  hideValues: boolean;
+  exchangeRate: number;
+  exchangeRateUpdatedAt: string | null;
+}
+
+export interface Currency {
+  code: string;
+  name: string;
+  symbol: string;
+  decimalPlaces: number;
+}
+
+export const settingsApi = {
+  getSettings: () => apiFetch<UserSettings>('/settings'),
+
+  updateSettings: (data: Partial<Pick<UserSettings, 'metricSystem' | 'currencyCode' | 'hideValues'>>) =>
+    apiFetch<UserSettings>('/settings', {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    }),
+
+  getCurrencies: () => apiFetch<Currency[]>('/settings/currencies'),
+
+  getExchangeRate: (currency: string) =>
+    apiFetch<{ currency: string; rate: number; base: string }>(`/settings/exchange-rate/${currency}`),
+};
+
 export function isAuthenticated(): boolean {
   return !!getAccessToken();
 }

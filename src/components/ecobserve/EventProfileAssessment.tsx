@@ -8,6 +8,7 @@ import {
   EventType, EventFormat, EventProfileData, EVENT_TYPES, INDUSTRIES,
   EVENT_BENCHMARKS, FORMAT_MULTIPLIERS, getEventScale, INDUSTRY_MULTIPLIERS
 } from '@/lib/preAssessmentData';
+import { useSettings } from '@/contexts/SettingsContext';
 
 interface EventProfileAssessmentProps {
   onComplete: (data: EventProfileData) => void;
@@ -15,6 +16,7 @@ interface EventProfileAssessmentProps {
 }
 
 const EventProfileAssessment: React.FC<EventProfileAssessmentProps> = ({ onComplete, onDataChange }) => {
+  const { convertValue, getUnit, maskValue } = useSettings();
   const [data, setData] = useState<EventProfileData>({
     eventType: 'conference',
     eventFormat: 'in-person',
@@ -268,17 +270,17 @@ const EventProfileAssessment: React.FC<EventProfileAssessmentProps> = ({ onCompl
               Quick Estimate
             </h3>
             <div className="text-4xl font-bold mb-2">
-              {(assessment.totalEmissionsKg / 1000).toFixed(1)}
+              {maskValue((convertValue(assessment.totalEmissionsKg, 'weight') / 1000).toFixed(1))}
               <span className="text-lg font-normal opacity-80 ml-1">tonnes CO₂e</span>
             </div>
             <p className="text-sm opacity-80 mb-4">
-              {assessment.emissionPerAttendee} kg per attendee
+              {maskValue(Math.round(convertValue(assessment.emissionPerAttendee, 'weight')))} {getUnit('weight')} per attendee
             </p>
             <div className="bg-white/10 rounded-xl p-4 mb-4">
               <div className="flex justify-between items-center mb-2">
                 <span className="text-sm">Industry Percentile</span>
                 <span className={`font-bold ${assessment.percentile >= 50 ? 'text-emerald-300' : 'text-amber-300'}`}>
-                  Top {100 - assessment.percentile}%
+                  Top {maskValue(100 - assessment.percentile)}%
                 </span>
               </div>
               <div className="w-full bg-white/20 rounded-full h-2">

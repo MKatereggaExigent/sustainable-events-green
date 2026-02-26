@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Calendar, Users, Leaf, Award, X, TrendingDown, RefreshCw } from 'lucide-react';
 import { EventPortfolioItem, fetchEventPortfolio } from '@/lib/carbonData';
 import { isAuthenticated } from '@/services/api';
+import { useSettings } from '@/contexts/SettingsContext';
 
 // Sample showcase data for unauthenticated users
 const sampleShowcaseEvents: EventPortfolioItem[] = [
@@ -74,6 +75,7 @@ const sampleShowcaseEvents: EventPortfolioItem[] = [
 ];
 
 const EventPortfolio: React.FC = () => {
+  const { convertValue, getUnit, maskValue } = useSettings();
   const [events, setEvents] = useState<EventPortfolioItem[]>(sampleShowcaseEvents);
   const [loading, setLoading] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState<EventPortfolioItem | null>(null);
@@ -185,7 +187,7 @@ const EventPortfolio: React.FC = () => {
                 <div className="flex items-center gap-2 p-3 bg-emerald-50 rounded-xl mb-4">
                   <Leaf className="w-4 h-4 text-emerald-600" />
                   <span className="text-sm font-semibold text-emerald-700">
-                    {event.carbonSaved.toLocaleString()} kg CO₂ saved
+                    {maskValue(Math.round(convertValue(event.carbonSaved, 'weight')).toLocaleString())} {getUnit('weight')} CO₂ saved
                   </span>
                 </div>
 
@@ -210,24 +212,24 @@ const EventPortfolio: React.FC = () => {
         <div className="mt-12 bg-gradient-to-r from-emerald-600 to-teal-600 rounded-3xl p-8 text-white">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
             <div>
-              <div className="text-3xl font-bold">{events.length}</div>
+              <div className="text-3xl font-bold">{maskValue(events.length)}</div>
               <div className="text-emerald-200 text-sm mt-1">Events Showcased</div>
             </div>
             <div>
               <div className="text-3xl font-bold">
-                {events.reduce((a, e) => a + e.attendees, 0).toLocaleString()}
+                {maskValue(events.reduce((a, e) => a + e.attendees, 0).toLocaleString())}
               </div>
               <div className="text-emerald-200 text-sm mt-1">Total Attendees</div>
             </div>
             <div>
               <div className="text-3xl font-bold">
-                {events.reduce((a, e) => a + e.carbonSaved, 0).toLocaleString()}
+                {maskValue(Math.round(convertValue(events.reduce((a, e) => a + e.carbonSaved, 0), 'weight')).toLocaleString())}
               </div>
-              <div className="text-emerald-200 text-sm mt-1">kg CO₂ Saved</div>
+              <div className="text-emerald-200 text-sm mt-1">{getUnit('weight')} CO₂ Saved</div>
             </div>
             <div>
               <div className="text-3xl font-bold">
-                {events.length > 0 ? Math.round(events.reduce((a, e) => a + e.greenScore, 0) / events.length) : 0}
+                {maskValue(events.length > 0 ? Math.round(events.reduce((a, e) => a + e.greenScore, 0) / events.length) : 0)}
               </div>
               <div className="text-emerald-200 text-sm mt-1">Avg Green Score</div>
             </div>
@@ -281,10 +283,10 @@ const EventPortfolio: React.FC = () => {
                   <span className="font-semibold text-emerald-800">Carbon Savings</span>
                 </div>
                 <div className="text-3xl font-bold text-emerald-700">
-                  {selectedEvent.carbonSaved.toLocaleString()} kg CO₂
+                  {maskValue(Math.round(convertValue(selectedEvent.carbonSaved, 'weight')).toLocaleString())} {getUnit('weight')} CO₂
                 </div>
                 <p className="text-sm text-emerald-600 mt-1">
-                  Equivalent to planting {Math.round(selectedEvent.carbonSaved / 22)} trees
+                  Equivalent to planting {maskValue(Math.round(selectedEvent.carbonSaved / 22))} trees
                 </p>
               </div>
 

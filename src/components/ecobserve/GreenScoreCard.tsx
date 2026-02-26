@@ -2,12 +2,14 @@ import React, { useState, useRef } from 'react';
 import { Share2, Download, Copy, Check, Leaf, Award, Twitter, Linkedin, Mail, X } from 'lucide-react';
 import { FootprintResult } from '@/lib/carbonData';
 import BrandLogo, { getBrandName, getBrandNameForFile } from './BrandLogo';
+import { useSettings } from '@/contexts/SettingsContext';
 
 interface GreenScoreCardProps {
   result: FootprintResult;
 }
 
 const GreenScoreCard: React.FC<GreenScoreCardProps> = ({ result }) => {
+  const { convertValue, getUnit, maskValue } = useSettings();
   const [showShareModal, setShowShareModal] = useState(false);
   const [copied, setCopied] = useState(false);
   const [eventName, setEventName] = useState('My Sustainable Event');
@@ -23,7 +25,7 @@ const GreenScoreCard: React.FC<GreenScoreCardProps> = ({ result }) => {
 
   const scoreInfo = getScoreLabel(result.greenScore);
 
-  const shareText = `${eventName} achieved a Green Score of ${result.greenScore}/100 on EcobServe! Carbon: ${result.carbonKg}kg CO₂ | Water: ${result.waterLiters}L | Waste: ${result.wasteKg}kg #SustainableEvents #EcobServe`;
+  const shareText = `${eventName} achieved a Green Score of ${maskValue(result.greenScore)}/100 on EcobServe! Carbon: ${maskValue(Math.round(convertValue(result.carbonKg, 'weight')))}${getUnit('weight')} CO₂ | Water: ${maskValue(Math.round(convertValue(result.waterLiters, 'volume')))}${getUnit('volume')} | Waste: ${maskValue(Math.round(convertValue(result.wasteKg, 'weight')))}${getUnit('weight')} #SustainableEvents #EcobServe`;
 
   const handleCopy = () => {
     navigator.clipboard.writeText(shareText);
@@ -32,21 +34,24 @@ const GreenScoreCard: React.FC<GreenScoreCardProps> = ({ result }) => {
   };
 
   const handleDownload = () => {
+    const carbonConverted = maskValue(Math.round(convertValue(result.carbonKg, 'weight')));
+    const waterConverted = maskValue(Math.round(convertValue(result.waterLiters, 'volume')));
+    const wasteConverted = maskValue(Math.round(convertValue(result.wasteKg, 'weight')));
     const certificate = `
 ╔══════════════════════════════════════════════╗
 ║                                              ║
 ║           🌿 EcobServe Certificate 🌿        ║
 ║                                              ║
-║   ${scoreInfo.label.toUpperCase()} GREEN SCORE: ${result.greenScore}/100${' '.repeat(Math.max(0, 20 - scoreInfo.label.length - String(result.greenScore).length))}║
+║   ${scoreInfo.label.toUpperCase()} GREEN SCORE: ${maskValue(result.greenScore)}/100${' '.repeat(Math.max(0, 20 - scoreInfo.label.length - String(maskValue(result.greenScore)).length))}║
 ║                                              ║
 ║   Event: ${eventName}${' '.repeat(Math.max(0, 35 - eventName.length))}║
 ║   ${organizerName ? `Organized by: ${organizerName}` : ''}${' '.repeat(Math.max(0, organizerName ? 35 - organizerName.length - 14 : 44))}║
 ║   Date: ${new Date().toLocaleDateString()}${' '.repeat(Math.max(0, 35 - new Date().toLocaleDateString().length))}║
 ║                                              ║
 ║   Environmental Impact:                      ║
-║   • Carbon: ${result.carbonKg} kg CO₂${' '.repeat(Math.max(0, 30 - String(result.carbonKg).length))}║
-║   • Water: ${result.waterLiters} liters${' '.repeat(Math.max(0, 30 - String(result.waterLiters).length))}║
-║   • Waste: ${result.wasteKg} kg${' '.repeat(Math.max(0, 33 - String(result.wasteKg).length))}║
+║   • Carbon: ${carbonConverted} ${getUnit('weight')} CO₂${' '.repeat(Math.max(0, 30 - String(carbonConverted).length - getUnit('weight').length))}║
+║   • Water: ${waterConverted} ${getUnit('volume')}${' '.repeat(Math.max(0, 30 - String(waterConverted).length - getUnit('volume').length))}║
+║   • Waste: ${wasteConverted} ${getUnit('weight')}${' '.repeat(Math.max(0, 30 - String(wasteConverted).length - getUnit('weight').length))}║
 ║                                              ║
 ║   Verified by EcobServe Platform             ║
 ║                                              ║
@@ -128,22 +133,22 @@ const GreenScoreCard: React.FC<GreenScoreCardProps> = ({ result }) => {
                         </defs>
                       </svg>
                       <div className="absolute inset-0 flex flex-col items-center justify-center">
-                        <span className="text-3xl font-bold text-white">{result.greenScore}</span>
+                        <span className="text-3xl font-bold text-white">{maskValue(result.greenScore)}</span>
                         <span className="text-emerald-400 text-xs">/100</span>
                       </div>
                     </div>
                     <div className="space-y-2">
                       <div>
                         <div className="text-emerald-400 text-xs">Carbon</div>
-                        <div className="text-white font-semibold">{result.carbonKg.toLocaleString()} kg CO₂</div>
+                        <div className="text-white font-semibold">{maskValue(Math.round(convertValue(result.carbonKg, 'weight')).toLocaleString())} {getUnit('weight')} CO₂</div>
                       </div>
                       <div>
                         <div className="text-blue-400 text-xs">Water</div>
-                        <div className="text-white font-semibold">{result.waterLiters.toLocaleString()} L</div>
+                        <div className="text-white font-semibold">{maskValue(Math.round(convertValue(result.waterLiters, 'volume')).toLocaleString())} {getUnit('volume')}</div>
                       </div>
                       <div>
                         <div className="text-amber-400 text-xs">Waste</div>
-                        <div className="text-white font-semibold">{result.wasteKg.toLocaleString()} kg</div>
+                        <div className="text-white font-semibold">{maskValue(Math.round(convertValue(result.wasteKg, 'weight')).toLocaleString())} {getUnit('weight')}</div>
                       </div>
                     </div>
                   </div>
@@ -233,7 +238,7 @@ const GreenScoreCard: React.FC<GreenScoreCardProps> = ({ result }) => {
             <div className="bg-emerald-50 rounded-2xl p-6 border border-emerald-200">
               <h4 className="font-semibold text-emerald-800 mb-3">About Your {scoreInfo.label} Score</h4>
               <div className="space-y-2 text-sm text-emerald-700">
-                <p>Your Green Score of <strong>{result.greenScore}/100</strong> places your event in the <strong>{scoreInfo.label}</strong> tier.</p>
+                <p>Your Green Score of <strong>{maskValue(result.greenScore)}/100</strong> places your event in the <strong>{scoreInfo.label}</strong> tier.</p>
                 <div className="grid grid-cols-2 gap-2 mt-3">
                   {[
                     { tier: 'Platinum', range: '90-100', color: 'bg-emerald-200' },

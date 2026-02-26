@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import { PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip } from 'recharts';
 import { EventInputs, defaultInputs, calculateFootprint } from '@/lib/carbonData';
+import { useSettings } from '@/contexts/SettingsContext';
 
 interface CarbonCalculatorProps {
   onComplete: (inputs: EventInputs) => void;
@@ -91,6 +92,7 @@ const SelectButton: React.FC<{
 );
 
 const CarbonCalculator: React.FC<CarbonCalculatorProps> = ({ onComplete, inputs, setInputs }) => {
+  const { convertValue, getUnit, formatCurrency, maskValue } = useSettings();
   const [step, setStep] = useState(0);
   const [showBreakdown, setShowBreakdown] = useState<'pie' | 'bar'>('pie');
   const [isVisible, setIsVisible] = useState(false);
@@ -600,11 +602,11 @@ const CarbonCalculator: React.FC<CarbonCalculatorProps> = ({ onComplete, inputs,
                   </div>
                 </div>
                 <div className="text-4xl font-bold mb-1">
-                  {Math.round(animatedCarbon).toLocaleString()}
-                  <span className="text-lg font-normal text-slate-400 ml-2">kg CO₂e</span>
+                  {maskValue(Math.round(convertValue(animatedCarbon, 'weight')).toLocaleString())}
+                  <span className="text-lg font-normal text-slate-400 ml-2">{getUnit('weight')} CO₂e</span>
                 </div>
                 <div className="text-slate-400 text-sm mb-4">
-                  {carbonTonnes.toFixed(2)} tonnes carbon equivalent
+                  {maskValue((convertValue(result.carbonKg, 'weight') / 1000).toFixed(2))} tonnes carbon equivalent
                 </div>
 
                 {/* Per-attendee metric */}
@@ -612,7 +614,7 @@ const CarbonCalculator: React.FC<CarbonCalculatorProps> = ({ onComplete, inputs,
                   <Users className="w-5 h-5 text-emerald-400" />
                   <div className="flex-1">
                     <div className="text-sm text-slate-400">Per Attendee</div>
-                    <div className="text-lg font-semibold">{perAttendeeCarbon.toFixed(1)} kg CO₂</div>
+                    <div className="text-lg font-semibold">{maskValue(convertValue(perAttendeeCarbon, 'weight').toFixed(1))} {getUnit('weight')} CO₂</div>
                   </div>
                   <div className={`text-xs px-2 py-1 rounded-full ${perAttendeeCarbon < 8 ? 'bg-emerald-500/20 text-emerald-400' : perAttendeeCarbon < 12 ? 'bg-amber-500/20 text-amber-400' : 'bg-red-500/20 text-red-400'}`}>
                     {perAttendeeCarbon < 8 ? 'Excellent' : perAttendeeCarbon < 12 ? 'Average' : 'High'}
@@ -624,7 +626,7 @@ const CarbonCalculator: React.FC<CarbonCalculatorProps> = ({ onComplete, inputs,
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-sm text-slate-400">vs Industry Average</span>
                     <span className={`text-sm font-semibold ${percentBelowAvg > 0 ? 'text-emerald-400' : 'text-amber-400'}`}>
-                      {percentBelowAvg > 0 ? `${percentBelowAvg}% below` : `${Math.abs(Math.round(((result.carbonKg - industryAvg) / industryAvg) * 100))}% above`}
+                      {percentBelowAvg > 0 ? `${maskValue(percentBelowAvg)}% below` : `${maskValue(Math.abs(Math.round(((result.carbonKg - industryAvg) / industryAvg) * 100)))}% above`}
                     </span>
                   </div>
                   <div className="relative h-2 bg-slate-700 rounded-full overflow-hidden">
@@ -638,8 +640,8 @@ const CarbonCalculator: React.FC<CarbonCalculatorProps> = ({ onComplete, inputs,
                     />
                   </div>
                   <div className="flex justify-between mt-1 text-xs text-slate-500">
-                    <span>Your Event: {result.carbonKg.toLocaleString()} kg</span>
-                    <span>Avg: {industryAvg.toLocaleString()} kg</span>
+                    <span>Your Event: {maskValue(Math.round(convertValue(result.carbonKg, 'weight')).toLocaleString())} {getUnit('weight')}</span>
+                    <span>Avg: {maskValue(Math.round(convertValue(industryAvg, 'weight')).toLocaleString())} {getUnit('weight')}</span>
                   </div>
                 </div>
               </div>
@@ -657,7 +659,7 @@ const CarbonCalculator: React.FC<CarbonCalculatorProps> = ({ onComplete, inputs,
                 </div>
               </div>
               <div className="flex items-baseline gap-2 mb-3">
-                <span className="text-3xl font-bold text-gray-900">${Math.round(offsetCost).toLocaleString()}</span>
+                <span className="text-3xl font-bold text-gray-900">{maskValue(formatCurrency(Math.round(offsetCost)))}</span>
                 <span className="text-sm text-gray-500">to offset</span>
               </div>
               <div className="grid grid-cols-2 gap-2 text-xs">
@@ -745,7 +747,7 @@ const CarbonCalculator: React.FC<CarbonCalculatorProps> = ({ onComplete, inputs,
                         ))}
                       </Pie>
                       <Tooltip
-                        formatter={(value: number) => [`${value.toLocaleString()} kg`, '']}
+                        formatter={(value: number) => [`${maskValue(Math.round(convertValue(value, 'weight')).toLocaleString())} ${getUnit('weight')}`, '']}
                         contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
                       />
                     </PieChart>
@@ -754,7 +756,7 @@ const CarbonCalculator: React.FC<CarbonCalculatorProps> = ({ onComplete, inputs,
                       <XAxis type="number" hide />
                       <YAxis type="category" dataKey="name" width={60} tick={{ fontSize: 11 }} />
                       <Tooltip
-                        formatter={(value: number) => [`${value.toLocaleString()} kg CO₂`, '']}
+                        formatter={(value: number) => [`${maskValue(Math.round(convertValue(value, 'weight')).toLocaleString())} ${getUnit('weight')} CO₂`, '']}
                         contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
                       />
                       <Bar dataKey="value" radius={[0, 4, 4, 0]}>
@@ -771,7 +773,7 @@ const CarbonCalculator: React.FC<CarbonCalculatorProps> = ({ onComplete, inputs,
                   <div key={i} className="flex items-center gap-2 text-xs">
                     <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: item.color }} />
                     <span className="text-gray-600">{item.name}</span>
-                    <span className="text-gray-400 ml-auto">{Math.round((item.value / result.carbonKg) * 100)}%</span>
+                    <span className="text-gray-400 ml-auto">{maskValue(Math.round((item.value / result.carbonKg) * 100))}%</span>
                   </div>
                 ))}
               </div>
@@ -784,7 +786,7 @@ const CarbonCalculator: React.FC<CarbonCalculatorProps> = ({ onComplete, inputs,
                   <Lightbulb className="w-5 h-5 text-amber-600" />
                   <h3 className="text-sm font-semibold text-gray-700">Quick Wins</h3>
                   <span className="ml-auto text-xs text-amber-600 font-medium">
-                    Save {totalPotentialSavings.toLocaleString()} kg CO₂
+                    Save {maskValue(Math.round(convertValue(totalPotentialSavings, 'weight')).toLocaleString())} {getUnit('weight')} CO₂
                   </span>
                 </div>
                 <div className="space-y-2">
@@ -800,7 +802,7 @@ const CarbonCalculator: React.FC<CarbonCalculatorProps> = ({ onComplete, inputs,
                           <div className="text-xs text-gray-500">{rec.category}</div>
                         </div>
                         <div className="text-xs font-semibold text-emerald-600 whitespace-nowrap">
-                          -{rec.savings.toLocaleString()} kg
+                          -{maskValue(Math.round(convertValue(rec.savings, 'weight')).toLocaleString())} {getUnit('weight')}
                         </div>
                       </div>
                     );
@@ -823,18 +825,18 @@ const CarbonCalculator: React.FC<CarbonCalculatorProps> = ({ onComplete, inputs,
                 </div>
                 <div className="p-3 bg-blue-50 rounded-xl text-center">
                   <Car className="w-5 h-5 text-blue-600 mx-auto mb-1" />
-                  <div className="text-lg font-bold text-gray-900">{Math.round(result.carbonKg / 0.21 / 1000)}k</div>
-                  <div className="text-xs text-gray-500">km driving</div>
+                  <div className="text-lg font-bold text-gray-900">{maskValue(Math.round(convertValue(result.carbonKg / 0.21, 'distance') / 1000))}k</div>
+                  <div className="text-xs text-gray-500">{getUnit('distance')} driving</div>
                 </div>
                 <div className="p-3 bg-cyan-50 rounded-xl text-center">
                   <Droplets className="w-5 h-5 text-cyan-600 mx-auto mb-1" />
-                  <div className="text-lg font-bold text-gray-900">{Math.round(animatedWater).toLocaleString()}</div>
-                  <div className="text-xs text-gray-500">L water used</div>
+                  <div className="text-lg font-bold text-gray-900">{maskValue(Math.round(convertValue(animatedWater, 'volume')).toLocaleString())}</div>
+                  <div className="text-xs text-gray-500">{getUnit('volume')} water used</div>
                 </div>
                 <div className="p-3 bg-amber-50 rounded-xl text-center">
                   <Trash2 className="w-5 h-5 text-amber-600 mx-auto mb-1" />
-                  <div className="text-lg font-bold text-gray-900">{Math.round(animatedWaste)}</div>
-                  <div className="text-xs text-gray-500">kg waste</div>
+                  <div className="text-lg font-bold text-gray-900">{maskValue(Math.round(convertValue(animatedWaste, 'weight')))}</div>
+                  <div className="text-xs text-gray-500">{getUnit('weight')} waste</div>
                 </div>
               </div>
             </div>

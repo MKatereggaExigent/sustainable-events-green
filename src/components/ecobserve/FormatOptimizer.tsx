@@ -4,6 +4,7 @@ import {
   Heart, Globe2, Handshake, ChevronRight, Award, Sparkles, Target, BarChart3
 } from 'lucide-react';
 import { EventFormat, compareFormats, FormatComparisonResult } from '@/lib/preAssessmentData';
+import { useSettings } from '@/contexts/SettingsContext';
 
 interface FormatOptimizerProps {
   attendees: number;
@@ -32,6 +33,7 @@ const FormatOptimizer: React.FC<FormatOptimizerProps> = ({
   onComplete,
   onDataChange
 }) => {
+  const { convertValue, getUnit, maskValue } = useSettings();
   const [selectedFormat, setSelectedFormat] = useState<EventFormat>('hybrid');
   const [hybridRatio, setHybridRatio] = useState(50); // % in-person
 
@@ -125,10 +127,10 @@ const FormatOptimizer: React.FC<FormatOptimizerProps> = ({
                 {/* Carbon */}
                 <div className="mb-4">
                   <div className="text-3xl font-bold text-gray-900">
-                    {(format.estimatedCarbonKg / 1000).toFixed(1)}
+                    {maskValue((convertValue(format.estimatedCarbonKg, 'weight') / 1000).toFixed(1))}
                     <span className="text-sm font-normal text-gray-500 ml-1">t CO₂e</span>
                   </div>
-                  <p className="text-sm text-gray-500">{format.estimatedCarbonPerAttendee} kg per attendee</p>
+                  <p className="text-sm text-gray-500">{maskValue(Math.round(convertValue(format.estimatedCarbonPerAttendee, 'weight')))} {getUnit('weight')} per attendee</p>
                 </div>
 
                 {/* Scores */}
@@ -232,9 +234,11 @@ const FormatOptimizer: React.FC<FormatOptimizerProps> = ({
               </div>
               <div className="text-right">
                 <div className="text-3xl font-bold">
-                  {(comparison.find(c => c.format === selectedFormat)?.estimatedCarbonKg || 0) / 1000 < 10
-                    ? ((comparison.find(c => c.format === selectedFormat)?.estimatedCarbonKg || 0) / 1000).toFixed(1)
-                    : Math.round((comparison.find(c => c.format === selectedFormat)?.estimatedCarbonKg || 0) / 1000)}
+                  {maskValue(
+                    (convertValue(comparison.find(c => c.format === selectedFormat)?.estimatedCarbonKg || 0, 'weight') / 1000) < 10
+                      ? (convertValue(comparison.find(c => c.format === selectedFormat)?.estimatedCarbonKg || 0, 'weight') / 1000).toFixed(1)
+                      : Math.round(convertValue(comparison.find(c => c.format === selectedFormat)?.estimatedCarbonKg || 0, 'weight') / 1000)
+                  )}
                   <span className="text-lg font-normal opacity-80 ml-1">t CO₂e</span>
                 </div>
               </div>
@@ -246,9 +250,9 @@ const FormatOptimizer: React.FC<FormatOptimizerProps> = ({
                   <TrendingDown className="w-5 h-5" />
                   <span>
                     <strong>
-                      {Math.round(((comparison.find(c => c.format === 'in-person')?.estimatedCarbonKg || 0) -
+                      {maskValue(Math.round(((comparison.find(c => c.format === 'in-person')?.estimatedCarbonKg || 0) -
                         (comparison.find(c => c.format === selectedFormat)?.estimatedCarbonKg || 0)) /
-                        (comparison.find(c => c.format === 'in-person')?.estimatedCarbonKg || 1) * 100)}%
+                        (comparison.find(c => c.format === 'in-person')?.estimatedCarbonKg || 1) * 100))}%
                     </strong> less carbon than in-person
                   </span>
                 </div>

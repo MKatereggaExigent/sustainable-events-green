@@ -8,6 +8,7 @@ import {
   calculateTravelEmissions, TRAVEL_EMISSION_FACTORS, REGIONAL_DISTANCES,
   ACCOMMODATION_FACTOR
 } from '@/lib/preAssessmentData';
+import { useSettings } from '@/contexts/SettingsContext';
 
 interface AttendeeTravelProps {
   totalAttendees: number;
@@ -39,6 +40,7 @@ const AttendeeTravel: React.FC<AttendeeTravelProps> = ({
   onComplete,
   onDataChange
 }) => {
+  const { convertValue, getUnit, maskValue } = useSettings();
   const [data, setData] = useState<AttendeeData>({
     totalAttendees,
     profiles: [
@@ -86,10 +88,10 @@ const AttendeeTravel: React.FC<AttendeeTravelProps> = ({
     // Recommendations
     const recommendations: string[] = [];
     if (data.virtualAttendeePercent < 20) {
-      recommendations.push(`Adding ${20 - data.virtualAttendeePercent}% virtual attendees could save ${Math.round(travelEmissions * 0.2)} kg CO₂e`);
+      recommendations.push(`Adding ${maskValue(20 - data.virtualAttendeePercent)}% virtual attendees could save ${maskValue(Math.round(convertValue(travelEmissions * 0.2, 'weight')))} ${getUnit('weight')} CO₂e`);
     }
     if (biggestContributor.emissions > travelEmissions * 0.5) {
-      recommendations.push(`${biggestContributor.region} travel accounts for ${Math.round(biggestContributor.emissions / travelEmissions * 100)}% of emissions`);
+      recommendations.push(`${biggestContributor.region} travel accounts for ${maskValue(Math.round(biggestContributor.emissions / travelEmissions * 100))}% of emissions`);
     }
     const airTravelers = data.profiles.filter(p => p.primaryTravelMode.includes('air')).reduce((sum, p) => sum + p.percentage, 0);
     if (airTravelers > 50) {
@@ -248,11 +250,11 @@ const AttendeeTravel: React.FC<AttendeeTravelProps> = ({
                 Travel Impact
               </h3>
               <div className="text-4xl font-bold mb-1">
-                {(analysis.totalEmissions / 1000).toFixed(1)}
+                {maskValue((convertValue(analysis.totalEmissions, 'weight') / 1000).toFixed(1))}
                 <span className="text-lg font-normal opacity-80 ml-1">t CO₂e</span>
               </div>
               <p className="text-blue-200 text-sm mb-4">
-                {analysis.emissionsPerAttendee} kg per attendee
+                {maskValue(Math.round(convertValue(analysis.emissionsPerAttendee, 'weight')))} {getUnit('weight')} per attendee
               </p>
 
               {/* Breakdown bars */}
@@ -261,7 +263,7 @@ const AttendeeTravel: React.FC<AttendeeTravelProps> = ({
                   <div key={r.region}>
                     <div className="flex justify-between text-xs mb-1">
                       <span className="capitalize">{r.region}</span>
-                      <span>{Math.round(r.emissions)} kg</span>
+                      <span>{maskValue(Math.round(convertValue(r.emissions, 'weight')))} {getUnit('weight')}</span>
                     </div>
                     <div className="w-full bg-white/20 rounded-full h-2">
                       <div
@@ -276,7 +278,7 @@ const AttendeeTravel: React.FC<AttendeeTravelProps> = ({
               <div className="bg-white/10 rounded-xl p-3 text-sm">
                 <div className="flex justify-between">
                   <span>Accommodation</span>
-                  <span className="font-medium">{analysis.accommodationEmissions} kg</span>
+                  <span className="font-medium">{maskValue(Math.round(convertValue(analysis.accommodationEmissions, 'weight')))} {getUnit('weight')}</span>
                 </div>
               </div>
             </div>
