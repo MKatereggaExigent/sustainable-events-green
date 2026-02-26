@@ -57,6 +57,7 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
   const [currencies, setCurrencies] = useState<Currency[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [hasLoadedSettings, setHasLoadedSettings] = useState(false);
 
   // Load currencies on mount (public endpoint)
   useEffect(() => {
@@ -64,36 +65,77 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
       if (result.data) {
         setCurrencies(result.data);
       }
+    }).catch(() => {
+      // Silently fail - currencies will be empty
     });
   }, []);
 
-  // Load user settings when authenticated
-  const loadSettings = useCallback(async () => {
+  // Load user settings when authenticated - only once per auth state change
+  useEffect(() => {
+    // Reset when user logs out
     if (!isAuthenticated) {
       setSettings(null);
+      setHasLoadedSettings(false);
       return;
     }
 
-    setIsLoading(true);
-    setError(null);
+    // Don't reload if already loaded for this auth session
+    if (hasLoadedSettings) {
+      return;
+    }
 
+    const loadSettings = async () => {
+      setIsLoading(true);
+      setError(null);
+
+      try {
+        const result = await settingsApi.getSettings();
+        if (result.data) {
+          setSettings(result.data);
+        } else if (result.error) {
+          setError(result.error);
+          // Set default settings on error to prevent UI issues
+          setSettings({
+            metricSystem: 'metric',
+            currencyCode: 'USD',
+            hideValues: false,
+            exchangeRate: 1,
+          });
+        }
+      } catch (err) {
+        setError('Failed to load settings');
+        // Set default settings on error
+        setSettings({
+          metricSystem: 'metric',
+          currencyCode: 'USD',
+          hideValues: false,
+          exchangeRate: 1,
+        });
+      } finally {
+        setIsLoading(false);
+        setHasLoadedSettings(true);
+      }
+    };
+
+    loadSettings();
+  }, [isAuthenticated, hasLoadedSettings]);
+
+  // Manual refresh function
+  const refreshSettings = useCallback(async () => {
+    if (!isAuthenticated) return;
+
+    setIsLoading(true);
     try {
       const result = await settingsApi.getSettings();
       if (result.data) {
         setSettings(result.data);
-      } else if (result.error) {
-        setError(result.error);
       }
     } catch (err) {
-      setError('Failed to load settings');
+      // Silently fail on refresh
     } finally {
       setIsLoading(false);
     }
   }, [isAuthenticated]);
-
-  useEffect(() => {
-    loadSettings();
-  }, [loadSettings]);
 
   const updateSettings = async (data: Partial<Pick<UserSettings, 'metricSystem' | 'currencyCode' | 'hideValues'>>) => {
     setIsLoading(true);
@@ -166,7 +208,7 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
     getUnit,
     formatCurrency,
     maskValue,
-    refreshSettings: loadSettings,
+    refreshSettings,
   };
 
   return <SettingsContext.Provider value={value}>{children}</SettingsContext.Provider>;

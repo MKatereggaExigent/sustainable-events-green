@@ -187,13 +187,29 @@ export function TourProvider({ children }: { children: React.ReactNode }) {
   const [tourEnabled, setTourEnabledState] = useState(true);
   const [hasCompletedTour, setHasCompletedTour] = useState(false);
   const [preferences, setPreferences] = useState<TourPreferences | null>(null);
+  const [hasLoadedPreferences, setHasLoadedPreferences] = useState(false);
   const tourStartTime = useRef<number>(0);
   const hasShownAutoTour = useRef(false);
 
-  // Load preferences on mount or auth change
+  // Load preferences on mount or auth change - only once per auth session
   useEffect(() => {
+    // Reset when user logs out
+    if (!userIsAuthenticated) {
+      setHasLoadedPreferences(false);
+      // Use local storage for anonymous users
+      const local = getLocalTourPrefs();
+      setTourEnabledState(local.tourEnabled);
+      setHasCompletedTour(local.hasCompletedTour);
+      return;
+    }
+
+    // Don't reload if already loaded for this auth session
+    if (hasLoadedPreferences) {
+      return;
+    }
+
     const loadPreferences = async () => {
-      if (userIsAuthenticated && isAuthenticated()) {
+      if (isAuthenticated()) {
         try {
           const result = await tourApi.getPreferences();
           if (result.data?.preferences) {
@@ -207,17 +223,14 @@ export function TourProvider({ children }: { children: React.ReactNode }) {
           const local = getLocalTourPrefs();
           setTourEnabledState(local.tourEnabled);
           setHasCompletedTour(local.hasCompletedTour);
+        } finally {
+          setHasLoadedPreferences(true);
         }
-      } else {
-        // Use local storage for anonymous users
-        const local = getLocalTourPrefs();
-        setTourEnabledState(local.tourEnabled);
-        setHasCompletedTour(local.hasCompletedTour);
       }
     };
 
     loadPreferences();
-  }, [userIsAuthenticated]);
+  }, [userIsAuthenticated, hasLoadedPreferences]);
 
   // Auto-start tour for new users (only once per session)
   useEffect(() => {
