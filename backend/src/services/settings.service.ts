@@ -168,12 +168,12 @@ export async function getSupportedCurrencies(): Promise<Currency[]> {
 export async function fetchExchangeRate(currencyCode: string): Promise<number> {
   try {
     const response = await fetch(EXCHANGE_RATE_API);
-    const data = await response.json();
-    
+    const data = await response.json() as { rates?: Record<string, number> };
+
     if (data.rates && data.rates[currencyCode]) {
       return data.rates[currencyCode];
     }
-    
+
     logger.warn(`Exchange rate not found for ${currencyCode}, using 1.0`);
     return 1.0;
   } catch (error) {
