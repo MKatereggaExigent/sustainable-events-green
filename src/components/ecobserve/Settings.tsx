@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Settings as SettingsIcon, Eye, EyeOff, Scale, DollarSign, Check, Loader2, ChevronDown, Search } from 'lucide-react';
-import { useSettings, METRIC_CONVERSIONS } from '../../contexts/SettingsContext';
+import { Settings as SettingsIcon, Eye, EyeOff, Scale, DollarSign, Check, Loader2, ChevronDown, Search, Palette } from 'lucide-react';
+import { useSettings, THEMES } from '../../contexts/SettingsContext';
+import { ThemeType } from '../../services/api';
 
 interface SettingsProps {
   onClose?: () => void;
@@ -13,12 +14,13 @@ const metricSystems = [
 ] as const;
 
 const Settings: React.FC<SettingsProps> = ({ onClose }) => {
-  const { settings, currencies, isLoading, updateSettings } = useSettings();
+  const { settings, currencies, isLoading, updateSettings, applyTheme } = useSettings();
   const [showCurrencyDropdown, setShowCurrencyDropdown] = useState(false);
   const [currencySearch, setCurrencySearch] = useState('');
   const [savingMetric, setSavingMetric] = useState(false);
   const [savingCurrency, setSavingCurrency] = useState(false);
   const [savingHide, setSavingHide] = useState(false);
+  const [savingTheme, setSavingTheme] = useState(false);
 
   const filteredCurrencies = currencies.filter(
     (c) =>
@@ -51,6 +53,14 @@ const Settings: React.FC<SettingsProps> = ({ onClose }) => {
     setSavingHide(true);
     await updateSettings({ hideValues: !settings?.hideValues });
     setSavingHide(false);
+  };
+
+  const handleThemeChange = async (theme: ThemeType) => {
+    if (theme === settings?.theme) return;
+    setSavingTheme(true);
+    applyTheme(theme); // Immediate visual feedback
+    await updateSettings({ theme });
+    setSavingTheme(false);
   };
 
   if (!settings) {
@@ -217,6 +227,45 @@ const Settings: React.FC<SettingsProps> = ({ onClose }) => {
               </p>
             </div>
           )}
+        </div>
+
+        {/* Theme Selection */}
+        <div>
+          <div className="flex items-center gap-2 mb-3">
+            <Palette className="w-4 h-4 text-gray-500" />
+            <label className="text-sm font-medium text-gray-700">Theme</label>
+            {savingTheme && <Loader2 className="w-4 h-4 animate-spin text-emerald-500" />}
+          </div>
+          <div className="grid grid-cols-3 gap-2">
+            {(Object.keys(THEMES) as ThemeType[]).map((themeKey) => {
+              const theme = THEMES[themeKey];
+              const isSelected = (settings.theme || 'emerald') === themeKey;
+              return (
+                <button
+                  key={themeKey}
+                  onClick={() => handleThemeChange(themeKey)}
+                  disabled={savingTheme}
+                  className={`relative flex flex-col items-center p-3 rounded-xl border transition-all ${
+                    isSelected
+                      ? 'border-primary bg-primary/5 ring-2 ring-primary/20'
+                      : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
+                  }`}
+                >
+                  <div
+                    className="w-8 h-8 rounded-full mb-2 shadow-sm border border-gray-200"
+                    style={{ backgroundColor: theme.preview }}
+                  />
+                  <span className="text-xs font-medium text-gray-900">{theme.name}</span>
+                  {isSelected && (
+                    <Check className="absolute top-2 right-2 w-4 h-4 text-primary" />
+                  )}
+                </button>
+              );
+            })}
+          </div>
+          <p className="text-xs text-gray-500 mt-2">
+            Choose a color theme for the application interface
+          </p>
         </div>
       </div>
     </div>

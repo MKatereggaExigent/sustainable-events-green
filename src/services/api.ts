@@ -253,14 +253,17 @@ export const tourApi = {
 };
 
 // Settings API
+export type ThemeType = 'light' | 'dark' | 'emerald' | 'blue' | 'violet' | 'rose' | 'amber' | 'slate' | 'zinc';
+
 export interface UserSettings {
-  id: string;
-  userId: string;
+  id?: string;
+  userId?: string;
   metricSystem: 'metric' | 'imperial' | 'uk';
   currencyCode: string;
   hideValues: boolean;
+  theme: ThemeType;
   exchangeRate: number;
-  exchangeRateUpdatedAt: string | null;
+  exchangeRateUpdatedAt?: string | null;
 }
 
 export interface Currency {
@@ -273,7 +276,7 @@ export interface Currency {
 export const settingsApi = {
   getSettings: () => apiFetch<UserSettings>('/settings'),
 
-  updateSettings: (data: Partial<Pick<UserSettings, 'metricSystem' | 'currencyCode' | 'hideValues'>>) =>
+  updateSettings: (data: Partial<Pick<UserSettings, 'metricSystem' | 'currencyCode' | 'hideValues' | 'theme'>>) =>
     apiFetch<UserSettings>('/settings', {
       method: 'PUT',
       body: JSON.stringify(data),

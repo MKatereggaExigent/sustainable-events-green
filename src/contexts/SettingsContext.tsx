@@ -1,6 +1,19 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import { settingsApi, UserSettings, Currency } from '../services/api';
+import { settingsApi, UserSettings, Currency, ThemeType } from '../services/api';
 import { useAuth } from './AuthContext';
+
+// Theme definitions with CSS variables
+export const THEMES: Record<ThemeType, { name: string; description: string; preview: string }> = {
+  emerald: { name: 'Emerald', description: 'Default green sustainability theme', preview: '#10b981' },
+  light: { name: 'Light', description: 'Clean bright theme', preview: '#f8fafc' },
+  dark: { name: 'Dark', description: 'Dark mode for reduced eye strain', preview: '#0f172a' },
+  blue: { name: 'Blue', description: 'Professional ocean blue', preview: '#3b82f6' },
+  violet: { name: 'Violet', description: 'Creative purple accent', preview: '#8b5cf6' },
+  rose: { name: 'Rose', description: 'Warm rose pink accent', preview: '#f43f5e' },
+  amber: { name: 'Amber', description: 'Warm amber gold accent', preview: '#f59e0b' },
+  slate: { name: 'Slate', description: 'Neutral professional slate', preview: '#64748b' },
+  zinc: { name: 'Zinc', description: 'Modern metallic zinc', preview: '#71717a' },
+};
 
 // Metric system conversion factors
 export const METRIC_CONVERSIONS = {
@@ -41,15 +54,36 @@ interface SettingsContextType {
   currencies: Currency[];
   isLoading: boolean;
   error: string | null;
-  updateSettings: (data: Partial<Pick<UserSettings, 'metricSystem' | 'currencyCode' | 'hideValues'>>) => Promise<void>;
+  updateSettings: (data: Partial<Pick<UserSettings, 'metricSystem' | 'currencyCode' | 'hideValues' | 'theme'>>) => Promise<void>;
   convertValue: (value: number, type: keyof typeof METRIC_CONVERSIONS) => number;
   getUnit: (type: keyof typeof METRIC_CONVERSIONS) => string;
   formatCurrency: (amount: number) => string;
   maskValue: (value: string | number) => string;
   refreshSettings: () => Promise<void>;
+  applyTheme: (theme: ThemeType) => void;
 }
 
 const SettingsContext = createContext<SettingsContextType | null>(null);
+
+// Apply theme CSS variables to document root
+const applyThemeToDOM = (theme: ThemeType) => {
+  const root = document.documentElement;
+
+  // Remove all theme classes
+  root.classList.remove('light', 'dark', 'theme-emerald', 'theme-blue', 'theme-violet', 'theme-rose', 'theme-amber', 'theme-slate', 'theme-zinc');
+
+  // Apply dark class for dark theme, otherwise light
+  if (theme === 'dark') {
+    root.classList.add('dark');
+  } else {
+    root.classList.add('light');
+  }
+
+  // Add specific theme class for accent colors
+  if (theme !== 'light' && theme !== 'dark') {
+    root.classList.add(`theme-${theme}`);
+  }
+};
 
 export function SettingsProvider({ children }: { children: React.ReactNode }) {
   const { isAuthenticated } = useAuth();
@@ -92,6 +126,7 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
         const result = await settingsApi.getSettings();
         if (result.data) {
           setSettings(result.data);
+          applyThemeToDOM(result.data.theme || 'emerald');
         } else if (result.error) {
           setError(result.error);
           // Set default settings on error to prevent UI issues
@@ -99,6 +134,7 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
             metricSystem: 'metric',
             currencyCode: 'USD',
             hideValues: false,
+            theme: 'emerald',
             exchangeRate: 1,
           });
         }
@@ -109,6 +145,7 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
           metricSystem: 'metric',
           currencyCode: 'USD',
           hideValues: false,
+          theme: 'emerald',
           exchangeRate: 1,
         });
       } finally {
@@ -137,7 +174,7 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
     }
   }, [isAuthenticated]);
 
-  const updateSettings = async (data: Partial<Pick<UserSettings, 'metricSystem' | 'currencyCode' | 'hideValues'>>) => {
+  const updateSettings = async (data: Partial<Pick<UserSettings, 'metricSystem' | 'currencyCode' | 'hideValues' | 'theme'>>) => {
     setIsLoading(true);
     setError(null);
 
@@ -145,6 +182,10 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
       const result = await settingsApi.updateSettings(data);
       if (result.data) {
         setSettings(result.data);
+        // Apply theme if it was updated
+        if (data.theme) {
+          applyThemeToDOM(data.theme);
+        }
       } else if (result.error) {
         setError(result.error);
       }
@@ -154,6 +195,11 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
       setIsLoading(false);
     }
   };
+
+  // Apply theme to DOM (for immediate visual feedback)
+  const applyTheme = useCallback((theme: ThemeType) => {
+    applyThemeToDOM(theme);
+  }, []);
 
   // Convert value based on metric system
   const convertValue = (value: number, type: keyof typeof METRIC_CONVERSIONS): number => {
@@ -209,6 +255,7 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
     formatCurrency,
     maskValue,
     refreshSettings,
+    applyTheme,
   };
 
   return <SettingsContext.Provider value={value}>{children}</SettingsContext.Provider>;

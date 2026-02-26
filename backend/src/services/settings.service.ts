@@ -1,12 +1,15 @@
 import { query, transaction } from '../config/database';
 import { logger } from '../utils/logger';
 
+export type ThemeType = 'light' | 'dark' | 'emerald' | 'blue' | 'violet' | 'rose' | 'amber' | 'slate' | 'zinc';
+
 export interface UserSettings {
   id: string;
   userId: string;
   metricSystem: 'metric' | 'imperial' | 'uk';
   currencyCode: string;
   hideValues: boolean;
+  theme: ThemeType;
   exchangeRate: number;
   exchangeRateUpdatedAt: Date | null;
 }
@@ -22,6 +25,7 @@ export interface UpdateSettingsInput {
   metricSystem?: 'metric' | 'imperial' | 'uk';
   currencyCode?: string;
   hideValues?: boolean;
+  theme?: ThemeType;
 }
 
 // Free exchange rate API - exchangerate-api.com (free tier)
@@ -33,7 +37,7 @@ const EXCHANGE_RATE_API = 'https://api.exchangerate-api.com/v4/latest/USD';
 export async function getUserSettings(userId: string): Promise<UserSettings> {
   // Try to get existing settings
   const result = await query<any>(
-    `SELECT id, user_id, metric_system, currency_code, hide_values, 
+    `SELECT id, user_id, metric_system, currency_code, hide_values, theme,
             exchange_rate, exchange_rate_updated_at
      FROM user_settings WHERE user_id = $1`,
     [userId]
@@ -47,6 +51,7 @@ export async function getUserSettings(userId: string): Promise<UserSettings> {
       metricSystem: row.metric_system,
       currencyCode: row.currency_code,
       hideValues: row.hide_values,
+      theme: row.theme || 'emerald',
       exchangeRate: parseFloat(row.exchange_rate),
       exchangeRateUpdatedAt: row.exchange_rate_updated_at,
     };
@@ -54,9 +59,9 @@ export async function getUserSettings(userId: string): Promise<UserSettings> {
 
   // Create default settings
   const insertResult = await query<any>(
-    `INSERT INTO user_settings (user_id, metric_system, currency_code, hide_values)
-     VALUES ($1, 'metric', 'USD', false)
-     RETURNING id, user_id, metric_system, currency_code, hide_values, exchange_rate, exchange_rate_updated_at`,
+    `INSERT INTO user_settings (user_id, metric_system, currency_code, hide_values, theme)
+     VALUES ($1, 'metric', 'USD', false, 'emerald')
+     RETURNING id, user_id, metric_system, currency_code, hide_values, theme, exchange_rate, exchange_rate_updated_at`,
     [userId]
   );
 
@@ -67,6 +72,7 @@ export async function getUserSettings(userId: string): Promise<UserSettings> {
     metricSystem: row.metric_system,
     currencyCode: row.currency_code,
     hideValues: row.hide_values,
+    theme: row.theme || 'emerald',
     exchangeRate: parseFloat(row.exchange_rate),
     exchangeRateUpdatedAt: row.exchange_rate_updated_at,
   };
@@ -106,6 +112,11 @@ export async function updateUserSettings(
     values.push(input.hideValues);
   }
 
+  if (input.theme !== undefined) {
+    updates.push(`theme = $${paramCount++}`);
+    values.push(input.theme);
+  }
+
   if (exchangeRate !== undefined) {
     updates.push(`exchange_rate = $${paramCount++}`);
     values.push(exchangeRate);
@@ -120,13 +131,14 @@ export async function updateUserSettings(
 
   // Upsert settings
   const result = await query<any>(
-    `INSERT INTO user_settings (user_id, metric_system, currency_code, hide_values)
-     VALUES ($${paramCount}, 
-             COALESCE($1, 'metric'), 
-             COALESCE($2, 'USD'), 
-             COALESCE($3, false))
+    `INSERT INTO user_settings (user_id, metric_system, currency_code, hide_values, theme)
+     VALUES ($${paramCount},
+             COALESCE($1, 'metric'),
+             COALESCE($2, 'USD'),
+             COALESCE($3, false),
+             COALESCE($4, 'emerald'))
      ON CONFLICT (user_id) DO UPDATE SET ${updates.join(', ')}
-     RETURNING id, user_id, metric_system, currency_code, hide_values, exchange_rate, exchange_rate_updated_at`,
+     RETURNING id, user_id, metric_system, currency_code, hide_values, theme, exchange_rate, exchange_rate_updated_at`,
     values
   );
 
@@ -137,6 +149,7 @@ export async function updateUserSettings(
     metricSystem: row.metric_system,
     currencyCode: row.currency_code,
     hideValues: row.hide_values,
+    theme: row.theme || 'emerald',
     exchangeRate: parseFloat(row.exchange_rate),
     exchangeRateUpdatedAt: row.exchange_rate_updated_at,
   };
