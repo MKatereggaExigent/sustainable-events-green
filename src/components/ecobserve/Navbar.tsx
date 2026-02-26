@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Leaf, Menu, X, User, FolderOpen, DollarSign, LogOut, LayoutDashboard, Sparkles, Award, Calculator, HelpCircle, RotateCcw } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTour } from '@/contexts/TourContext';
+import BrandLogo from './BrandLogo';
 
 interface NavbarProps {
   onNavigate: (section: string) => void;
@@ -52,9 +53,7 @@ const Navbar: React.FC<NavbarProps> = ({ onNavigate, activeSection }) => {
               <div className="w-9 h-9 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center shadow-lg shadow-emerald-200 group-hover:shadow-emerald-300 transition-shadow">
                 <Leaf className="w-5 h-5 text-white" />
               </div>
-              <span className="text-xl font-bold bg-gradient-to-r from-emerald-700 to-teal-600 bg-clip-text text-transparent">
-                GreenConnect
-              </span>
+              <BrandLogo size="md" variant="gradient" />
             </button>
 
             {/* Desktop links */}

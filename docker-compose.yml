@@ -4,10 +4,10 @@ services:
   # PostgreSQL Database
   db:
     image: postgres:16-alpine
-    container_name: greenconnect-db
+    container_name: ecobserve-db
     restart: unless-stopped
     environment:
-      POSTGRES_DB: greenconnect
+      POSTGRES_DB: ecobserve
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
     volumes:
@@ -15,7 +15,7 @@ services:
     ports:
       - "8055:5432"
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d greenconnect"]
+      test: ["CMD-SHELL", "pg_isready -U postgres -d ecobserve"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -23,7 +23,7 @@ services:
   # Redis Cache
   redis:
     image: redis:7-alpine
-    container_name: greenconnect-redis
+    container_name: ecobserve-redis
     restart: unless-stopped
     command: redis-server --appendonly yes
     volumes:
@@ -41,7 +41,7 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    container_name: greenconnect-backend
+    container_name: ecobserve-backend
     restart: unless-stopped
     depends_on:
       db:
@@ -53,7 +53,7 @@ services:
       PORT: 8035
       DB_HOST: db
       DB_PORT: 5432
-      DB_NAME: greenconnect
+      DB_NAME: ecobserve
       DB_USER: postgres
       DB_PASSWORD: postgres
       DB_SSL: "false"
@@ -77,7 +77,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: greenconnect-frontend
+    container_name: ecobserve-frontend
     restart: unless-stopped
     depends_on:
       - backend
@@ -93,5 +93,5 @@ volumes:
 
 networks:
   default:
-    name: greenconnect-network
+    name: ecobserve-network
 

@@ -1,7 +1,7 @@
 {
-  "name": "greenconnect-backend",
+  "name": "ecobserve-backend",
   "version": "1.0.0",
-  "description": "GreenConnect Backend API with Multi-tenancy, RBAC, OAuth 2.0, JWT",
+  "description": "EcobServe Backend API with Multi-tenancy, RBAC, OAuth 2.0, JWT",
   "main": "dist/index.js",
   "scripts": {
     "dev": "ts-node-dev --respawn --transpile-only src/index.ts",

@@ -8,7 +8,7 @@ const testimonials = [
     role: 'Head of Events, TechCorp',
     avatar: 'SC',
     rating: 5,
-    text: 'GreenConnect completely transformed how we plan our annual conference. We reduced our carbon footprint by 62% and our attendees loved the transparency. The green score card became a badge of honor for our brand.',
+    text: 'EcobServe completely transformed how we plan our annual conference. We reduced our carbon footprint by 62% and our attendees loved the transparency. The green score card became a badge of honor for our brand.',
     company: 'TechCorp',
     savings: '62% carbon reduction',
   },
@@ -28,7 +28,7 @@ const testimonials = [
     role: 'Event Manager, Global Summits',
     avatar: 'ER',
     rating: 5,
-    text: 'We used GreenConnect for our international summit with 2,000 attendees. The alternative suggestions alone saved us $15,000 while cutting emissions by 40%. The shareable green score was perfect for our ESG reporting.',
+    text: 'We used EcobServe for our international summit with 2,000 attendees. The alternative suggestions alone saved us $15,000 while cutting emissions by 40%. The shareable green score was perfect for our ESG reporting.',
     company: 'Global Summits',
     savings: '$15K saved + 40% less CO₂',
   },
@@ -38,7 +38,7 @@ const testimonials = [
     role: 'CEO, Eco Celebrations',
     avatar: 'DP',
     rating: 5,
-    text: 'Our wedding planning business has seen a 3x increase in bookings since we started sharing GreenConnect green scores on social media. Couples love knowing their special day is also kind to the planet.',
+    text: 'Our wedding planning business has seen a 3x increase in bookings since we started sharing EcobServe green scores on social media. Couples love knowing their special day is also kind to the planet.',
     company: 'Eco Celebrations',
     savings: '3x booking increase',
   },
@@ -48,7 +48,7 @@ const testimonials = [
     role: 'VP Operations, ConferenceHub',
     avatar: 'AO',
     rating: 5,
-    text: 'The AI assistant helped us identify sustainable vendors we never knew existed. GreenConnect is now mandatory for all our event planning workflows. It pays for itself in cost savings alone.',
+    text: 'The AI assistant helped us identify sustainable vendors we never knew existed. EcobServe is now mandatory for all our event planning workflows. It pays for itself in cost savings alone.',
     company: 'ConferenceHub',
     savings: '28% cost savings',
   },
@@ -94,7 +94,7 @@ const TestimonialsSection: React.FC = () => {
             Loved by Event Planners
           </h2>
           <p className="text-gray-600 max-w-2xl mx-auto">
-            See how organizations worldwide are using GreenConnect to create sustainable, impactful events.
+            See how organizations worldwide are using EcobServe to create sustainable, impactful events.
           </p>
         </div>
 

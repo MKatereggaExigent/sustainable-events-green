@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowRight, TreePine, Droplets, Recycle, Compass } from 'lucide-react';
+import { ArrowRight, TreePine, Droplets, Recycle, Compass, Leaf, Eye, Users } from 'lucide-react';
 import { useTour } from '@/contexts/TourContext';
+import BrandLogo from './BrandLogo';
 
 interface HeroSectionProps {
   onNavigate: (section: string) => void;
@@ -158,6 +159,68 @@ const HeroSection: React.FC<HeroSectionProps> = ({ onNavigate }) => {
             <AnimatedCounter target={8200} suffix="t" label="CO₂ Offset" />
             <AnimatedCounter target={4800} suffix="+" label="Planners Active" />
             <AnimatedCounter target={92} suffix="%" label="Avg Satisfaction" />
+          </div>
+        </div>
+
+        {/* About / Brand Story Section */}
+        <div className="mt-20 bg-white/5 backdrop-blur-md border border-white/10 rounded-3xl p-8 md:p-12">
+          <div className="text-center mb-10">
+            <h2 className="text-2xl md:text-3xl font-bold text-white mb-3">
+              Why <BrandLogo size="lg" variant="white" />?
+            </h2>
+            <p className="text-gray-300 text-lg max-w-3xl mx-auto">
+              Our name embodies our mission — three powerful concepts united to transform event sustainability.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-6 md:gap-8">
+            {/* Eco */}
+            <div className="bg-white/5 border border-emerald-500/20 rounded-2xl p-6 text-center hover:bg-white/10 transition-all">
+              <div className="w-14 h-14 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-emerald-500/20">
+                <Leaf className="w-7 h-7 text-white" />
+              </div>
+              <h3 className="text-xl font-bold text-white mb-2">
+                <span className="text-emerald-400">Eco</span>
+              </h3>
+              <p className="text-emerald-300 text-sm font-medium mb-3">Eco-Friendly</p>
+              <p className="text-gray-400 text-sm leading-relaxed">
+                Environmental sustainability at the heart of every event. We help you minimize your carbon, water, and waste footprint.
+              </p>
+            </div>
+
+            {/* b (Observe) */}
+            <div className="bg-white/5 border border-blue-500/20 rounded-2xl p-6 text-center hover:bg-white/10 transition-all">
+              <div className="w-14 h-14 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-blue-500/20">
+                <Eye className="w-7 h-7 text-white" />
+              </div>
+              <h3 className="text-xl font-bold text-white mb-2">
+                <span className="italic font-light text-blue-300/60">b</span>
+              </h3>
+              <p className="text-blue-300 text-sm font-medium mb-3">Observability</p>
+              <p className="text-gray-400 text-sm leading-relaxed">
+                Real-time visibility into your environmental impact. Track, measure, and analyze sustainability metrics with precision.
+              </p>
+            </div>
+
+            {/* Serve */}
+            <div className="bg-white/5 border border-teal-500/20 rounded-2xl p-6 text-center hover:bg-white/10 transition-all">
+              <div className="w-14 h-14 bg-gradient-to-br from-teal-500 to-teal-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-teal-500/20">
+                <Users className="w-7 h-7 text-white" />
+              </div>
+              <h3 className="text-xl font-bold text-white mb-2">
+                <span className="text-teal-400">Serve</span>
+              </h3>
+              <p className="text-teal-300 text-sm font-medium mb-3">Service</p>
+              <p className="text-gray-400 text-sm leading-relaxed">
+                A service-first platform dedicated to empowering event planners with tools and insights for sustainable success.
+              </p>
+            </div>
+          </div>
+
+          <div className="mt-10 text-center">
+            <p className="text-gray-400 text-sm italic">
+              <BrandLogo size="sm" variant="white" /> — Where eco-conscious planning meets observable impact and exceptional service.
+            </p>
           </div>
         </div>
       </div>
