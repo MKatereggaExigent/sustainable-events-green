@@ -43,16 +43,21 @@ else
 fi
 echo -e "${GREEN}✅ Using: $COMPOSE_CMD${NC}"
 
-# Step 1: Stop existing containers (if any)
+# Step 1: Stop and remove existing containers
 echo ""
 echo -e "${YELLOW}🛑 Stopping existing containers...${NC}"
 $COMPOSE_CMD down --remove-orphans 2>/dev/null || true
-echo -e "${GREEN}✅ Containers stopped${NC}"
+
+# Also explicitly stop and remove ecobserve containers that might be stuck
+echo -e "${YELLOW}🧹 Removing any leftover containers...${NC}"
+docker stop ecobserve-frontend ecobserve-backend ecobserve-db ecobserve-redis 2>/dev/null || true
+docker rm ecobserve-frontend ecobserve-backend ecobserve-db ecobserve-redis 2>/dev/null || true
+echo -e "${GREEN}✅ Containers stopped and removed${NC}"
 
 # Step 2: Remove old images (optional - uncomment if you want fresh builds)
 # echo ""
 # echo -e "${YELLOW}🧹 Removing old images...${NC}"
-# docker rmi sustainable-events-green-frontend sustainable-events-green-backend 2>/dev/null || true
+# docker rmi ecobserve-frontend ecobserve-backend 2>/dev/null || true
 # echo -e "${GREEN}✅ Old images removed${NC}"
 
 # Step 3: Pull latest base images
