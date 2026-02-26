@@ -1,4 +1,4 @@
--- Seed data for EventCarbon
+-- Seed data for EcobServe
 
 -- ============================================
 -- PERMISSIONS

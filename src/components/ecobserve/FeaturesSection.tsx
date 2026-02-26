@@ -1,8 +1,9 @@
 import React from 'react';
 import {
   Calculator, BarChart3, Lightbulb, Share2, TreePine, Shield,
-  Zap, Globe, Users
+  Zap, Globe, Users, Leaf, Eye, Heart
 } from 'lucide-react';
+import BrandLogo from './BrandLogo';
 
 interface FeaturesSectionProps {
   onNavigate: (section: string) => void;
@@ -83,7 +84,7 @@ const FeaturesSection: React.FC<FeaturesSectionProps> = ({ onNavigate }) => {
             </span>
           </h2>
           <p className="text-gray-600 max-w-2xl mx-auto text-lg">
-            From carbon calculation to social sharing, EcobServe provides a complete toolkit for environmentally conscious event planning.
+            From carbon calculation to social sharing, Eco<span className="italic font-light opacity-50">b</span>Serve provides a complete toolkit for environmentally conscious event planning.
           </p>
         </div>
 
@@ -151,6 +152,56 @@ const FeaturesSection: React.FC<FeaturesSectionProps> = ({ onNavigate }) => {
               </div>
             );
           })}
+        </div>
+
+        {/* Core Values Banner */}
+        <div className="mt-20 bg-gradient-to-r from-emerald-600 via-teal-600 to-blue-600 rounded-3xl p-8 md:p-12 text-white">
+          <div className="text-center mb-8">
+            <h3 className="text-2xl md:text-3xl font-bold mb-3">
+              Our Core Values: The <BrandLogo size="lg" variant="white" /> Promise
+            </h3>
+            <p className="text-emerald-100 max-w-2xl mx-auto">
+              Every feature we build is guided by three principles that define who we are.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-6 md:gap-8">
+            <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 text-center border border-white/20">
+              <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center mx-auto mb-4">
+                <Leaf className="w-6 h-6 text-white" />
+              </div>
+              <h4 className="font-bold text-lg mb-1">
+                <span className="text-emerald-200">Eco</span>-Friendly
+              </h4>
+              <p className="text-emerald-100 text-sm">
+                Genuine commitment to environmental sustainability in everything we do.
+              </p>
+            </div>
+
+            <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 text-center border border-white/20">
+              <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center mx-auto mb-4">
+                <Eye className="w-6 h-6 text-white" />
+              </div>
+              <h4 className="font-bold text-lg mb-1">
+                O<span className="italic font-light opacity-60">b</span>servability
+              </h4>
+              <p className="text-blue-100 text-sm">
+                Complete transparency and real-time insights into your environmental impact.
+              </p>
+            </div>
+
+            <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 text-center border border-white/20">
+              <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center mx-auto mb-4">
+                <Heart className="w-6 h-6 text-white" />
+              </div>
+              <h4 className="font-bold text-lg mb-1">
+                <span className="text-teal-200">Serve</span> with Care
+              </h4>
+              <p className="text-teal-100 text-sm">
+                Personalized service delivering authentic care and tailored value for every client.
+              </p>
+            </div>
+          </div>
         </div>
       </div>
     </section>

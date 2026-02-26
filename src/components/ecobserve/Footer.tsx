@@ -42,9 +42,14 @@ const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
               </div>
               <BrandLogo size="md" variant="white" />
             </div>
-            <p className="text-gray-400 text-sm mb-6 leading-relaxed">
+            <p className="text-gray-400 text-sm mb-4 leading-relaxed">
               The leading platform for measuring and reducing the environmental impact of events worldwide.
             </p>
+            <div className="flex flex-wrap gap-2 mb-6">
+              <span className="px-2 py-1 bg-emerald-900/50 text-emerald-400 text-xs rounded-full">Eco-Friendly</span>
+              <span className="px-2 py-1 bg-blue-900/50 text-blue-400 text-xs rounded-full">Observability</span>
+              <span className="px-2 py-1 bg-teal-900/50 text-teal-400 text-xs rounded-full">Service</span>
+            </div>
             <div className="flex gap-3">
               {[
                 { icon: Twitter, href: '#', label: 'Twitter' },

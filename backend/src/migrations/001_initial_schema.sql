@@ -1,4 +1,4 @@
--- EventCarbon Database Schema
+-- EcobServe Database Schema
 -- Multi-tenancy, RBAC, OAuth 2.0, JWT support
 
 -- Enable UUID extension

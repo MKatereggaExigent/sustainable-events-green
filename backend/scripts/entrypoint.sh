@@ -3,7 +3,7 @@
 
 set -e
 
-echo "Starting EventCarbon Backend..."
+echo "Starting EcobServe Backend..."
 
 # Wait for database
 echo "Waiting for PostgreSQL..."

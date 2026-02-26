@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# EventCarbon Docker Compose Build Script
+# EcobServe Docker Compose Build Script
 # Run this script on the server to build all Docker containers
 # After building, run deploy_to_caprover.sh to deploy to CapRover
 
@@ -15,7 +15,7 @@ CYAN='\033[0;36m'
 NC='\033[0m' # No Color
 
 echo ""
-echo -e "${BLUE}🐳 EventCarbon Docker Compose Build${NC}"
+echo -e "${BLUE}🐳 EcobServe Docker Compose Build${NC}"
 echo "======================================"
 echo ""
 
@@ -93,16 +93,16 @@ echo ""
 echo -e "${CYAN}📋 Recent logs (last 10 lines per service):${NC}"
 echo "---------------------------------------------"
 echo -e "${YELLOW}Database:${NC}"
-docker logs eventcarbon-db --tail 5 2>&1 || echo "No logs available"
+docker logs ecobserve-db --tail 5 2>&1 || echo "No logs available"
 echo ""
 echo -e "${YELLOW}Redis:${NC}"
-docker logs eventcarbon-redis --tail 5 2>&1 || echo "No logs available"
+docker logs ecobserve-redis --tail 5 2>&1 || echo "No logs available"
 echo ""
 echo -e "${YELLOW}Backend:${NC}"
-docker logs eventcarbon-backend --tail 5 2>&1 || echo "No logs available"
+docker logs ecobserve-backend --tail 5 2>&1 || echo "No logs available"
 echo ""
 echo -e "${YELLOW}Frontend:${NC}"
-docker logs eventcarbon-frontend --tail 5 2>&1 || echo "No logs available"
+docker logs ecobserve-frontend --tail 5 2>&1 || echo "No logs available"
 
 # Step 8: Health check
 echo ""

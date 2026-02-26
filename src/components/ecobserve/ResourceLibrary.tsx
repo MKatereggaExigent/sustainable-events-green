@@ -110,13 +110,18 @@ const ResourceLibrary: React.FC = () => {
         )}
 
         {/* Newsletter CTA */}
-        <div className="mt-16 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-3xl p-8 sm:p-12 text-white">
+        <div className="mt-16 bg-gradient-to-r from-emerald-600 via-teal-600 to-blue-600 rounded-3xl p-8 sm:p-12 text-white">
           <div className="grid md:grid-cols-2 gap-8 items-center">
             <div>
               <h3 className="text-2xl font-bold mb-3">Stay Updated</h3>
-              <p className="text-indigo-200">
-                Get the latest sustainability guides, industry reports, and EcobServe updates delivered to your inbox.
+              <p className="text-emerald-100 mb-4">
+                Get the latest sustainability guides, industry reports, and Eco<span className="italic font-light opacity-60">b</span>Serve updates delivered to your inbox.
               </p>
+              <div className="flex flex-wrap gap-2 text-xs">
+                <span className="px-2 py-1 bg-white/20 rounded-full">🌿 Eco-Friendly Tips</span>
+                <span className="px-2 py-1 bg-white/20 rounded-full">📊 Impact Insights</span>
+                <span className="px-2 py-1 bg-white/20 rounded-full">💚 Personalized Guides</span>
+              </div>
             </div>
             <form
               onSubmit={(e) => {

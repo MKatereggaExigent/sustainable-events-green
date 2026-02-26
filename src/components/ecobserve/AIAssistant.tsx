@@ -20,7 +20,7 @@ const AIAssistant: React.FC = () => {
     {
       id: 0,
       role: 'assistant',
-      content: "Hi! I'm your EcobServe AI assistant. I can help you with sustainable event planning tips, carbon reduction strategies, and eco-friendly alternatives. What would you like to know?",
+      content: "Hi! I'm your EcobServe AI assistant — here to provide authentic care and personalized guidance for your sustainable events. 🌿\n\nI can help you with:\n• **Eco-friendly** alternatives and carbon reduction\n• **Observable** impact metrics and tracking\n• **Personalized service** tailored to your event\n\nWhat would you like to know?",
     },
   ]);
   const [input, setInput] = useState('');

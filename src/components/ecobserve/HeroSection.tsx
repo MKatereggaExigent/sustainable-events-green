@@ -169,7 +169,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ onNavigate }) => {
               Why <BrandLogo size="lg" variant="white" />?
             </h2>
             <p className="text-gray-300 text-lg max-w-3xl mx-auto">
-              Our name embodies our mission — three powerful concepts united to transform event sustainability.
+              Our name embodies our mission — three powerful concepts united to deliver authentic care and personalized value for sustainable event planning.
             </p>
           </div>
 
@@ -184,7 +184,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ onNavigate }) => {
               </h3>
               <p className="text-emerald-300 text-sm font-medium mb-3">Eco-Friendly</p>
               <p className="text-gray-400 text-sm leading-relaxed">
-                Environmental sustainability at the heart of every event. We help you minimize your carbon, water, and waste footprint.
+                Authentic environmental care at the heart of every event. We help you minimize your carbon, water, and waste footprint with genuine commitment to our planet.
               </p>
             </div>
 
@@ -198,7 +198,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ onNavigate }) => {
               </h3>
               <p className="text-blue-300 text-sm font-medium mb-3">Observability</p>
               <p className="text-gray-400 text-sm leading-relaxed">
-                Real-time visibility into your environmental impact. Track, measure, and analyze sustainability metrics with precision.
+                Complete visibility into your environmental impact. Track, measure, and analyze sustainability metrics with precision — because what gets measured gets improved.
               </p>
             </div>
 
@@ -212,14 +212,14 @@ const HeroSection: React.FC<HeroSectionProps> = ({ onNavigate }) => {
               </h3>
               <p className="text-teal-300 text-sm font-medium mb-3">Service</p>
               <p className="text-gray-400 text-sm leading-relaxed">
-                A service-first platform dedicated to empowering event planners with tools and insights for sustainable success.
+                Personalized service tailored to your unique needs. We empower event planners with smart tools and actionable insights for sustainable success.
               </p>
             </div>
           </div>
 
           <div className="mt-10 text-center">
-            <p className="text-gray-400 text-sm italic">
-              <BrandLogo size="sm" variant="white" /> — Where eco-conscious planning meets observable impact and exceptional service.
+            <p className="text-gray-300 text-sm">
+              Built with <span className="text-red-400">♥</span> to provide <span className="text-emerald-400 font-medium">authentic care</span> and <span className="text-teal-400 font-medium">personalized value</span> for every event.
             </p>
           </div>
         </div>
