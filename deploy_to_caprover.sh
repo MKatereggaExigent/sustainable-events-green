@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# EventCarbon CapRover Deployment Script
+# GreenConnect CapRover Deployment Script
 # This builds the frontend and deploys it to CapRover
 # Port options available: 8065, 8035, 8055, 8095
 
@@ -10,10 +10,10 @@ set -e
 # CONFIGURATION - Update these for your setup
 # ============================================
 CAPROVER_NAME="aidoc-server"           # Your CapRover server name (run: caprover list)
-CAPROVER_APP="eventcarbon"              # CapRover app name
+CAPROVER_APP="greenconnect"             # CapRover app name
 BACKEND_HOST="41.76.109.131"            # Server's public IP (for API proxy)
 BACKEND_PORT="8035"                     # Backend port on host
-TAR_FILE="eventcarbon-frontend.tar.gz"  # Deployment artifact name
+TAR_FILE="greenconnect-frontend.tar.gz" # Deployment artifact name
 
 # Colors for output
 RED='\033[0;31m'
@@ -23,7 +23,7 @@ BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
 echo ""
-echo -e "${BLUE}🚀 EventCarbon CapRover Deployment${NC}"
+echo -e "${BLUE}🚀 GreenConnect CapRover Deployment${NC}"
 echo "================================="
 echo ""
 
