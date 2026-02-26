@@ -53,7 +53,7 @@ export default function Login() {
               <Leaf className="h-8 w-8 text-green-600 dark:text-green-400" />
             </Link>
           </div>
-          <CardTitle className="text-2xl">Welcome to Eco<span className="italic font-light opacity-50">b</span>Serve</CardTitle>
+          <CardTitle className="text-2xl">Welcome to Eco<span className="italic font-light text-blue-400">b</span>Serve</CardTitle>
           <CardDescription>Sign in to manage your sustainable events</CardDescription>
         </CardHeader>
         <form onSubmit={handleSubmit}>

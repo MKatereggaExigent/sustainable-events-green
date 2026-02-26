@@ -194,7 +194,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ onNavigate }) => {
                 <Eye className="w-7 h-7 text-white" />
               </div>
               <h3 className="text-xl font-bold text-white mb-2">
-                <span className="italic font-light text-blue-300/60">b</span>
+                <span className="italic font-light text-blue-300">b</span>
               </h3>
               <p className="text-blue-300 text-sm font-medium mb-3">Observability</p>
               <p className="text-gray-400 text-sm leading-relaxed">

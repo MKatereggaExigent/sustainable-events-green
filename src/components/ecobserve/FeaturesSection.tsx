@@ -84,7 +84,7 @@ const FeaturesSection: React.FC<FeaturesSectionProps> = ({ onNavigate }) => {
             </span>
           </h2>
           <p className="text-gray-600 max-w-2xl mx-auto text-lg">
-            From carbon calculation to social sharing, Eco<span className="italic font-light opacity-50">b</span>Serve provides a complete toolkit for environmentally conscious event planning.
+            From carbon calculation to social sharing, Eco<span className="italic font-light text-blue-400">b</span>Serve provides a complete toolkit for environmentally conscious event planning.
           </p>
         </div>
 
@@ -183,7 +183,7 @@ const FeaturesSection: React.FC<FeaturesSectionProps> = ({ onNavigate }) => {
                 <Eye className="w-6 h-6 text-white" />
               </div>
               <h4 className="font-bold text-lg mb-1">
-                O<span className="italic font-light opacity-60">b</span>servability
+                O<span className="italic font-light text-blue-300">b</span>servability
               </h4>
               <p className="text-blue-100 text-sm">
                 Complete transparency and real-time insights into your environmental impact.

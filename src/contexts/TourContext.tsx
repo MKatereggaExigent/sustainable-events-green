@@ -49,7 +49,7 @@ const tourSteps: Step[] = [
     target: 'body',
     content: (
       <div className="text-center">
-        <h3 className="text-xl font-bold text-emerald-700 mb-2">Welcome to Eco<span className="italic font-light opacity-50">b</span>Serve! 🌿</h3>
+        <h3 className="text-xl font-bold text-emerald-700 mb-2">Welcome to Eco<span className="italic font-light text-blue-400">b</span>Serve! 🌿</h3>
         <p className="text-gray-600 mb-3">
           Let us show you how to measure and reduce your event's environmental impact.
           This quick tour will help you get started.
@@ -68,7 +68,7 @@ const tourSteps: Step[] = [
     target: '[data-tour="navbar-logo"]',
     content: (
       <div>
-        <h4 className="font-semibold text-emerald-700 mb-1">Eco<span className="italic font-light opacity-50">b</span>Serve Logo</h4>
+        <h4 className="font-semibold text-emerald-700 mb-1">Eco<span className="italic font-light text-blue-400">b</span>Serve Logo</h4>
         <p className="text-sm text-gray-600">Click here anytime to return to the home page.</p>
       </div>
     ),

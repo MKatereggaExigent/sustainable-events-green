@@ -94,7 +94,7 @@ const TestimonialsSection: React.FC = () => {
             Loved by Event Planners
           </h2>
           <p className="text-gray-600 max-w-2xl mx-auto">
-            See how organizations worldwide are using Eco<span className="italic font-light opacity-50">b</span>Serve to create sustainable, impactful events.
+            See how organizations worldwide are using Eco<span className="italic font-light text-blue-400">b</span>Serve to create sustainable, impactful events.
           </p>
         </div>
 

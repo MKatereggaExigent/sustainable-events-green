@@ -22,11 +22,12 @@ const BrandLogo: React.FC<BrandLogoProps> = ({
   variant = 'default',
   className = '' 
 }) => {
+  // Slightly smaller font sizes to give more space next to navigation
   const sizeClasses = {
-    sm: 'text-lg',
-    md: 'text-xl',
-    lg: 'text-2xl',
-    xl: 'text-3xl',
+    sm: 'text-base',
+    md: 'text-lg',
+    lg: 'text-xl',
+    xl: 'text-2xl',
   };
 
   const variantClasses = {
@@ -35,17 +36,18 @@ const BrandLogo: React.FC<BrandLogoProps> = ({
     gradient: 'bg-gradient-to-r from-emerald-700 to-teal-600 bg-clip-text text-transparent',
   };
 
+  // Navy/pastel blue color for the "b" to emphasize observability
   const bVariantClasses = {
-    default: 'text-gray-400',
-    white: 'text-white/40',
-    gradient: 'from-emerald-500/40 to-teal-400/40',
+    default: 'text-blue-400',
+    white: 'text-blue-300/70',
+    gradient: 'text-blue-500',
   };
 
   return (
     <span className={`font-bold ${sizeClasses[size]} ${className}`}>
       <span className={variantClasses[variant]}>Eco</span>
-      <span 
-        className={`italic font-light opacity-40 ${variant === 'gradient' ? 'bg-gradient-to-r bg-clip-text text-transparent ' + bVariantClasses[variant] : bVariantClasses[variant]}`}
+      <span
+        className={`italic font-light opacity-70 ${bVariantClasses[variant]}`}
       >
         b
       </span>

@@ -53,7 +53,7 @@ const AuthGate: React.FC<AuthGateProps> = ({ children, feature, description }) =
             
             {/* Description */}
             <p className="text-gray-600 text-lg mb-8 max-w-xl mx-auto">
-              {description || (<>Sign in to unlock {feature} and get the most out of Eco<span className="italic font-light opacity-50">b</span>Serve's sustainability tools.</>)}
+              {description || (<>Sign in to unlock {feature} and get the most out of Eco<span className="italic font-light text-blue-400">b</span>Serve's sustainability tools.</>)}
             </p>
             
             {/* Benefits */}
