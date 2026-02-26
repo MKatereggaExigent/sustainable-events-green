@@ -22,7 +22,7 @@ const allowedOrigins = [
   'http://localhost:8065',
   'http://localhost:5173',
   'http://localhost:8080',
-  'https://eventcarbon.aidocumines.com',
+  'https://greenconnect.aidocumines.com',
 ].filter(Boolean);
 
 app.use(cors({

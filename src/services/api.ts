@@ -1,4 +1,4 @@
-// API Client for EventCarbon Backend
+// API Client for GreenConnect Backend
 
 // Use relative path for production (nginx will proxy), absolute for local dev
 const API_URL = import.meta.env.VITE_API_URL || '/api';
@@ -199,15 +199,57 @@ export const incentivesApi = {
 // Organizations API
 export const organizationsApi = {
   getMine: () => apiFetch<{ organizations: any[] }>('/organizations/mine'),
-  
+
   getCurrent: () => apiFetch<{ organization: any }>('/organizations/current'),
-  
-  create: (data: { name: string; slug?: string }) => 
+
+  create: (data: { name: string; slug?: string }) =>
     apiFetch<{ organization: any }>('/organizations', { method: 'POST', body: JSON.stringify(data) }),
-  
+
   update: (data: any) => apiFetch<{ organization: any }>('/organizations/current', { method: 'PUT', body: JSON.stringify(data) }),
-  
+
   getMembers: () => apiFetch<{ members: any[] }>('/organizations/members'),
+};
+
+// Tour API
+export interface TourPreferences {
+  id: string;
+  userId: string;
+  hasCompletedTour: boolean;
+  completedAt: string | null;
+  tourEnabled: boolean;
+  showTourOnNewFeatures: boolean;
+  completedSteps: string[];
+  lastSeenStep: string | null;
+  timesStarted: number;
+  timesCompleted: number;
+  timesSkipped: number;
+  totalTimeSeconds: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export const tourApi = {
+  getPreferences: () => apiFetch<{ preferences: TourPreferences }>('/tour/preferences'),
+
+  updatePreferences: (data: Partial<TourPreferences>) =>
+    apiFetch<{ preferences: TourPreferences }>('/tour/preferences', {
+      method: 'PUT',
+      body: JSON.stringify(data)
+    }),
+
+  startTour: () => apiFetch<{ preferences: TourPreferences }>('/tour/start', { method: 'POST' }),
+
+  completeTour: (timeSpent?: number) =>
+    apiFetch<{ preferences: TourPreferences }>('/tour/complete', {
+      method: 'POST',
+      body: JSON.stringify({ timeSpent })
+    }),
+
+  skipTour: (lastSeenStep?: string) =>
+    apiFetch<{ preferences: TourPreferences }>('/tour/skip', {
+      method: 'POST',
+      body: JSON.stringify({ lastSeenStep })
+    }),
 };
 
 export function isAuthenticated(): boolean {

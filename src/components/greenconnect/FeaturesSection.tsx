@@ -83,7 +83,7 @@ const FeaturesSection: React.FC<FeaturesSectionProps> = ({ onNavigate }) => {
             </span>
           </h2>
           <p className="text-gray-600 max-w-2xl mx-auto text-lg">
-            From carbon calculation to social sharing, EventCarbon provides a complete toolkit for environmentally conscious event planning.
+            From carbon calculation to social sharing, GreenConnect provides a complete toolkit for environmentally conscious event planning.
           </p>
         </div>
 

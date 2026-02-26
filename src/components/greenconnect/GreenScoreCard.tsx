@@ -22,7 +22,7 @@ const GreenScoreCard: React.FC<GreenScoreCardProps> = ({ result }) => {
 
   const scoreInfo = getScoreLabel(result.greenScore);
 
-  const shareText = `${eventName} achieved a Green Score of ${result.greenScore}/100 on EventCarbon! Carbon: ${result.carbonKg}kg CO₂ | Water: ${result.waterLiters}L | Waste: ${result.wasteKg}kg #SustainableEvents #EventCarbon`;
+  const shareText = `${eventName} achieved a Green Score of ${result.greenScore}/100 on GreenConnect! Carbon: ${result.carbonKg}kg CO₂ | Water: ${result.waterLiters}L | Waste: ${result.wasteKg}kg #SustainableEvents #GreenConnect`;
 
   const handleCopy = () => {
     navigator.clipboard.writeText(shareText);
@@ -34,7 +34,7 @@ const GreenScoreCard: React.FC<GreenScoreCardProps> = ({ result }) => {
     const certificate = `
 ╔══════════════════════════════════════════════╗
 ║                                              ║
-║           🌿 EventCarbon Certificate 🌿      ║
+║           🌿 GreenConnect Certificate 🌿     ║
 ║                                              ║
 ║   ${scoreInfo.label.toUpperCase()} GREEN SCORE: ${result.greenScore}/100${' '.repeat(Math.max(0, 20 - scoreInfo.label.length - String(result.greenScore).length))}║
 ║                                              ║
@@ -47,7 +47,7 @@ const GreenScoreCard: React.FC<GreenScoreCardProps> = ({ result }) => {
 ║   • Water: ${result.waterLiters} liters${' '.repeat(Math.max(0, 30 - String(result.waterLiters).length))}║
 ║   • Waste: ${result.wasteKg} kg${' '.repeat(Math.max(0, 33 - String(result.wasteKg).length))}║
 ║                                              ║
-║   Verified by EventCarbon Platform           ║
+║   Verified by GreenConnect Platform          ║
 ║                                              ║
 ╚══════════════════════════════════════════════╝
     `.trim();
@@ -56,7 +56,7 @@ const GreenScoreCard: React.FC<GreenScoreCardProps> = ({ result }) => {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `eventcarbon-certificate-${eventName.toLowerCase().replace(/\s+/g, '-')}.txt`;
+    a.download = `greenconnect-certificate-${eventName.toLowerCase().replace(/\s+/g, '-')}.txt`;
     a.click();
     URL.revokeObjectURL(url);
   };
@@ -95,7 +95,7 @@ const GreenScoreCard: React.FC<GreenScoreCardProps> = ({ result }) => {
                     <div className="w-8 h-8 bg-gradient-to-br from-emerald-400 to-teal-400 rounded-lg flex items-center justify-center">
                       <Leaf className="w-4 h-4 text-white" />
                     </div>
-                    <span className="text-white font-bold text-lg">EventCarbon</span>
+                    <span className="text-white font-bold text-lg">GreenConnect</span>
                     <div className="ml-auto">
                       <span className={`px-3 py-1 bg-gradient-to-r ${scoreInfo.color} rounded-full text-xs font-bold text-gray-900`}>
                         {scoreInfo.label}
@@ -175,7 +175,7 @@ const GreenScoreCard: React.FC<GreenScoreCardProps> = ({ result }) => {
                   {/* Footer */}
                   <div className="flex items-center justify-between pt-4 border-t border-white/10">
                     <span className="text-gray-500 text-xs">Verified {new Date().toLocaleDateString()}</span>
-                    <span className="text-gray-500 text-xs">eventcarbon.app</span>
+                    <span className="text-gray-500 text-xs">greenconnect.app</span>
                   </div>
                 </div>
               </div>
@@ -286,7 +286,7 @@ const GreenScoreCard: React.FC<GreenScoreCardProps> = ({ result }) => {
                 Twitter
               </button>
               <button
-                onClick={() => window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent('https://eventcarbon.app')}`, '_blank')}
+                onClick={() => window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent('https://greenconnect.app')}`, '_blank')}
                 className="flex items-center justify-center gap-2 px-4 py-3 bg-blue-50 text-blue-600 rounded-xl text-sm font-medium hover:bg-blue-100 transition-colors"
               >
                 <Linkedin className="w-4 h-4" />

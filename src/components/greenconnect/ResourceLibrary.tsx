@@ -115,7 +115,7 @@ const ResourceLibrary: React.FC = () => {
             <div>
               <h3 className="text-2xl font-bold mb-3">Stay Updated</h3>
               <p className="text-indigo-200">
-                Get the latest sustainability guides, industry reports, and EventCarbon updates delivered to your inbox.
+                Get the latest sustainability guides, industry reports, and GreenConnect updates delivered to your inbox.
               </p>
             </div>
             <form

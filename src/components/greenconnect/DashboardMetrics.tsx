@@ -335,7 +335,7 @@ const DashboardMetrics: React.FC<DashboardMetricsProps> = ({ result, inputs, onS
           </button>
           <button
             onClick={() => {
-              const text = `EventCarbon Report\n\nCarbon: ${result.carbonKg} kg CO₂\nWater: ${result.waterLiters} L\nWaste: ${result.wasteKg} kg\nGreen Score: ${result.greenScore}/100\n\nPer Attendee:\nCarbon: ${perAttendee.carbon.toFixed(1)} kg\nWater: ${perAttendee.water.toFixed(0)} L\nWaste: ${perAttendee.waste.toFixed(1)} kg\n\nIndustry Percentile: ${percentile}%\nOffset Cost: $${offsetCosts.goldStandard.toFixed(2)}`;
+              const text = `GreenConnect Report\n\nCarbon: ${result.carbonKg} kg CO₂\nWater: ${result.waterLiters} L\nWaste: ${result.wasteKg} kg\nGreen Score: ${result.greenScore}/100\n\nPer Attendee:\nCarbon: ${perAttendee.carbon.toFixed(1)} kg\nWater: ${perAttendee.water.toFixed(0)} L\nWaste: ${perAttendee.waste.toFixed(1)} kg\n\nIndustry Percentile: ${percentile}%\nOffset Cost: $${offsetCosts.goldStandard.toFixed(2)}`;
               const blob = new Blob([text], { type: 'text/plain' });
               const url = URL.createObjectURL(blob);
               const a = document.createElement('a');

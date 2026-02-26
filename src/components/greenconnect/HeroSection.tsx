@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowRight, TreePine, Droplets, Recycle, Play } from 'lucide-react';
+import { ArrowRight, TreePine, Droplets, Recycle, Compass } from 'lucide-react';
+import { useTour } from '@/contexts/TourContext';
 
 interface HeroSectionProps {
   onNavigate: (section: string) => void;
@@ -36,7 +37,7 @@ const AnimatedCounter: React.FC<{ target: number; suffix: string; label: string 
 };
 
 const HeroSection: React.FC<HeroSectionProps> = ({ onNavigate }) => {
-  const [showVideo, setShowVideo] = useState(false);
+  const { startTour } = useTour();
 
   return (
     <section className="relative min-h-screen flex items-center overflow-hidden">
@@ -94,19 +95,20 @@ const HeroSection: React.FC<HeroSectionProps> = ({ onNavigate }) => {
             <div className="flex flex-wrap gap-4">
               <button
                 onClick={() => onNavigate('calculator')}
+                data-tour="hero-cta"
                 className="group flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-2xl font-semibold text-lg hover:from-emerald-600 hover:to-teal-600 transition-all shadow-xl shadow-emerald-500/25 hover:shadow-emerald-500/40 hover:-translate-y-0.5"
               >
                 Start Calculating
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </button>
               <button
-                onClick={() => setShowVideo(true)}
+                onClick={startTour}
                 className="flex items-center gap-3 px-6 py-4 bg-white/10 backdrop-blur-sm border border-white/20 text-white rounded-2xl font-medium hover:bg-white/20 transition-all"
               >
                 <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
-                  <Play className="w-4 h-4 text-white ml-0.5" />
+                  <Compass className="w-4 h-4 text-white" />
                 </div>
-                Watch Demo
+                Take a Tour
               </button>
             </div>
 
@@ -160,26 +162,6 @@ const HeroSection: React.FC<HeroSectionProps> = ({ onNavigate }) => {
         </div>
       </div>
 
-      {/* Video modal */}
-      {showVideo && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/70 backdrop-blur-sm" onClick={() => setShowVideo(false)}>
-          <div className="bg-gray-900 rounded-2xl p-8 max-w-2xl w-full mx-4 text-center" onClick={(e) => e.stopPropagation()}>
-            <div className="aspect-video bg-gray-800 rounded-xl flex items-center justify-center mb-4">
-              <div className="text-center">
-                <Play className="w-16 h-16 text-emerald-400 mx-auto mb-3" />
-                <p className="text-gray-400">Demo video coming soon</p>
-                <p className="text-gray-500 text-sm mt-1">See how EventCarbon transforms event planning</p>
-              </div>
-            </div>
-            <button
-              onClick={() => setShowVideo(false)}
-              className="px-6 py-2 bg-emerald-600 text-white rounded-xl text-sm font-medium hover:bg-emerald-700 transition-colors"
-            >
-              Close
-            </button>
-          </div>
-        </div>
-      )}
     </section>
   );
 };

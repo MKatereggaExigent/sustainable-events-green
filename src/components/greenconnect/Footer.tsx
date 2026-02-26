@@ -39,7 +39,7 @@ const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
               <div className="w-9 h-9 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center">
                 <Leaf className="w-5 h-5 text-white" />
               </div>
-              <span className="text-xl font-bold">EventCarbon</span>
+              <span className="text-xl font-bold">GreenConnect</span>
             </div>
             <p className="text-gray-400 text-sm mb-6 leading-relaxed">
               The leading platform for measuring and reducing the environmental impact of events worldwide.
@@ -126,7 +126,7 @@ const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
             <ul className="space-y-3">
               <li className="flex items-center gap-2 text-gray-400 text-sm">
                 <Mail className="w-4 h-4 text-emerald-500 flex-shrink-0" />
-                hello@eventcarbon.app
+                hello@greenconnect.app
               </li>
               <li className="flex items-center gap-2 text-gray-400 text-sm">
                 <Phone className="w-4 h-4 text-emerald-500 flex-shrink-0" />
@@ -146,7 +146,7 @@ const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="text-gray-500 text-sm text-center sm:text-left">
-              &copy; {new Date().getFullYear()} EventCarbon. All rights reserved.
+              &copy; {new Date().getFullYear()} GreenConnect. All rights reserved.
             </div>
             <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-6">
               {['Privacy Policy', 'Terms of Service', 'Cookie Settings'].map((link) => (
