@@ -74,19 +74,34 @@ CREATE TABLE subscription_plans (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
--- Insert default subscription plans
+-- Insert default subscription plans (South African Rand - ZAR)
 INSERT INTO subscription_plans (code, name, description, amount, currency, interval, features, max_events, max_users) VALUES
-('free', 'Free', 'Basic features for small events', 0.00, 'NGN', 'monthly', 
- '["Carbon Calculator", "Basic Impact Dashboard", "Up to 5 saved events", "Community support"]'::jsonb, 
- 5, 1),
-('premium_monthly', 'Premium Monthly', 'Advanced features for professional event planners', 29000.00, 'NGN', 'monthly',
- '["Unlimited events", "Advanced analytics", "Custom branding", "Priority support", "API access", "Team collaboration"]'::jsonb,
- -1, 10),
-('premium_yearly', 'Premium Yearly', 'Advanced features with annual discount', 290000.00, 'NGN', 'yearly',
- '["Unlimited events", "Advanced analytics", "Custom branding", "Priority support", "API access", "Team collaboration", "17% discount"]'::jsonb,
- -1, 10),
-('enterprise', 'Enterprise', 'Custom solutions for large organizations', 0.00, 'NGN', 'monthly',
- '["Everything in Premium", "Dedicated account manager", "Custom training", "On-site support", "SLA guarantee", "Custom integrations"]'::jsonb,
+-- Explorer (Free) - Lead generation tier
+('explorer', 'Explorer', 'Perfect for students and individuals testing sustainability', 0.00, 'ZAR', 'monthly',
+ '["Event Footprint Calculator (3 events/month)", "Basic carbon, water, waste calculations", "Simple sustainability score", "Basic recommendations", "FAQ & Resources access", "View success stories"]'::jsonb,
+ 3, 1),
+
+-- Planner (Premium) - Professional tier
+('planner_monthly', 'Planner Monthly', 'For professional event planners and agencies', 499.00, 'ZAR', 'monthly',
+ '["Unlimited event calculations", "Cost & Savings Calculator with ROI", "Save & manage events (My Events)", "Smart AI-powered recommendations", "Green Score Card certificates", "Tax Incentive Calculator (SA)", "PDF report export", "Up to 3 team members", "Email support"]'::jsonb,
+ -1, 3),
+
+('planner_yearly', 'Planner Yearly', 'Annual plan with 17% savings', 4990.00, 'ZAR', 'yearly',
+ '["Unlimited event calculations", "Cost & Savings Calculator with ROI", "Save & manage events (My Events)", "Smart AI-powered recommendations", "Green Score Card certificates", "Tax Incentive Calculator (SA)", "PDF report export", "Up to 3 team members", "Email support", "Save R1,000 annually"]'::jsonb,
+ -1, 3),
+
+-- Impact Leader (Enterprise) - Corporate tier
+('impact_monthly', 'Impact Leader Monthly', 'For large agencies and corporate teams', 1999.00, 'ZAR', 'monthly',
+ '["Everything in Planner", "Impact Dashboard with visual analytics", "Industry benchmarking", "Portfolio sustainability tracking", "UN SDG alignment reporting", "Unlimited team members", "Custom branded reports", "Advanced data export (CSV, Excel)", "Priority support", "Multi-location tracking", "Custom event categories"]'::jsonb,
+ -1, -1),
+
+('impact_yearly', 'Impact Leader Yearly', 'Annual enterprise plan with savings', 19990.00, 'ZAR', 'yearly',
+ '["Everything in Planner", "Impact Dashboard with visual analytics", "Industry benchmarking", "Portfolio sustainability tracking", "UN SDG alignment reporting", "Unlimited team members", "Custom branded reports", "Advanced data export (CSV, Excel)", "Priority support", "Multi-location tracking", "Custom event categories", "Save R4,000 annually"]'::jsonb,
+ -1, -1),
+
+-- Enterprise Custom - Contact sales
+('enterprise', 'Enterprise Custom', 'Custom solution for large organizations', 0.00, 'ZAR', 'yearly',
+ '["Everything in Impact Leader", "API integrations", "Dedicated onboarding & training", "Custom feature development", "SLA guarantees (99.9% uptime)", "On-premise deployment option", "Compliance certifications", "Carbon offset marketplace", "Quarterly business reviews", "Contact for pricing"]'::jsonb,
  -1, -1);
 
 -- ============================================
