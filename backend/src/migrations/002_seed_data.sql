@@ -35,6 +35,11 @@ INSERT INTO permissions (name, description, resource, action) VALUES
 ('report:read', 'View reports', 'report', 'read'),
 ('report:export', 'Export reports', 'report', 'export'),
 
+-- Payment & Subscription permissions
+('payment:read', 'View payment and subscription data', 'payment', 'read'),
+('payment:create', 'Initialize payments', 'payment', 'create'),
+('payment:manage', 'Manage subscriptions and payments', 'payment', 'manage'),
+
 -- Admin permissions
 ('admin:access', 'Access admin panel', 'admin', 'access'),
 ('admin:audit_logs', 'View audit logs', 'admin', 'audit_logs');
@@ -59,34 +64,37 @@ SELECT r.id, p.id FROM roles r, permissions p WHERE r.name = 'super_admin';
 
 -- Org Owner permissions
 INSERT INTO role_permissions (role_id, permission_id)
-SELECT r.id, p.id FROM roles r, permissions p 
+SELECT r.id, p.id FROM roles r, permissions p
 WHERE r.name = 'org_owner' AND p.name IN (
     'organization:read', 'organization:update', 'organization:delete', 'organization:manage_members',
     'user:read', 'user:update', 'user:delete', 'user:manage_roles',
     'event:create', 'event:read', 'event:update', 'event:delete', 'event:publish',
     'cost:read', 'cost:update', 'incentive:read', 'incentive:apply',
+    'payment:read', 'payment:create', 'payment:manage',
     'report:read', 'report:export', 'admin:access', 'admin:audit_logs'
 );
 
 -- Org Admin permissions
 INSERT INTO role_permissions (role_id, permission_id)
-SELECT r.id, p.id FROM roles r, permissions p 
+SELECT r.id, p.id FROM roles r, permissions p
 WHERE r.name = 'org_admin' AND p.name IN (
     'organization:read', 'organization:update', 'organization:manage_members',
     'user:read', 'user:update', 'user:manage_roles',
     'event:create', 'event:read', 'event:update', 'event:delete', 'event:publish',
     'cost:read', 'cost:update', 'incentive:read', 'incentive:apply',
+    'payment:read', 'payment:create', 'payment:manage',
     'report:read', 'report:export', 'admin:access'
 );
 
 -- Org Member permissions
 INSERT INTO role_permissions (role_id, permission_id)
-SELECT r.id, p.id FROM roles r, permissions p 
+SELECT r.id, p.id FROM roles r, permissions p
 WHERE r.name = 'org_member' AND p.name IN (
     'organization:read',
     'user:read',
     'event:create', 'event:read', 'event:update',
     'cost:read', 'cost:update', 'incentive:read',
+    'payment:read',
     'report:read'
 );
 

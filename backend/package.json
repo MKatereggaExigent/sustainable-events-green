@@ -25,8 +25,9 @@
     "ioredis": "^5.4.1",
     "jsonwebtoken": "^9.0.2",
     "passport": "^0.7.0",
-    "passport-google-oauth20": "^2.0.0",
     "passport-github2": "^0.1.12",
+    "passport-google-oauth20": "^2.0.0",
+    "paystack": "^2.0.1",
     "pg": "^8.12.0",
     "uuid": "^10.0.0",
     "winston": "^3.14.2"
@@ -54,4 +55,3 @@
     "node": ">=20.0.0"
   }
 }
-

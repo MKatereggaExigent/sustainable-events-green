@@ -6,6 +6,7 @@ import incentiveRoutes from './incentive.routes';
 import organizationRoutes from './organization.routes';
 import tourRoutes from './tour.routes';
 import settingsRoutes from './settings.routes';
+import paymentRoutes from './payment.routes';
 
 const router = Router();
 
@@ -22,6 +23,7 @@ router.use('/incentives', incentiveRoutes);
 router.use('/organizations', organizationRoutes);
 router.use('/tour', tourRoutes);
 router.use('/settings', settingsRoutes);
+router.use('/payments', paymentRoutes);
 
 export default router;
 
