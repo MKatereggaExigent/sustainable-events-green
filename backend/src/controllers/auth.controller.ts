@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { validationResult, body } from 'express-validator';
 import * as authService from '../services/auth.service';
 import { logger } from '../utils/logger';
+import { query } from '../config/database';
 
 export const registerValidation = [
   body('email').isEmail().normalizeEmail().withMessage('Valid email required'),
@@ -137,7 +138,7 @@ export async function me(req: Request, res: Response) {
     // Get organization details with subscription info
     let organization = null;
     if (req.user.organizationId) {
-      const orgResult = await pool.query(
+      const orgResult = await query(
         `SELECT id, name, slug, subscription_tier, subscription_expires_at
          FROM organizations
          WHERE id = $1`,
