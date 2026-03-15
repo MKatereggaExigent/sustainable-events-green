@@ -61,8 +61,8 @@ export const config = {
   paystack: {
     secretKey: process.env.PAYSTACK_SECRET_KEY || '',
     publicKey: process.env.PAYSTACK_PUBLIC_KEY || '',
-    callbackUrl: process.env.PAYSTACK_CALLBACK_URL || 'http://localhost:8035/api/payments/callback',
-    webhookUrl: process.env.PAYSTACK_WEBHOOK_URL || 'http://localhost:8035/api/payments/webhook',
+    callbackUrl: process.env.PAYSTACK_CALLBACK_URL || 'https://ecobserve.com/api/payments/callback',
+    webhookUrl: process.env.PAYSTACK_WEBHOOK_URL || 'https://ecobserve.com/api/payments/webhook',
   },
 };
 
