@@ -1,5 +1,6 @@
 import React from 'react';
 import { Leaf, Twitter, Linkedin, Github, Instagram, Mail, MapPin, Phone, ArrowUp } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import BrandLogo, { getBrandName } from './BrandLogo';
 
 interface FooterProps {
@@ -7,6 +8,8 @@ interface FooterProps {
 }
 
 const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
+  const navigate = useNavigate();
+
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -96,6 +99,14 @@ const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
           <div>
             <h4 className="font-semibold text-white mb-4">Resources</h4>
             <ul className="space-y-3">
+              <li>
+                <button
+                  onClick={() => navigate('/faq')}
+                  className="text-gray-400 text-sm hover:text-emerald-400 transition-colors"
+                >
+                  FAQs
+                </button>
+              </li>
               {['Guides', 'Blog', 'Case Studies', 'API Docs', 'Certifications'].map((link) => (
                 <li key={link}>
                   <button

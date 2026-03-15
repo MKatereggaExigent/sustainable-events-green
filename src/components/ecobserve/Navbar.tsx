@@ -24,6 +24,7 @@ const Navbar: React.FC<NavbarProps> = ({ onNavigate, activeSection }) => {
     { id: 'hero', label: 'Home', icon: null },
     { id: 'portfolio', label: 'Success Stories', icon: null },
     { id: 'resources', label: 'Resources', icon: null },
+    { id: 'faq', label: 'FAQs', icon: HelpCircle, isRoute: true },
   ];
 
   // Premium features - require authentication
@@ -92,17 +93,18 @@ const Navbar: React.FC<NavbarProps> = ({ onNavigate, activeSection }) => {
                 </button>
               ))}
 
-              {/* Remaining free links (Success Stories, Resources) */}
+              {/* Remaining free links (Success Stories, Resources, FAQs) */}
               {freeLinks.slice(1).map((link) => (
                 <button
                   key={link.id}
-                  onClick={() => onNavigate(link.id)}
+                  onClick={() => link.isRoute ? navigate(`/${link.id}`) : onNavigate(link.id)}
                   className={`px-2 xl:px-3 py-2 rounded-lg text-xs xl:text-sm font-medium transition-all flex items-center gap-1 whitespace-nowrap ${
                     activeSection === link.id
                       ? 'bg-emerald-50 text-emerald-700'
                       : 'text-gray-600 hover:text-emerald-700 hover:bg-emerald-50/50'
                   }`}
                 >
+                  {link.icon && <link.icon className="w-3 xl:w-3.5 h-3 xl:h-3.5 flex-shrink-0" />}
                   {link.label}
                 </button>
               ))}
@@ -216,17 +218,25 @@ const Navbar: React.FC<NavbarProps> = ({ onNavigate, activeSection }) => {
                 </button>
               ))}
 
-              {/* Remaining free links (Success Stories, Resources) */}
+              {/* Remaining free links (Success Stories, Resources, FAQs) */}
               {freeLinks.slice(1).map((link) => (
                 <button
                   key={link.id}
-                  onClick={() => { onNavigate(link.id); setMobileOpen(false); }}
-                  className={`block w-full text-left px-4 py-2.5 rounded-lg text-sm font-medium transition-all ${
+                  onClick={() => {
+                    if (link.isRoute) {
+                      navigate(`/${link.id}`);
+                    } else {
+                      onNavigate(link.id);
+                    }
+                    setMobileOpen(false);
+                  }}
+                  className={`w-full text-left px-4 py-2.5 rounded-lg text-sm font-medium transition-all flex items-center gap-2 ${
                     activeSection === link.id
                       ? 'bg-emerald-50 text-emerald-700'
                       : 'text-gray-600 hover:bg-emerald-50'
                   }`}
                 >
+                  {link.icon && <link.icon className="w-4 h-4" />}
                   {link.label}
                 </button>
               ))}
