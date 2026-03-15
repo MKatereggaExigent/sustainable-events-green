@@ -23,6 +23,8 @@ const allowedOrigins = [
   'http://localhost:5173',
   'http://localhost:8080',
   'https://ecobserve.aidocumines.com',
+  'https://ecobserve.com',
+  'https://www.ecobserve.com',
 ].filter(Boolean);
 
 app.use(cors({
