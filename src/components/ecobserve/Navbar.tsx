@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Leaf, Menu, X, User, FolderOpen, DollarSign, LogOut, LayoutDashboard, Sparkles, Award, Calculator, HelpCircle, RotateCcw, Settings as SettingsIcon } from 'lucide-react';
+import { Leaf, Menu, X, User, FolderOpen, DollarSign, LogOut, LayoutDashboard, Sparkles, Award, Calculator, HelpCircle, RotateCcw, Settings as SettingsIcon, CreditCard } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTour } from '@/contexts/TourContext';
 import BrandLogo from './BrandLogo';
 import Settings from './Settings';
+import SubscriptionBadge from './SubscriptionBadge';
 
 interface NavbarProps {
   onNavigate: (section: string) => void;
@@ -15,7 +16,7 @@ const Navbar: React.FC<NavbarProps> = ({ onNavigate, activeSection }) => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
-  const { user, isAuthenticated, logout, isLoading } = useAuth();
+  const { user, isAuthenticated, logout, isLoading, subscriptionTier } = useAuth();
   const { restartTour, hasCompletedTour } = useTour();
   const navigate = useNavigate();
 
@@ -142,11 +143,20 @@ const Navbar: React.FC<NavbarProps> = ({ onNavigate, activeSection }) => {
                   </button>
 
                   {showUserMenu && (
-                    <div className="absolute right-0 top-12 w-48 bg-white rounded-xl shadow-xl border border-gray-100 py-2 z-50">
-                      <div className="px-4 py-2 border-b border-gray-100">
+                    <div className="absolute right-0 top-12 w-56 bg-white rounded-xl shadow-xl border border-gray-100 py-2 z-50">
+                      <div className="px-4 py-3 border-b border-gray-100">
                         <p className="text-sm font-medium text-gray-900 truncate">{user.email}</p>
-                        <p className="text-xs text-emerald-600">Premium Member</p>
+                        <div className="mt-2">
+                          <SubscriptionBadge tier={subscriptionTier} size="sm" />
+                        </div>
                       </div>
+                      <button
+                        onClick={() => { navigate('/pricing'); setShowUserMenu(false); }}
+                        className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-emerald-50 flex items-center gap-2"
+                      >
+                        <CreditCard className="w-4 h-4" />
+                        Manage Subscription
+                      </button>
                       <button
                         onClick={() => { setShowSettings(true); setShowUserMenu(false); }}
                         className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-emerald-50 flex items-center gap-2"

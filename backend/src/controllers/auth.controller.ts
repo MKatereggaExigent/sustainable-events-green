@@ -134,6 +134,28 @@ export async function me(req: Request, res: Response) {
       return res.status(401).json({ error: 'Not authenticated' });
     }
 
+    // Get organization details with subscription info
+    let organization = null;
+    if (req.user.organizationId) {
+      const orgResult = await pool.query(
+        `SELECT id, name, slug, subscription_tier, subscription_expires_at
+         FROM organizations
+         WHERE id = $1`,
+        [req.user.organizationId]
+      );
+
+      if (orgResult.rows.length > 0) {
+        const org = orgResult.rows[0];
+        organization = {
+          id: org.id,
+          name: org.name,
+          slug: org.slug,
+          subscriptionTier: org.subscription_tier || 'explorer',
+          subscriptionExpiresAt: org.subscription_expires_at,
+        };
+      }
+    }
+
     return res.json({
       user: {
         id: req.user.userId,
@@ -141,6 +163,7 @@ export async function me(req: Request, res: Response) {
         organizationId: req.user.organizationId,
         permissions: req.user.permissions,
       },
+      organization,
     });
   } catch (error) {
     logger.error('Me endpoint error:', error);

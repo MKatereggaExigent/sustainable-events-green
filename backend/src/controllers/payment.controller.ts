@@ -208,6 +208,59 @@ export async function getTransactions(req: Request, res: Response) {
 }
 
 /**
+ * Get current subscription status
+ * GET /api/payments/subscription
+ */
+export async function getSubscription(req: Request, res: Response) {
+  try {
+    if (!req.organizationId) {
+      return res.status(400).json({ error: 'Organization context required' });
+    }
+
+    // Get organization subscription details
+    const orgResult = await pool.query(
+      `SELECT subscription_tier, subscription_expires_at
+       FROM organizations
+       WHERE id = $1`,
+      [req.organizationId]
+    );
+
+    if (orgResult.rows.length === 0) {
+      return res.status(404).json({ error: 'Organization not found' });
+    }
+
+    const org = orgResult.rows[0];
+    const tier = org.subscription_tier || 'explorer';
+    const expiresAt = org.subscription_expires_at;
+    const isActive = !expiresAt || new Date(expiresAt) > new Date();
+
+    // Get plan features
+    const planResult = await pool.query(
+      `SELECT features FROM subscription_plans
+       WHERE code LIKE $1
+       ORDER BY amount DESC
+       LIMIT 1`,
+      [`${tier}%`]
+    );
+
+    const features = planResult.rows.length > 0 ? planResult.rows[0].features : [];
+
+    return res.json({
+      success: true,
+      data: {
+        tier,
+        expiresAt,
+        isActive,
+        features
+      }
+    });
+  } catch (error: any) {
+    logger.error('Get subscription error:', error);
+    return res.status(500).json({ error: 'Failed to fetch subscription' });
+  }
+}
+
+/**
  * Cancel subscription
  * POST /api/payments/subscription/cancel
  */

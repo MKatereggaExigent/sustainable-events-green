@@ -193,11 +193,12 @@ const AppLayout: React.FC = () => {
         </AuthGate>
       </div>
 
-      {/* Premium Feature: Cost & Savings Calculator */}
+      {/* Premium Feature: Cost & Savings Calculator - Requires Planner */}
       <div ref={costsavingsRef}>
         <AuthGate
           feature="Cost & Savings Calculator"
           description="Discover the financial value of reducing carbon emissions, including cost savings, ROI comparisons, and potential tax incentives."
+          requiredTier="planner"
         >
           <CostSavingsCalculator
             carbonInputs={inputs}
@@ -206,11 +207,12 @@ const AppLayout: React.FC = () => {
         </AuthGate>
       </div>
 
-      {/* Premium Feature: Dashboard Metrics */}
+      {/* Premium Feature: Dashboard Metrics - Requires Impact Leader */}
       <div ref={dashboardRef}>
         <AuthGate
           feature="Impact Dashboard"
           description="Track your event's environmental impact with detailed metrics, visualizations, and progress tracking."
+          requiredTier="impact"
         >
           <DashboardMetrics
             result={result}
@@ -221,11 +223,12 @@ const AppLayout: React.FC = () => {
         </AuthGate>
       </div>
 
-      {/* Premium Feature: My Events */}
+      {/* Premium Feature: My Events - Requires Planner */}
       <div ref={myeventsRef}>
         <AuthGate
           feature="My Events"
           description="Save, manage, and track all your events in one place. Compare performance over time."
+          requiredTier="planner"
         >
           <MyEvents
             key={myEventsKey}
@@ -235,21 +238,23 @@ const AppLayout: React.FC = () => {
         </AuthGate>
       </div>
 
-      {/* Premium Feature: Smart Recommendations */}
+      {/* Premium Feature: Smart Recommendations - Requires Planner */}
       <div ref={alternativesRef}>
         <AuthGate
           feature="Smart Recommendations"
           description="Get AI-powered recommendations for sustainable alternatives to reduce your event's carbon footprint."
+          requiredTier="planner"
         >
           <AlternativesSection alternatives={alternatives} />
         </AuthGate>
       </div>
 
-      {/* Premium Feature: Green Score Card */}
+      {/* Premium Feature: Green Score Card - Requires Planner */}
       <div ref={scoreRef}>
         <AuthGate
           feature="Green Score Card"
           description="Generate shareable sustainability certificates to showcase your commitment to the environment."
+          requiredTier="planner"
         >
           <GreenScoreCard result={result} />
         </AuthGate>
