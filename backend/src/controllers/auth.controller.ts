@@ -138,15 +138,15 @@ export async function me(req: Request, res: Response) {
     // Get organization details with subscription info
     let organization = null;
     if (req.user.organizationId) {
-      const orgResult = await query(
+      const orgResult = await query<any>(
         `SELECT id, name, slug, subscription_tier, subscription_expires_at
          FROM organizations
          WHERE id = $1`,
         [req.user.organizationId]
       );
 
-      if (orgResult.rows.length > 0) {
-        const org = orgResult.rows[0];
+      if (orgResult.length > 0) {
+        const org = orgResult[0];
         organization = {
           id: org.id,
           name: org.name,
