@@ -13,6 +13,9 @@ import passport from 'passport';
 
 const app = express();
 
+// Trust proxy - Required for rate limiting behind nginx/CapRover
+app.set('trust proxy', 1);
+
 // Security middleware
 app.use(helmet());
 
