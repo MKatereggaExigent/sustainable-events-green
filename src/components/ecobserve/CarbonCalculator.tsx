@@ -487,7 +487,7 @@ const CarbonCalculator: React.FC<CarbonCalculatorProps> = ({ onComplete, inputs,
   };
 
   return (
-    <section ref={sectionRef} className="py-24 bg-gradient-to-b from-gray-50 via-white to-emerald-50/30">
+    <section ref={sectionRef} className="py-24 bg-gradient-to-b from-gray-50 via-white to-emerald-50/30" data-tour="calculator-section">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section header with animation */}
         <div className={`text-center mb-12 transition-all duration-700 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
@@ -527,7 +527,7 @@ const CarbonCalculator: React.FC<CarbonCalculatorProps> = ({ onComplete, inputs,
 
         <div className="grid lg:grid-cols-3 gap-8">
           {/* Left: Calculator form */}
-          <div className="lg:col-span-2">
+          <div className="lg:col-span-2" data-tour="calculator-inputs">
             <div className="bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden">
               {/* Step indicators */}
               <div className="flex border-b border-gray-100">
@@ -592,7 +592,7 @@ const CarbonCalculator: React.FC<CarbonCalculatorProps> = ({ onComplete, inputs,
           </div>
 
           {/* Right: Live preview with Business Insights */}
-          <div className={`space-y-4 transition-all duration-700 delay-200 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
+          <div className={`space-y-4 transition-all duration-700 delay-200 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`} data-tour="calculator-results">
             {/* Hero Impact Card */}
             <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl shadow-xl p-6 text-white relative overflow-hidden">
               <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 rounded-full blur-2xl" />

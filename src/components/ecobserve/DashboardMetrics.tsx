@@ -287,6 +287,7 @@ const DashboardMetrics: React.FC<DashboardMetricsProps> = ({ result, inputs, onS
     <section
       ref={sectionRef}
       className="py-20 lg:py-28 bg-gradient-to-br from-slate-50 via-blue-50/30 to-emerald-50/20 relative overflow-hidden"
+      data-tour="dashboard-section"
     >
       {/* Background decorations */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">

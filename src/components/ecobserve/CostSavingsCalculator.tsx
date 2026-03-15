@@ -130,6 +130,7 @@ const CostSavingsCalculator: React.FC<CostSavingsCalculatorProps> = ({
     <section
       ref={sectionRef}
       className="py-20 lg:py-28 bg-gradient-to-br from-slate-50 via-emerald-50/30 to-teal-50/20 relative overflow-hidden"
+      data-tour="cost-savings-section"
     >
       {/* Background decorations */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
