@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Leaf, Menu, X, User, FolderOpen, DollarSign, LogOut, LayoutDashboard, Sparkles, Award, Calculator, HelpCircle, RotateCcw, Settings as SettingsIcon, CreditCard } from 'lucide-react';
+import { Leaf, Menu, X, User, FolderOpen, DollarSign, LogOut, LayoutDashboard, Sparkles, Award, Calculator, HelpCircle, RotateCcw, Settings as SettingsIcon, CreditCard, Crown } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTour } from '@/contexts/TourContext';
 import BrandLogo from './BrandLogo';
@@ -9,7 +9,7 @@ import SubscriptionBadge from './SubscriptionBadge';
 
 interface NavbarProps {
   onNavigate: (section: string) => void;
-  activeSection: string;
+  activeSection?: string;
 }
 
 const Navbar: React.FC<NavbarProps> = ({ onNavigate, activeSection }) => {
@@ -25,6 +25,7 @@ const Navbar: React.FC<NavbarProps> = ({ onNavigate, activeSection }) => {
     { id: 'hero', label: 'Home', icon: null },
     { id: 'portfolio', label: 'Success Stories', icon: null },
     { id: 'resources', label: 'Resources', icon: null },
+    { id: 'pricing', label: 'Pricing', icon: CreditCard, isRoute: true },
     { id: 'faq', label: 'FAQs', icon: HelpCircle, isRoute: true },
   ];
 
@@ -131,7 +132,19 @@ const Navbar: React.FC<NavbarProps> = ({ onNavigate, activeSection }) => {
               {isLoading ? (
                 <div className="w-8 h-8 rounded-full bg-gray-200 animate-pulse" />
               ) : isAuthenticated && user ? (
-                <div className="relative">
+                <>
+                  {/* Upgrade button for free/planner users */}
+                  {(subscriptionTier === 'explorer' || subscriptionTier === 'planner') && (
+                    <button
+                      onClick={() => navigate('/pricing')}
+                      className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:from-purple-700 hover:to-pink-700 transition-all shadow-md hover:shadow-lg"
+                    >
+                      <Crown className="w-3.5 h-3.5" />
+                      <span className="hidden xl:inline">Upgrade</span>
+                    </button>
+                  )}
+
+                  <div className="relative">
                   <button
                     onClick={() => setShowUserMenu(!showUserMenu)}
                     className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-xl text-sm font-medium text-gray-700 hover:bg-emerald-50 transition-all"
@@ -173,7 +186,8 @@ const Navbar: React.FC<NavbarProps> = ({ onNavigate, activeSection }) => {
                       </button>
                     </div>
                   )}
-                </div>
+                  </div>
+                </>
               ) : (
                 <button
                   onClick={() => navigate('/login')}
