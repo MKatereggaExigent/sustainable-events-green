@@ -23,11 +23,41 @@ export async function initializePayment(req: Request, res: Response) {
       return res.status(400).json({ errors: errors.array() });
     }
 
-    if (!req.organizationId) {
-      return res.status(400).json({ error: 'Organization context required' });
+    if (!req.user?.userId) {
+      return res.status(401).json({ error: 'Authentication required' });
     }
 
     const { planCode, email, metadata } = req.body;
+
+    // Get or create user's organization
+    let organizationId = req.organizationId;
+
+    if (!organizationId) {
+      // Get user's first organization or create a default one
+      const userOrgs = await query(
+        'SELECT organization_id FROM user_organizations WHERE user_id = $1 LIMIT 1',
+        [req.user.userId]
+      );
+
+      if (userOrgs.length > 0) {
+        organizationId = userOrgs[0].organization_id;
+      } else {
+        // Create a default organization for the user
+        const newOrg = await query(
+          `INSERT INTO organizations (name, slug, subscription_tier)
+           VALUES ($1, $2, $3)
+           RETURNING id`,
+          [`${email.split('@')[0]}'s Organization`, `org-${Date.now()}`, 'explorer']
+        );
+        organizationId = newOrg[0].id;
+
+        // Link user to organization
+        await query(
+          'INSERT INTO user_organizations (user_id, organization_id) VALUES ($1, $2)',
+          [req.user.userId, organizationId]
+        );
+      }
+    }
 
     // Get plan details to determine amount
     const planResult = await pool.query(
@@ -43,7 +73,7 @@ export async function initializePayment(req: Request, res: Response) {
     const amountInKobo = Math.round(parseFloat(plan.amount) * 100); // Convert to kobo
 
     const result = await paymentService.initializePayment(pool, {
-      organizationId: req.organizationId,
+      organizationId,
       email,
       amount: amountInKobo,
       planCode,

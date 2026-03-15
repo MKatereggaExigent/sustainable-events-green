@@ -17,15 +17,13 @@ router.post('/webhook', paymentController.paystackWebhook);
 // GET /api/payments/callback - Payment callback after Paystack redirect
 router.get('/callback', paymentController.paymentCallback);
 
-// Protected routes - require authentication and organization context
+// Protected routes - require authentication only
 router.use(authenticate);
 router.use(loadUserPermissions);
-router.use(requireOrganization);
 
 // POST /api/payments/initialize - Initialize a payment
 router.post(
   '/initialize',
-  requirePermission('payment:create'),
   paymentController.initializePaymentValidation,
   paymentController.initializePayment
 );

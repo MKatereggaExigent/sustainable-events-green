@@ -196,13 +196,6 @@ const Pricing: React.FC = () => {
 
     try {
       const token = localStorage.getItem('access_token');
-      const organizationId = localStorage.getItem('organization_id');
-
-      if (!organizationId) {
-        alert('Please create or select an organization first.');
-        navigate('/organizations');
-        return;
-      }
 
       // Determine API URL based on current domain
       const apiUrl = window.location.hostname === 'localhost'
@@ -214,7 +207,6 @@ const Pricing: React.FC = () => {
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,
-          'X-Organization-Id': organizationId,
         },
         body: JSON.stringify({
           planCode,
