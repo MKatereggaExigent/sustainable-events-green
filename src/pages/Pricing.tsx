@@ -32,16 +32,147 @@ const Pricing: React.FC = () => {
 
   const fetchPlans = async () => {
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:8035'}/api/payments/plans`);
+      // Determine API URL based on current domain
+      const apiUrl = window.location.hostname === 'localhost'
+        ? 'http://localhost:8035'
+        : `${window.location.protocol}//${window.location.hostname}`;
+
+      const response = await fetch(`${apiUrl}/api/payments/plans`);
       const data = await response.json();
-      if (data.success) {
+      if (data.success && data.data && data.data.length > 0) {
         setPlans(data.data);
+      } else {
+        // Fallback to hardcoded plans if API fails
+        setPlans(getFallbackPlans());
       }
     } catch (error) {
       console.error('Failed to fetch plans:', error);
+      // Use fallback plans
+      setPlans(getFallbackPlans());
     } finally {
       setLoading(false);
     }
+  };
+
+  const getFallbackPlans = (): Plan[] => {
+    return [
+      {
+        id: '1',
+        code: 'explorer',
+        name: 'Explorer',
+        description: 'Perfect for individuals and students exploring sustainability',
+        amount: 0,
+        currency: 'ZAR',
+        interval: 'monthly',
+        maxEvents: 3,
+        maxUsers: 1,
+        features: [
+          'Event Footprint Calculator (3 events/month)',
+          'Basic carbon, water, waste calculations',
+          'Simple sustainability score',
+          'Basic recommendations',
+          'FAQ & Resources access',
+        ],
+      },
+      {
+        id: '2',
+        code: 'planner_monthly',
+        name: 'Planner',
+        description: 'For professional event planners and agencies',
+        amount: 499,
+        currency: 'ZAR',
+        interval: 'monthly',
+        maxEvents: -1,
+        maxUsers: 5,
+        features: [
+          'Unlimited event calculations',
+          'Cost & Savings Calculator',
+          'My Events (save & manage history)',
+          'Smart AI Recommendations',
+          'Green Score Card (shareable)',
+          'Email support',
+        ],
+      },
+      {
+        id: '3',
+        code: 'planner_yearly',
+        name: 'Planner',
+        description: 'For professional event planners and agencies',
+        amount: 4990,
+        currency: 'ZAR',
+        interval: 'yearly',
+        maxEvents: -1,
+        maxUsers: 5,
+        features: [
+          'Unlimited event calculations',
+          'Cost & Savings Calculator',
+          'My Events (save & manage history)',
+          'Smart AI Recommendations',
+          'Green Score Card (shareable)',
+          'Email support',
+          'Save R1,000 annually',
+        ],
+      },
+      {
+        id: '4',
+        code: 'impact_monthly',
+        name: 'Impact Leader',
+        description: 'For venues and organizations managing multiple events',
+        amount: 1999,
+        currency: 'ZAR',
+        interval: 'monthly',
+        maxEvents: -1,
+        maxUsers: 20,
+        features: [
+          'Everything in Planner, plus:',
+          'Impact Dashboard with analytics',
+          'Team collaboration (up to 20 users)',
+          'Advanced reporting & exports',
+          'API access',
+          'Priority support',
+        ],
+      },
+      {
+        id: '5',
+        code: 'impact_yearly',
+        name: 'Impact Leader',
+        description: 'For venues and organizations managing multiple events',
+        amount: 19990,
+        currency: 'ZAR',
+        interval: 'yearly',
+        maxEvents: -1,
+        maxUsers: 20,
+        features: [
+          'Everything in Planner, plus:',
+          'Impact Dashboard with analytics',
+          'Team collaboration (up to 20 users)',
+          'Advanced reporting & exports',
+          'API access',
+          'Priority support',
+          'Save R4,000 annually',
+        ],
+      },
+      {
+        id: '6',
+        code: 'enterprise',
+        name: 'Enterprise',
+        description: 'Custom solutions for large organizations',
+        amount: 0,
+        currency: 'ZAR',
+        interval: 'monthly',
+        maxEvents: -1,
+        maxUsers: -1,
+        features: [
+          'Everything in Impact Leader, plus:',
+          'Unlimited users',
+          'Custom integrations',
+          'Dedicated account manager',
+          'SLA guarantees',
+          'Custom training & onboarding',
+          'White-label options',
+        ],
+      },
+    ];
   };
 
   const handleSelectPlan = async (planCode: string) => {
@@ -65,7 +196,12 @@ const Pricing: React.FC = () => {
 
     try {
       const token = localStorage.getItem('access_token');
-      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:8035'}/api/payments/initialize`, {
+      // Determine API URL based on current domain
+      const apiUrl = window.location.hostname === 'localhost'
+        ? 'http://localhost:8035'
+        : `${window.location.protocol}//${window.location.hostname}`;
+
+      const response = await fetch(`${apiUrl}/api/payments/initialize`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

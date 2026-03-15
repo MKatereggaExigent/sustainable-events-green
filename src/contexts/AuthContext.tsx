@@ -89,7 +89,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (!organization?.id) return;
 
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:8035'}/api/payments/subscription`, {
+      // Determine API URL based on current domain
+      const apiUrl = typeof window !== 'undefined' && window.location.hostname === 'localhost'
+        ? 'http://localhost:8035'
+        : typeof window !== 'undefined'
+          ? `${window.location.protocol}//${window.location.hostname}`
+          : 'http://localhost:8035';
+
+      const response = await fetch(`${apiUrl}/api/payments/subscription`, {
         headers: {
           'Authorization': `Bearer ${getAccessToken()}`,
         },

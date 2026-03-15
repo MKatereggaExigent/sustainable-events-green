@@ -21,8 +21,13 @@ const PaymentSuccess: React.FC = () => {
   const verifyPayment = async () => {
     try {
       const token = localStorage.getItem('access_token');
+      // Determine API URL based on current domain
+      const apiUrl = window.location.hostname === 'localhost'
+        ? 'http://localhost:8035'
+        : `${window.location.protocol}//${window.location.hostname}`;
+
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL || 'http://localhost:8035'}/api/payments/verify/${reference}`,
+        `${apiUrl}/api/payments/verify/${reference}`,
         {
           headers: {
             'Authorization': `Bearer ${token}`,
