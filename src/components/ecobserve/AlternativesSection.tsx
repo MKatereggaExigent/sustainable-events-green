@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { Lightbulb, ArrowRight, TrendingDown, DollarSign, Zap, Filter, Check, ChevronDown } from 'lucide-react';
 import { Alternative } from '@/lib/carbonData';
+import GlossaryButton from './GlossaryButton';
 
 interface AlternativesSectionProps {
   alternatives: Alternative[];
@@ -66,6 +67,9 @@ const AlternativesSection: React.FC<AlternativesSectionProps> = ({ alternatives 
           <p className="text-gray-600 max-w-2xl mx-auto">
             Based on your event inputs, here are personalized recommendations to reduce your environmental impact.
           </p>
+          <div className="mt-4 flex justify-center">
+            <GlossaryButton variant="inline" initialFilter="recommendation" />
+          </div>
         </div>
 
         {/* Applied savings banner */}

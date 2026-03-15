@@ -9,6 +9,7 @@ import {
 import { PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip } from 'recharts';
 import { EventInputs, defaultInputs, calculateFootprint } from '@/lib/carbonData';
 import { useSettings } from '@/contexts/SettingsContext';
+import GlossaryButton from './GlossaryButton';
 
 interface CarbonCalculatorProps {
   onComplete: (inputs: EventInputs) => void;
@@ -503,6 +504,9 @@ const CarbonCalculator: React.FC<CarbonCalculatorProps> = ({ onComplete, inputs,
           <p className="text-gray-600 max-w-3xl mx-auto text-lg">
             Get instant environmental impact metrics, cost estimates, industry benchmarks, and actionable reduction strategies — all updating in real-time as you configure your event.
           </p>
+          <div className="mt-4 flex justify-center">
+            <GlossaryButton variant="inline" initialFilter="calculator" />
+          </div>
 
           {/* Quick Stats Banner */}
           <div className="mt-8 flex flex-wrap justify-center gap-4">

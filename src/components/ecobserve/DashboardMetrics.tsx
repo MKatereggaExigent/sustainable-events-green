@@ -9,6 +9,7 @@ import {
 import { FootprintResult, EventInputs } from '@/lib/carbonData';
 import { eventsApi, isAuthenticated } from '@/services/api';
 import { useSettings } from '@/contexts/SettingsContext';
+import GlossaryButton from './GlossaryButton';
 
 interface DashboardMetricsProps {
   result: FootprintResult;
@@ -313,6 +314,9 @@ const DashboardMetrics: React.FC<DashboardMetricsProps> = ({ result, inputs, onS
             <span className="text-emerald-600 font-semibold"> industry benchmarks</span>, and
             <span className="text-purple-600 font-semibold"> actionable recommendations</span>.
           </p>
+          <div className="mt-4 flex justify-center">
+            <GlossaryButton variant="inline" initialFilter="metrics" />
+          </div>
         </div>
 
         {/* Action Buttons */}
