@@ -30,11 +30,11 @@ export async function initializePayment(req: Request, res: Response) {
     const { planCode, email, metadata } = req.body;
 
     // Get or create user's organization
-    let organizationId = req.organizationId;
+    let organizationId: string = req.organizationId || '';
 
     if (!organizationId) {
       // Get user's first organization or create a default one
-      const userOrgs = await query(
+      const userOrgs = await query<{ organization_id: string }>(
         'SELECT organization_id FROM user_organizations WHERE user_id = $1 LIMIT 1',
         [req.user.userId]
       );
@@ -43,7 +43,7 @@ export async function initializePayment(req: Request, res: Response) {
         organizationId = userOrgs[0].organization_id;
       } else {
         // Create a default organization for the user
-        const newOrg = await query(
+        const newOrg = await query<{ id: string }>(
           `INSERT INTO organizations (name, slug, subscription_tier)
            VALUES ($1, $2, $3)
            RETURNING id`,
