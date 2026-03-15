@@ -107,21 +107,24 @@ const Navbar: React.FC<NavbarProps> = ({ onNavigate, activeSection }) => {
                       onMouseLeave={() => setShowCalculatorsDropdown(false)}
                       className="absolute top-full left-0 mt-1 w-48 bg-white rounded-lg shadow-xl border border-gray-100 py-2 z-50"
                     >
-                      {calculatorLinks.map((link) => (
-                        <button
-                          key={link.id}
-                          onClick={() => { onNavigate(link.id); setShowCalculatorsDropdown(false); }}
-                          data-tour={`nav-${link.id}`}
-                          className={`w-full text-left px-4 py-2 text-sm transition-all flex items-center gap-2 ${
-                            activeSection === link.id
-                              ? 'bg-emerald-50 text-emerald-700'
-                              : 'text-gray-600 hover:bg-emerald-50 hover:text-emerald-700'
-                          }`}
-                        >
-                          {link.icon && <link.icon className="w-4 h-4 flex-shrink-0" />}
-                          {link.label}
-                        </button>
-                      ))}
+                      {calculatorLinks.map((link) => {
+                        const Icon = link.icon;
+                        return (
+                          <button
+                            key={link.id}
+                            onClick={() => { onNavigate(link.id); setShowCalculatorsDropdown(false); }}
+                            data-tour={`nav-${link.id}`}
+                            className={`w-full text-left px-4 py-2 text-sm transition-all flex items-center gap-2 ${
+                              activeSection === link.id
+                                ? 'bg-emerald-50 text-emerald-700'
+                                : 'text-gray-600 hover:bg-emerald-50 hover:text-emerald-700'
+                            }`}
+                          >
+                            {Icon && <Icon className="w-4 h-4 flex-shrink-0" />}
+                            {link.label}
+                          </button>
+                        );
+                      })}
                     </div>
                   )}
                 </div>
@@ -150,21 +153,24 @@ const Navbar: React.FC<NavbarProps> = ({ onNavigate, activeSection }) => {
                       onMouseLeave={() => setShowResultsDropdown(false)}
                       className="absolute top-full left-0 mt-1 w-48 bg-white rounded-lg shadow-xl border border-gray-100 py-2 z-50"
                     >
-                      {resultsLinks.map((link) => (
-                        <button
-                          key={link.id}
-                          onClick={() => { onNavigate(link.id); setShowResultsDropdown(false); }}
-                          data-tour={`nav-${link.id}`}
-                          className={`w-full text-left px-4 py-2 text-sm transition-all flex items-center gap-2 ${
-                            activeSection === link.id
-                              ? 'bg-emerald-50 text-emerald-700'
-                              : 'text-gray-600 hover:bg-emerald-50 hover:text-emerald-700'
-                          }`}
-                        >
-                          {link.icon && <link.icon className="w-4 h-4 flex-shrink-0" />}
-                          {link.label}
-                        </button>
-                      ))}
+                      {resultsLinks.map((link) => {
+                        const Icon = link.icon;
+                        return (
+                          <button
+                            key={link.id}
+                            onClick={() => { onNavigate(link.id); setShowResultsDropdown(false); }}
+                            data-tour={`nav-${link.id}`}
+                            className={`w-full text-left px-4 py-2 text-sm transition-all flex items-center gap-2 ${
+                              activeSection === link.id
+                                ? 'bg-emerald-50 text-emerald-700'
+                                : 'text-gray-600 hover:bg-emerald-50 hover:text-emerald-700'
+                            }`}
+                          >
+                            {Icon && <Icon className="w-4 h-4 flex-shrink-0" />}
+                            {link.label}
+                          </button>
+                        );
+                      })}
                     </div>
                   )}
                 </div>
@@ -208,27 +214,30 @@ const Navbar: React.FC<NavbarProps> = ({ onNavigate, activeSection }) => {
                     onMouseLeave={() => setShowInfoDropdown(false)}
                     className="absolute top-full left-0 mt-1 w-48 bg-white rounded-lg shadow-xl border border-gray-100 py-2 z-50"
                   >
-                    {infoLinks.map((link) => (
-                      <button
-                        key={link.id}
-                        onClick={() => {
-                          if (link.isRoute) {
-                            navigate(`/${link.id}`);
-                          } else {
-                            onNavigate(link.id);
-                          }
-                          setShowInfoDropdown(false);
-                        }}
-                        className={`w-full text-left px-4 py-2 text-sm transition-all flex items-center gap-2 ${
-                          activeSection === link.id
-                            ? 'bg-emerald-50 text-emerald-700'
-                            : 'text-gray-600 hover:bg-emerald-50 hover:text-emerald-700'
-                        }`}
-                      >
-                        {link.icon && <link.icon className="w-4 h-4 flex-shrink-0" />}
-                        {link.label}
-                      </button>
-                    ))}
+                    {infoLinks.map((link) => {
+                      const Icon = link.icon;
+                      return (
+                        <button
+                          key={link.id}
+                          onClick={() => {
+                            if (link.isRoute) {
+                              navigate(`/${link.id}`);
+                            } else {
+                              onNavigate(link.id);
+                            }
+                            setShowInfoDropdown(false);
+                          }}
+                          className={`w-full text-left px-4 py-2 text-sm transition-all flex items-center gap-2 ${
+                            activeSection === link.id
+                              ? 'bg-emerald-50 text-emerald-700'
+                              : 'text-gray-600 hover:bg-emerald-50 hover:text-emerald-700'
+                          }`}
+                        >
+                          {Icon && <Icon className="w-4 h-4 flex-shrink-0" />}
+                          {link.label}
+                        </button>
+                      );
+                    })}
                   </div>
                 )}
               </div>
@@ -364,20 +373,23 @@ const Navbar: React.FC<NavbarProps> = ({ onNavigate, activeSection }) => {
                   <div className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">
                     Calculators
                   </div>
-                  {calculatorLinks.map((link) => (
-                    <button
-                      key={link.id}
-                      onClick={() => { onNavigate(link.id); setMobileOpen(false); }}
-                      className={`w-full text-left px-4 py-2.5 rounded-lg text-sm font-medium transition-all flex items-center gap-2 ${
-                        activeSection === link.id
-                          ? 'bg-emerald-50 text-emerald-700'
-                          : 'text-gray-600 hover:bg-emerald-50'
-                      }`}
-                    >
-                      {link.icon && <link.icon className="w-4 h-4" />}
-                      {link.label}
-                    </button>
-                  ))}
+                  {calculatorLinks.map((link) => {
+                    const Icon = link.icon;
+                    return (
+                      <button
+                        key={link.id}
+                        onClick={() => { onNavigate(link.id); setMobileOpen(false); }}
+                        className={`w-full text-left px-4 py-2.5 rounded-lg text-sm font-medium transition-all flex items-center gap-2 ${
+                          activeSection === link.id
+                            ? 'bg-emerald-50 text-emerald-700'
+                            : 'text-gray-600 hover:bg-emerald-50'
+                        }`}
+                      >
+                        {Icon && <Icon className="w-4 h-4" />}
+                        {link.label}
+                      </button>
+                    );
+                  })}
                 </>
               )}
 
@@ -387,20 +399,23 @@ const Navbar: React.FC<NavbarProps> = ({ onNavigate, activeSection }) => {
                   <div className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider mt-2">
                     Results
                   </div>
-                  {resultsLinks.map((link) => (
-                    <button
-                      key={link.id}
-                      onClick={() => { onNavigate(link.id); setMobileOpen(false); }}
-                      className={`w-full text-left px-4 py-2.5 rounded-lg text-sm font-medium transition-all flex items-center gap-2 ${
-                        activeSection === link.id
-                          ? 'bg-emerald-50 text-emerald-700'
-                          : 'text-gray-600 hover:bg-emerald-50'
-                      }`}
-                    >
-                      {link.icon && <link.icon className="w-4 h-4" />}
-                      {link.label}
-                    </button>
-                  ))}
+                  {resultsLinks.map((link) => {
+                    const Icon = link.icon;
+                    return (
+                      <button
+                        key={link.id}
+                        onClick={() => { onNavigate(link.id); setMobileOpen(false); }}
+                        className={`w-full text-left px-4 py-2.5 rounded-lg text-sm font-medium transition-all flex items-center gap-2 ${
+                          activeSection === link.id
+                            ? 'bg-emerald-50 text-emerald-700'
+                            : 'text-gray-600 hover:bg-emerald-50'
+                        }`}
+                      >
+                        {Icon && <Icon className="w-4 h-4" />}
+                        {link.label}
+                      </button>
+                    );
+                  })}
                 </>
               )}
 
@@ -423,27 +438,30 @@ const Navbar: React.FC<NavbarProps> = ({ onNavigate, activeSection }) => {
               <div className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider mt-2">
                 Information
               </div>
-              {infoLinks.map((link) => (
-                <button
-                  key={link.id}
-                  onClick={() => {
-                    if (link.isRoute) {
-                      navigate(`/${link.id}`);
-                    } else {
-                      onNavigate(link.id);
-                    }
-                    setMobileOpen(false);
-                  }}
-                  className={`w-full text-left px-4 py-2.5 rounded-lg text-sm font-medium transition-all flex items-center gap-2 ${
-                    activeSection === link.id
-                      ? 'bg-emerald-50 text-emerald-700'
-                      : 'text-gray-600 hover:bg-emerald-50'
-                  }`}
-                >
-                  {link.icon && <link.icon className="w-4 h-4" />}
-                  {link.label}
-                </button>
-              ))}
+              {infoLinks.map((link) => {
+                const Icon = link.icon;
+                return (
+                  <button
+                    key={link.id}
+                    onClick={() => {
+                      if (link.isRoute) {
+                        navigate(`/${link.id}`);
+                      } else {
+                        onNavigate(link.id);
+                      }
+                      setMobileOpen(false);
+                    }}
+                    className={`w-full text-left px-4 py-2.5 rounded-lg text-sm font-medium transition-all flex items-center gap-2 ${
+                      activeSection === link.id
+                        ? 'bg-emerald-50 text-emerald-700'
+                        : 'text-gray-600 hover:bg-emerald-50'
+                    }`}
+                  >
+                    {Icon && <Icon className="w-4 h-4" />}
+                    {link.label}
+                  </button>
+                );
+              })}
 
               {/* Pricing link */}
               <button
