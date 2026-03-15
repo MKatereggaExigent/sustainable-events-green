@@ -75,64 +75,14 @@ const tourSteps: Step[] = [
     placement: 'bottom',
   },
   {
-    target: '[data-tour="nav-calculator"]',
-    content: (
-      <div>
-        <h4 className="font-semibold text-emerald-700 mb-1">Event Footprint Calculator</h4>
-        <p className="text-sm text-gray-600">
-          Calculate your event's complete carbon footprint including venue, transportation, 
-          food & beverage, and materials.
-        </p>
-      </div>
-    ),
-    placement: 'bottom',
-  },
-  {
-    target: '[data-tour="nav-costsavings"]',
-    content: (
-      <div>
-        <h4 className="font-semibold text-emerald-700 mb-1">Cost & Savings Calculator</h4>
-        <p className="text-sm text-gray-600">
-          Discover the financial benefits of sustainable choices - from ROI analysis 
-          to tax incentives and brand value impact.
-        </p>
-      </div>
-    ),
-    placement: 'bottom',
-  },
-  {
-    target: '[data-tour="nav-dashboard"]',
-    content: (
-      <div>
-        <h4 className="font-semibold text-emerald-700 mb-1">Environmental Impact Dashboard</h4>
-        <p className="text-sm text-gray-600">
-          Visualize your impact with detailed metrics, industry benchmarks, 
-          UN SDG alignment, and reduction roadmaps.
-        </p>
-      </div>
-    ),
-    placement: 'bottom',
-  },
-  {
-    target: '[data-tour="nav-myevents"]',
-    content: (
-      <div>
-        <h4 className="font-semibold text-emerald-700 mb-1">My Events</h4>
-        <p className="text-sm text-gray-600">
-          Save and manage all your events in one place. Track progress over time 
-          and compare performance across events.
-        </p>
-      </div>
-    ),
-    placement: 'bottom',
-  },
-  {
     target: '[data-tour="hero-cta"]',
     content: (
       <div>
         <h4 className="font-semibold text-emerald-700 mb-1">Start Calculating</h4>
         <p className="text-sm text-gray-600">
           Ready to begin? Click here to start calculating your event's environmental footprint!
+          You'll be able to access the Event Footprint Calculator, Cost & Savings Calculator,
+          Impact Dashboard, and more.
         </p>
       </div>
     ),
@@ -145,6 +95,10 @@ const tourSteps: Step[] = [
         <h4 className="font-semibold text-emerald-700 mb-1">Take the Tour Again</h4>
         <p className="text-sm text-gray-600">
           You can restart this tour anytime by clicking this button in the navigation bar.
+        </p>
+        <p className="text-xs text-gray-500 mt-2">
+          💡 Tip: After logging in, you'll have access to all premium features including
+          the calculator, dashboard, and event management tools.
         </p>
       </div>
     ),
@@ -317,6 +271,7 @@ export function TourProvider({ children }: { children: React.ReactNode }) {
     // Handle tour skip
     if (status === STATUS.SKIPPED || (action === ACTIONS.CLOSE && status !== STATUS.FINISHED)) {
       setIsRunning(false);
+      setHasCompletedTour(true); // Mark as completed even if skipped to prevent re-showing
 
       if (userIsAuthenticated && isAuthenticated()) {
         try {
@@ -326,7 +281,10 @@ export function TourProvider({ children }: { children: React.ReactNode }) {
         }
       } else {
         const local = getLocalTourPrefs();
-        setLocalTourPrefs({ timesSkipped: local.timesSkipped + 1 });
+        setLocalTourPrefs({
+          timesSkipped: local.timesSkipped + 1,
+          hasCompletedTour: true // Prevent tour from showing again
+        });
       }
     }
   }, [userIsAuthenticated]);
