@@ -79,21 +79,6 @@ const tourSteps: Step[] = [
     placement: 'bottom',
   },
 
-  // Home Page Features
-  {
-    target: '[data-tour="features-section"]',
-    content: (
-      <div>
-        <h4 className="font-semibold text-emerald-700 mb-1">Core Features</h4>
-        <p className="text-sm text-gray-600">
-          Explore our six main features: Carbon Calculator, Impact Dashboard, Smart Alternatives,
-          Green Score Cards, Carbon Offsetting, and Certifications.
-        </p>
-      </div>
-    ),
-    placement: 'top',
-  },
-
   {
     target: '[data-tour="hero-cta"]',
     content: (
@@ -108,255 +93,23 @@ const tourSteps: Step[] = [
     placement: 'top',
   },
 
-  // Event Footprint Calculator
+  // Home Page Features
   {
-    target: '[data-tour="calculator-section"]',
+    target: '[data-tour="features-section"]',
     content: (
       <div>
-        <h4 className="font-semibold text-emerald-700 mb-1">Event Footprint Calculator</h4>
-        <p className="text-sm text-gray-600">
-          Calculate your event's complete carbon, water, and waste footprint.
-          Get real-time metrics as you configure your event details.
+        <h4 className="font-semibold text-emerald-700 mb-1">Platform Features</h4>
+        <p className="text-sm text-gray-600 mb-2">
+          Scroll down to explore our six main features:
         </p>
-      </div>
-    ),
-    placement: 'top',
-    disableBeacon: true,
-  },
-
-  {
-    target: '[data-tour="calculator-inputs"]',
-    content: (
-      <div>
-        <h4 className="font-semibold text-emerald-700 mb-1">Event Configuration</h4>
-        <p className="text-sm text-gray-600">
-          Input your event details across four categories: Venue, Food & Beverage,
-          Transportation, and Materials. Each choice impacts your footprint.
-        </p>
-      </div>
-    ),
-    placement: 'right',
-  },
-
-  {
-    target: '[data-tour="calculator-results"]',
-    content: (
-      <div>
-        <h4 className="font-semibold text-emerald-700 mb-1">Real-Time Results</h4>
-        <p className="text-sm text-gray-600">
-          See instant calculations of carbon emissions, water usage, and waste generation.
-          Compare against industry benchmarks and get actionable insights.
-        </p>
-      </div>
-    ),
-    placement: 'left',
-  },
-
-  // Cost & Savings
-  {
-    target: '[data-tour="costsavings-section"]',
-    content: (
-      <div>
-        <h4 className="font-semibold text-emerald-700 mb-1">Cost & Savings Calculator</h4>
-        <p className="text-sm text-gray-600">
-          Discover the financial benefits of sustainable choices. Calculate ROI,
-          tax incentives, and long-term brand value impact.
-        </p>
-      </div>
-    ),
-    placement: 'top',
-    disableBeacon: true,
-  },
-
-  {
-    target: '[data-tour="costsavings-inputs"]',
-    content: (
-      <div>
-        <h4 className="font-semibold text-emerald-700 mb-1">Cost Inputs</h4>
-        <p className="text-sm text-gray-600">
-          Enter your event costs across different categories to see potential savings
-          from sustainable alternatives and available tax incentives.
-        </p>
-      </div>
-    ),
-    placement: 'right',
-  },
-
-  {
-    target: '[data-tour="costsavings-roi"]',
-    content: (
-      <div>
-        <h4 className="font-semibold text-emerald-700 mb-1">ROI Analysis</h4>
-        <p className="text-sm text-gray-600">
-          View your return on investment, total economic benefits, and payback period
-          for sustainable choices. See how green events save money!
-        </p>
-      </div>
-    ),
-    placement: 'left',
-  },
-
-  // Impact Dashboard
-  {
-    target: '[data-tour="dashboard-section"]',
-    content: (
-      <div>
-        <h4 className="font-semibold text-emerald-700 mb-1">Environmental Impact Dashboard</h4>
-        <p className="text-sm text-gray-600">
-          Visualize your impact with interactive charts, industry comparisons,
-          UN SDG alignment, and detailed reduction roadmaps.
-        </p>
-      </div>
-    ),
-    placement: 'top',
-    disableBeacon: true,
-  },
-
-  {
-    target: '[data-tour="dashboard-metrics"]',
-    content: (
-      <div>
-        <h4 className="font-semibold text-emerald-700 mb-1">Key Metrics</h4>
-        <p className="text-sm text-gray-600">
-          Track total carbon, water, waste, and energy metrics. See per-attendee
-          breakdowns and compare against industry benchmarks.
-        </p>
-      </div>
-    ),
-    placement: 'bottom',
-  },
-
-  {
-    target: '[data-tour="dashboard-charts"]',
-    content: (
-      <div>
-        <h4 className="font-semibold text-emerald-700 mb-1">Visual Analytics</h4>
-        <p className="text-sm text-gray-600">
-          Interactive charts show your impact breakdown, trends over time,
-          and comparisons with similar events in your industry.
-        </p>
-      </div>
-    ),
-    placement: 'top',
-  },
-
-  // Recommendations
-  {
-    target: '[data-tour="alternatives-section"]',
-    content: (
-      <div>
-        <h4 className="font-semibold text-emerald-700 mb-1">Sustainable Recommendations</h4>
-        <p className="text-sm text-gray-600">
-          Get personalized sustainable alternatives for every category.
-          See cost-impact trade-offs and implementation difficulty.
-        </p>
-      </div>
-    ),
-    placement: 'top',
-    disableBeacon: true,
-  },
-
-  {
-    target: '[data-tour="alternatives-cards"]',
-    content: (
-      <div>
-        <h4 className="font-semibold text-emerald-700 mb-1">Smart Alternatives</h4>
-        <p className="text-sm text-gray-600">
-          Each recommendation shows potential carbon reduction, cost impact,
-          and implementation steps. Apply changes with one click!
-        </p>
-      </div>
-    ),
-    placement: 'bottom',
-  },
-
-  // My Events
-  {
-    target: '[data-tour="myevents-section"]',
-    content: (
-      <div>
-        <h4 className="font-semibold text-emerald-700 mb-1">My Events</h4>
-        <p className="text-sm text-gray-600">
-          Save and manage all your events in one place. Track progress over time,
-          compare performance, and export reports.
-        </p>
-      </div>
-    ),
-    placement: 'top',
-    disableBeacon: true,
-  },
-
-  {
-    target: '[data-tour="myevents-list"]',
-    content: (
-      <div>
-        <h4 className="font-semibold text-emerald-700 mb-1">Event Management</h4>
-        <p className="text-sm text-gray-600">
-          View all your saved events, filter by date or impact, and track your
-          sustainability journey across multiple events.
-        </p>
-      </div>
-    ),
-    placement: 'bottom',
-  },
-
-  // Success Stories
-  {
-    target: '[data-tour="portfolio-section"]',
-    content: (
-      <div>
-        <h4 className="font-semibold text-emerald-700 mb-1">Success Stories</h4>
-        <p className="text-sm text-gray-600">
-          See real-world examples of sustainable events. Learn from others'
-          experiences and get inspired for your own events.
-        </p>
-      </div>
-    ),
-    placement: 'top',
-    disableBeacon: true,
-  },
-
-  // Resources
-  {
-    target: '[data-tour="resources-section"]',
-    content: (
-      <div>
-        <h4 className="font-semibold text-emerald-700 mb-1">Resource Library</h4>
-        <p className="text-sm text-gray-600">
-          Access guides, templates, checklists, and best practices for sustainable
-          event planning. Download resources and stay updated.
-        </p>
-      </div>
-    ),
-    placement: 'top',
-    disableBeacon: true,
-  },
-
-  // Settings & Customization
-  {
-    target: '[data-tour="settings-button"]',
-    content: (
-      <div>
-        <h4 className="font-semibold text-emerald-700 mb-1">Settings</h4>
-        <p className="text-sm text-gray-600">
-          Customize your experience: choose metric/imperial units, select from 100+ currencies,
-          enable privacy mode, and pick from 9 beautiful themes.
-        </p>
-      </div>
-    ),
-    placement: 'bottom',
-  },
-
-  // Glossary
-  {
-    target: '[data-tour="glossary-link"]',
-    content: (
-      <div>
-        <h4 className="font-semibold text-emerald-700 mb-1">Sustainability Glossary</h4>
-        <p className="text-sm text-gray-600">
-          Not sure about a term? Click "View Glossary" links throughout the app
-          to access definitions of sustainability and environmental terms.
-        </p>
+        <ul className="text-xs text-gray-600 space-y-1 list-disc list-inside">
+          <li><strong>Carbon Calculator</strong> - Measure event footprint</li>
+          <li><strong>Impact Dashboard</strong> - Visualize environmental metrics</li>
+          <li><strong>Smart Alternatives</strong> - Get sustainable recommendations</li>
+          <li><strong>Cost & Savings</strong> - Calculate financial benefits</li>
+          <li><strong>My Events</strong> - Save and compare events</li>
+          <li><strong>Resources</strong> - Learn best practices</li>
+        </ul>
       </div>
     ),
     placement: 'top',
@@ -368,12 +121,23 @@ const tourSteps: Step[] = [
     content: (
       <div className="text-center">
         <h4 className="font-semibold text-emerald-700 mb-1">Tour Complete! 🎉</h4>
-        <p className="text-sm text-gray-600 mb-2">
+        <p className="text-sm text-gray-600 mb-3">
           You can restart this tour anytime by clicking this button in the navigation bar.
         </p>
-        <p className="text-xs text-gray-500">
-          💡 Tip: Log in to save your events, access premium features, and track your
-          sustainability journey over time!
+        <p className="text-xs text-gray-500 mb-2">
+          💡 <strong>Explore More Features:</strong> Scroll down the page to discover:
+        </p>
+        <ul className="text-xs text-gray-500 space-y-1 text-left">
+          <li>📊 <strong>Event Footprint Calculator</strong> - Measure carbon, water & waste</li>
+          <li>💰 <strong>Cost & Savings</strong> - Calculate ROI and tax incentives</li>
+          <li>📈 <strong>Impact Dashboard</strong> - Visualize environmental metrics</li>
+          <li>💡 <strong>Smart Recommendations</strong> - Get sustainable alternatives</li>
+          <li>📁 <strong>My Events</strong> - Save and compare your events</li>
+          <li>🏆 <strong>Success Stories</strong> - Learn from real examples</li>
+          <li>📚 <strong>Resources</strong> - Access guides and best practices</li>
+        </ul>
+        <p className="text-xs text-gray-500 mt-2">
+          🔐 Log in to save events and access all premium features!
         </p>
       </div>
     ),
