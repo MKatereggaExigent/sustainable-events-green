@@ -86,11 +86,13 @@ const Navbar: React.FC<NavbarProps> = ({ onNavigate, activeSection }) => {
 
               {/* Calculators Dropdown - only show when authenticated */}
               {isAuthenticated && (
-                <div className="relative">
+                <div
+                  className="relative"
+                  onMouseEnter={() => setShowCalculatorsDropdown(true)}
+                  onMouseLeave={() => setShowCalculatorsDropdown(false)}
+                >
                   <button
                     onClick={() => setShowCalculatorsDropdown(!showCalculatorsDropdown)}
-                    onMouseEnter={() => setShowCalculatorsDropdown(true)}
-                    onMouseLeave={() => setShowCalculatorsDropdown(false)}
                     className={`px-2 xl:px-3 py-2 rounded-lg text-xs xl:text-sm font-medium transition-all flex items-center gap-1 whitespace-nowrap ${
                       calculatorLinks.some(link => link.id === activeSection)
                         ? 'bg-emerald-50 text-emerald-700'
@@ -102,11 +104,7 @@ const Navbar: React.FC<NavbarProps> = ({ onNavigate, activeSection }) => {
                     <ChevronDown className="w-3 h-3" />
                   </button>
                   {showCalculatorsDropdown && (
-                    <div
-                      onMouseEnter={() => setShowCalculatorsDropdown(true)}
-                      onMouseLeave={() => setShowCalculatorsDropdown(false)}
-                      className="absolute top-full left-0 mt-1 w-48 bg-white rounded-lg shadow-xl border border-gray-100 py-2 z-50"
-                    >
+                    <div className="absolute top-full left-0 mt-1 w-48 bg-white rounded-lg shadow-xl border border-gray-100 py-2 z-50">
                       {calculatorLinks.map((link) => {
                         const Icon = link.icon;
                         return (
@@ -132,11 +130,13 @@ const Navbar: React.FC<NavbarProps> = ({ onNavigate, activeSection }) => {
 
               {/* Results Dropdown - only show when authenticated */}
               {isAuthenticated && (
-                <div className="relative">
+                <div
+                  className="relative"
+                  onMouseEnter={() => setShowResultsDropdown(true)}
+                  onMouseLeave={() => setShowResultsDropdown(false)}
+                >
                   <button
                     onClick={() => setShowResultsDropdown(!showResultsDropdown)}
-                    onMouseEnter={() => setShowResultsDropdown(true)}
-                    onMouseLeave={() => setShowResultsDropdown(false)}
                     className={`px-2 xl:px-3 py-2 rounded-lg text-xs xl:text-sm font-medium transition-all flex items-center gap-1 whitespace-nowrap ${
                       resultsLinks.some(link => link.id === activeSection)
                         ? 'bg-emerald-50 text-emerald-700'
@@ -148,11 +148,7 @@ const Navbar: React.FC<NavbarProps> = ({ onNavigate, activeSection }) => {
                     <ChevronDown className="w-3 h-3" />
                   </button>
                   {showResultsDropdown && (
-                    <div
-                      onMouseEnter={() => setShowResultsDropdown(true)}
-                      onMouseLeave={() => setShowResultsDropdown(false)}
-                      className="absolute top-full left-0 mt-1 w-48 bg-white rounded-lg shadow-xl border border-gray-100 py-2 z-50"
-                    >
+                    <div className="absolute top-full left-0 mt-1 w-48 bg-white rounded-lg shadow-xl border border-gray-100 py-2 z-50">
                       {resultsLinks.map((link) => {
                         const Icon = link.icon;
                         return (
@@ -193,11 +189,13 @@ const Navbar: React.FC<NavbarProps> = ({ onNavigate, activeSection }) => {
               )}
 
               {/* Information Dropdown */}
-              <div className="relative">
+              <div
+                className="relative"
+                onMouseEnter={() => setShowInfoDropdown(true)}
+                onMouseLeave={() => setShowInfoDropdown(false)}
+              >
                 <button
                   onClick={() => setShowInfoDropdown(!showInfoDropdown)}
-                  onMouseEnter={() => setShowInfoDropdown(true)}
-                  onMouseLeave={() => setShowInfoDropdown(false)}
                   className={`px-2 xl:px-3 py-2 rounded-lg text-xs xl:text-sm font-medium transition-all flex items-center gap-1 whitespace-nowrap ${
                     infoLinks.some(link => link.id === activeSection)
                       ? 'bg-emerald-50 text-emerald-700'
@@ -209,11 +207,7 @@ const Navbar: React.FC<NavbarProps> = ({ onNavigate, activeSection }) => {
                   <ChevronDown className="w-3 h-3" />
                 </button>
                 {showInfoDropdown && (
-                  <div
-                    onMouseEnter={() => setShowInfoDropdown(true)}
-                    onMouseLeave={() => setShowInfoDropdown(false)}
-                    className="absolute top-full left-0 mt-1 w-48 bg-white rounded-lg shadow-xl border border-gray-100 py-2 z-50"
-                  >
+                  <div className="absolute top-full left-0 mt-1 w-48 bg-white rounded-lg shadow-xl border border-gray-100 py-2 z-50">
                     {infoLinks.map((link) => {
                       const Icon = link.icon;
                       return (
