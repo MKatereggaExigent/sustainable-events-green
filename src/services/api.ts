@@ -47,7 +47,8 @@ export function getOrganizationId(): string | null {
 // Base fetch with auth
 async function apiFetch<T>(
   endpoint: string,
-  options: RequestInit = {}
+  options: RequestInit = {},
+  retryCount = 0
 ): Promise<ApiResponse<T>> {
   const token = getAccessToken();
   const orgId = getOrganizationId();
@@ -74,11 +75,11 @@ async function apiFetch<T>(
     const data = await response.json();
 
     if (!response.ok) {
-      // Handle token refresh
-      if (response.status === 401 && token) {
+      // Handle token refresh - but only retry once to prevent infinite loop
+      if (response.status === 401 && token && retryCount === 0) {
         const refreshed = await refreshToken();
         if (refreshed) {
-          return apiFetch<T>(endpoint, options);
+          return apiFetch<T>(endpoint, options, retryCount + 1);
         }
         clearAuth();
       }
