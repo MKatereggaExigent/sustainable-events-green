@@ -352,7 +352,12 @@ const Pricing: React.FC = () => {
 
                     {/* Price */}
                     <div className="mb-6">
-                      {plan.amount === 0 ? (
+                      {plan.code === 'enterprise' ? (
+                        <>
+                          <div className="text-4xl font-bold">Custom</div>
+                          <div className="text-gray-500 text-sm">Contact us for pricing</div>
+                        </>
+                      ) : plan.amount === 0 ? (
                         <div className="text-4xl font-bold">Free</div>
                       ) : (
                         <>
