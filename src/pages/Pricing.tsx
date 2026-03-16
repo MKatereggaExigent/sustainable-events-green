@@ -202,6 +202,8 @@ const Pricing: React.FC = () => {
         ? 'http://localhost:8035'
         : `${window.location.protocol}//${window.location.hostname}`;
 
+      console.log('Initializing payment:', { planCode, email: user?.email, apiUrl });
+
       const response = await fetch(`${apiUrl}/api/payments/initialize`, {
         method: 'POST',
         headers: {
@@ -214,13 +216,17 @@ const Pricing: React.FC = () => {
         }),
       });
 
+      console.log('Payment response status:', response.status);
       const data = await response.json();
+      console.log('Payment response data:', data);
 
       if (data.success && data.data.authorizationUrl) {
         // Redirect to Paystack
+        console.log('Redirecting to:', data.data.authorizationUrl);
         window.location.href = data.data.authorizationUrl;
       } else {
-        alert('Failed to initialize payment. Please try again.');
+        console.error('Payment initialization failed:', data);
+        alert(`Failed to initialize payment: ${data.error || 'Please try again.'}`);
       }
     } catch (error) {
       console.error('Payment initialization error:', error);
