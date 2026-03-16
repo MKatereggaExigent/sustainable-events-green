@@ -49,11 +49,23 @@ fi
 echo -e "${BLUE}📦 Installing dependencies...${NC}"
 npm install || { echo -e "${RED}❌ npm install failed${NC}"; exit 1; }
 
-# Step 4: Build the React/Vite project
+# Step 4: Generate version file for cache busting
+echo -e "${BLUE}🔖 Generating version file...${NC}"
+BUILD_TIMESTAMP=$(date +%s)
+BUILD_TIME=$(date -u +"%Y-%m-%d %H:%M:%S UTC")
+cat > public/version.json <<EOF
+{
+  "version": "${BUILD_TIMESTAMP}",
+  "buildTime": "${BUILD_TIME}"
+}
+EOF
+echo -e "${GREEN}✅ Version: ${BUILD_TIMESTAMP}${NC}"
+
+# Step 5: Build the React/Vite project
 echo -e "${BLUE}🔨 Building React frontend...${NC}"
 npm run build || { echo -e "${RED}❌ Frontend build failed${NC}"; exit 1; }
 
-# Step 5: Navigate to dist folder
+# Step 6: Navigate to dist folder
 DIST_DIR="dist"
 if [ ! -d "$DIST_DIR" ]; then
     echo -e "${RED}❌ Build output directory '$DIST_DIR' not found${NC}"
@@ -61,7 +73,7 @@ if [ ! -d "$DIST_DIR" ]; then
 fi
 cd "$DIST_DIR"
 
-# Step 6: Create captain-definition for CapRover
+# Step 7: Create captain-definition for CapRover
 echo -e "${YELLOW}📝 Creating captain-definition...${NC}"
 cat <<EOF > captain-definition
 {
@@ -70,7 +82,7 @@ cat <<EOF > captain-definition
 }
 EOF
 
-# Step 7: Create production Dockerfile
+# Step 8: Create production Dockerfile
 echo -e "${YELLOW}📝 Creating Dockerfile...${NC}"
 cat <<EOF > Dockerfile
 FROM nginx:stable-alpine
@@ -80,7 +92,7 @@ EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
 EOF
 
-# Step 8: Create nginx configuration for SPA with API proxy
+# Step 9: Create nginx configuration for SPA with API proxy
 echo -e "${YELLOW}📝 Creating nginx.conf...${NC}"
 cat <<EOF > nginx.conf
 server {
@@ -90,9 +102,34 @@ server {
     root /usr/share/nginx/html;
     index index.html index.htm;
 
+    # Never cache index.html and version.json - always fetch fresh
+    location = /index.html {
+        add_header Cache-Control "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0";
+        add_header Pragma "no-cache";
+        add_header Expires "0";
+        try_files \$uri =404;
+    }
+
+    location = /version.json {
+        add_header Cache-Control "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0";
+        add_header Pragma "no-cache";
+        add_header Expires "0";
+        try_files \$uri =404;
+    }
+
+    # Cache busting for versioned assets (Vite adds hash to filenames)
+    # These can be cached forever because the hash changes when content changes
+    location ~* ^/assets/ {
+        expires 1y;
+        access_log off;
+        add_header Cache-Control "public, immutable";
+    }
+
     # Frontend - React SPA with client-side routing
+    # For all other routes, serve index.html (but don't cache it)
     location / {
         try_files \$uri \$uri/ /index.html;
+        add_header Cache-Control "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0";
     }
 
     # API Proxy to backend
@@ -107,19 +144,7 @@ server {
         proxy_connect_timeout 300;
     }
 
-    # Static file caching
-    location ~* \.(?:ico|css|js|gif|jpe?g|png|woff2?|eot|ttf|svg|webp|avif)\$ {
-        expires 6M;
-        access_log off;
-        add_header Cache-Control "public, immutable";
-    }
 
-    # Cache busting for versioned assets
-    location ~* ^/assets/ {
-        expires 1y;
-        access_log off;
-        add_header Cache-Control "public, immutable";
-    }
 
     # Security headers
     add_header X-Frame-Options "SAMEORIGIN" always;
@@ -143,14 +168,14 @@ server {
 }
 EOF
 
-# Step 9: Create deployment tarball
+# Step 10: Create deployment tarball
 echo -e "${BLUE}📦 Packaging into ${TAR_FILE}...${NC}"
 tar -czf ~/"$TAR_FILE" ./* || { echo -e "${RED}❌ Failed to create tar.gz${NC}"; exit 1; }
 
 echo -e "${GREEN}✅ Tarball created at: ~/${TAR_FILE}${NC}"
 echo ""
 
-# Step 10: Deploy to CapRover
+# Step 11: Deploy to CapRover
 echo -e "${BLUE}🚀 Deploying to CapRover...${NC}"
 caprover deploy \
   --caproverName "$CAPROVER_NAME" \
