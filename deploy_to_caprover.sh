@@ -65,7 +65,17 @@ echo -e "${GREEN}✅ Version: ${BUILD_TIMESTAMP}${NC}"
 echo -e "${BLUE}🔨 Building React frontend...${NC}"
 npm run build || { echo -e "${RED}❌ Frontend build failed${NC}"; exit 1; }
 
-# Step 6: Navigate to dist folder
+# Step 6: Inject version into built index.html
+echo -e "${BLUE}🔖 Injecting version into index.html...${NC}"
+if [ -f "dist/index.html" ]; then
+    sed -i.bak "s/BUILD_VERSION_PLACEHOLDER/${BUILD_TIMESTAMP}/g" dist/index.html
+    rm -f dist/index.html.bak
+    echo -e "${GREEN}✅ Version ${BUILD_TIMESTAMP} injected into index.html${NC}"
+else
+    echo -e "${YELLOW}⚠️  Warning: dist/index.html not found, skipping version injection${NC}"
+fi
+
+# Step 8: Navigate to dist folder
 DIST_DIR="dist"
 if [ ! -d "$DIST_DIR" ]; then
     echo -e "${RED}❌ Build output directory '$DIST_DIR' not found${NC}"
@@ -73,7 +83,7 @@ if [ ! -d "$DIST_DIR" ]; then
 fi
 cd "$DIST_DIR"
 
-# Step 7: Create captain-definition for CapRover
+# Step 9: Create captain-definition for CapRover
 echo -e "${YELLOW}📝 Creating captain-definition...${NC}"
 cat <<EOF > captain-definition
 {
@@ -82,7 +92,7 @@ cat <<EOF > captain-definition
 }
 EOF
 
-# Step 8: Create production Dockerfile
+# Step 10: Create production Dockerfile
 echo -e "${YELLOW}📝 Creating Dockerfile...${NC}"
 cat <<EOF > Dockerfile
 FROM nginx:stable-alpine
@@ -92,7 +102,7 @@ EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
 EOF
 
-# Step 9: Create nginx configuration for SPA with API proxy
+# Step 11: Create nginx configuration for SPA with API proxy
 echo -e "${YELLOW}📝 Creating nginx.conf...${NC}"
 cat <<EOF > nginx.conf
 server {
@@ -168,14 +178,14 @@ server {
 }
 EOF
 
-# Step 10: Create deployment tarball
+# Step 12: Create deployment tarball
 echo -e "${BLUE}📦 Packaging into ${TAR_FILE}...${NC}"
 tar -czf ~/"$TAR_FILE" ./* || { echo -e "${RED}❌ Failed to create tar.gz${NC}"; exit 1; }
 
 echo -e "${GREEN}✅ Tarball created at: ~/${TAR_FILE}${NC}"
 echo ""
 
-# Step 11: Deploy to CapRover
+# Step 13: Deploy to CapRover
 echo -e "${BLUE}🚀 Deploying to CapRover...${NC}"
 caprover deploy \
   --caproverName "$CAPROVER_NAME" \

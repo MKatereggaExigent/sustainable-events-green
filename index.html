@@ -32,15 +32,41 @@
   <body>
     <div id="root"></div>
 
-    <!-- Unregister any service workers to prevent caching issues -->
+    <!-- Cache busting script - runs before any app code -->
     <script>
-      if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.getRegistrations().then(function(registrations) {
-          for(let registration of registrations) {
-            registration.unregister();
-          }
-        });
-      }
+      (function() {
+        var APP_VERSION = 'BUILD_VERSION_PLACEHOLDER';
+
+        // Clear all caches
+        if ('caches' in window) {
+          caches.keys().then(function(names) {
+            names.forEach(function(name) {
+              caches.delete(name);
+            });
+          });
+        }
+
+        // Unregister service workers
+        if ('serviceWorker' in navigator) {
+          navigator.serviceWorker.getRegistrations().then(function(registrations) {
+            for(var i = 0; i < registrations.length; i++) {
+              registrations[i].unregister();
+            }
+          });
+        }
+
+        // Check version and force reload if changed
+        var storedVersion = localStorage.getItem('app_version');
+        if (storedVersion && storedVersion !== APP_VERSION) {
+          console.log('New version detected, clearing cache and reloading...');
+          localStorage.clear();
+          sessionStorage.clear();
+          localStorage.setItem('app_version', APP_VERSION);
+          window.location.reload(true);
+        } else if (!storedVersion) {
+          localStorage.setItem('app_version', APP_VERSION);
+        }
+      })();
     </script>
 
     <script type="module" src="/src/main.tsx"></script>
