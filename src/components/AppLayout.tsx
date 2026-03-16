@@ -1,4 +1,4 @@
-import React, { useState, useRef, useMemo } from 'react';
+import React, { useState, useRef, useMemo, useEffect } from 'react';
 import Navbar from './ecobserve/Navbar';
 import HeroSection from './ecobserve/HeroSection';
 import FeaturesSection from './ecobserve/FeaturesSection';
@@ -64,6 +64,12 @@ const AppLayout: React.FC = () => {
 
   const handleNavigate = (section: string) => {
     setActiveSection(section);
+
+    // Clear hash from URL if navigating to hero (home)
+    if (section === 'hero' && window.location.hash) {
+      window.history.replaceState(null, '', window.location.pathname);
+    }
+
     const ref = refsMap.current[section];
     if (ref?.current) {
       const offset = 80;
@@ -91,6 +97,13 @@ const AppLayout: React.FC = () => {
     // Force MyEvents to re-fetch by changing key
     setMyEventsKey(prev => prev + 1);
   };
+
+  // Clear hash from URL on initial load
+  useEffect(() => {
+    if (window.location.hash) {
+      window.history.replaceState(null, '', window.location.pathname);
+    }
+  }, []);
 
   return (
     <div className="min-h-screen bg-white">
