@@ -195,7 +195,7 @@ const Pricing: React.FC = () => {
     setProcessingPlan(planCode);
 
     try {
-      const token = localStorage.getItem('access_token');
+      const token = localStorage.getItem('accessToken');
 
       // Determine API URL based on current domain
       const apiUrl = window.location.hostname === 'localhost'
