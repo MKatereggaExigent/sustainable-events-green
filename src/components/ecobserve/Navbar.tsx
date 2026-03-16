@@ -7,6 +7,9 @@ import BrandLogo from './BrandLogo';
 import Settings from './Settings';
 import SubscriptionBadge from './SubscriptionBadge';
 
+// Navbar v1.1 - Dropdown menus with hover support
+// v1.1 - Fixed dropdown hover and icon rendering
+
 interface NavbarProps {
   onNavigate: (section: string) => void;
   activeSection?: string;
