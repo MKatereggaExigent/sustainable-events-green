@@ -220,6 +220,7 @@ const Navbar: React.FC<NavbarProps> = ({ onNavigate, activeSection }) => {
                         return (
                           <button
                             key={link.id}
+                            data-tour={link.id === 'faq' ? 'faq' : undefined}
                             onClick={() => {
                               if (link.isRoute) {
                                 navigate(`/${link.id}`);

@@ -1,6 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
 import { query } from '../config/database';
 import { logger } from '../utils/logger';
+import { sendApproachingLimitNotification, sendLimitReachedNotification } from '../services/notification.service';
+import { trackLimitReached } from '../services/analytics.service';
 
 /**
  * Middleware to enforce subscription limits (e.g., max events per month for Explorer tier)
@@ -62,9 +64,44 @@ export function enforceSubscriptionLimits(resource: 'event' | 'user') {
         );
 
         const eventsThisMonth = parseInt(eventCountResult[0]?.count || '0', 10);
+        const usagePercentage = Math.round((eventsThisMonth / maxEvents) * 100);
+
+        // Send notification at 80% usage (approaching limit)
+        if (usagePercentage === 80) {
+          sendApproachingLimitNotification({
+            organizationId: req.organizationId,
+            planName: planCode === 'explorer' ? 'Explorer' : 'Unknown',
+            currentUsage: eventsThisMonth,
+            limit: maxEvents,
+            percentage: usagePercentage,
+            resourceType: 'events',
+          }).catch(err => logger.error('Failed to send approaching limit notification:', err));
+        }
 
         if (eventsThisMonth >= maxEvents) {
           logger.warn(`Subscription limit reached for org ${req.organizationId}: ${eventsThisMonth}/${maxEvents} events this month`);
+
+          // Track analytics event
+          if (req.user) {
+            trackLimitReached(
+              req.organizationId,
+              req.user.userId,
+              planCode,
+              'events',
+              maxEvents
+            ).catch(err => logger.error('Failed to track limit reached event:', err));
+          }
+
+          // Send notification at 100% usage (limit reached)
+          sendLimitReachedNotification({
+            organizationId: req.organizationId,
+            planName: planCode === 'explorer' ? 'Explorer' : 'Unknown',
+            currentUsage: eventsThisMonth,
+            limit: maxEvents,
+            percentage: 100,
+            resourceType: 'events',
+          }).catch(err => logger.error('Failed to send limit reached notification:', err));
+
           res.status(403).json({
             error: 'Subscription limit reached',
             message: `You've reached your plan limit of ${maxEvents} events per month. Upgrade to create more events.`,

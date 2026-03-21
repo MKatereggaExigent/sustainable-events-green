@@ -19,6 +19,8 @@ import MyEvents from './ecobserve/MyEvents';
 import Footer from './ecobserve/Footer';
 import AIAssistant from './ecobserve/AIAssistant';
 import AuthGate from './ecobserve/AuthGate';
+import { SubscriptionUsageBadge } from './subscription/SubscriptionUsageBadge';
+import { ExplorerOnboarding } from './onboarding/ExplorerOnboarding';
 import { EventInputs, defaultInputs, calculateFootprint, getAlternatives } from '@/lib/carbonData';
 import { EventProfileData, AttendeeData, VenueData, CateringData, MaterialLevel, EventFormat } from '@/lib/preAssessmentData';
 
@@ -107,6 +109,9 @@ const AppLayout: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-white">
+      {/* Explorer Onboarding Tour */}
+      <ExplorerOnboarding />
+
       <Navbar onNavigate={handleNavigate} activeSection={activeSection} />
 
       <div ref={heroRef}>
@@ -118,6 +123,11 @@ const AppLayout: React.FC = () => {
       </div>
 
       <TestimonialsSection />
+
+      {/* Subscription Usage Badge - Shows event limits */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <SubscriptionUsageBadge />
+      </div>
 
       {/* Premium Feature: Pre-Assessment Suite */}
       <div ref={preAssessmentRef}>
@@ -193,7 +203,7 @@ const AppLayout: React.FC = () => {
       </div>
 
       {/* Premium Feature: Event Footprint Calculator */}
-      <div ref={calculatorRef}>
+      <div ref={calculatorRef} data-tour="calculator">
         <AuthGate
           feature="Event Footprint Calculator"
           description="Calculate your event's complete environmental footprint including carbon emissions, water usage, and waste generation."
@@ -279,7 +289,7 @@ const AppLayout: React.FC = () => {
       </div>
 
       {/* Free Feature: Resource Library (educational content) */}
-      <div ref={resourcesRef}>
+      <div ref={resourcesRef} data-tour="resources">
         <ResourceLibrary />
       </div>
 

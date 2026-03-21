@@ -8,6 +8,8 @@ import tourRoutes from './tour.routes';
 import settingsRoutes from './settings.routes';
 import paymentRoutes from './payment.routes';
 import statisticsRoutes from './statistics.routes';
+import subscriptionRoutes from './subscription.routes';
+import analyticsRoutes from './analytics.routes';
 
 const router = Router();
 
@@ -26,6 +28,8 @@ router.use('/tour', tourRoutes);
 router.use('/settings', settingsRoutes);
 router.use('/payments', paymentRoutes);
 router.use('/statistics', statisticsRoutes);
+router.use('/subscription', subscriptionRoutes);
+router.use('/analytics', analyticsRoutes);
 
 export default router;
 
