@@ -30,25 +30,23 @@ ON CONFLICT (id) DO NOTHING;
 -- Note: TRUNCATE will cascade to dependent tables automatically
 TRUNCATE TABLE events CASCADE;
 
--- 3. Clean up test users (keep only admin users with role_id = 1)
--- First, remove user sessions
-DELETE FROM user_sessions WHERE user_id IN (
-    SELECT id FROM users WHERE role_id != 1
-);
-
--- Remove non-admin users
-DELETE FROM users WHERE role_id != 1;
-
--- 4. Clean up test organizations (optional - keep structure)
--- If you want to remove test organizations, uncomment:
--- DELETE FROM organization_members;
--- DELETE FROM organizations;
-
--- 5. Reset sequences to start fresh
+-- 3. Reset sequences to start fresh (if they exist)
 -- This ensures new records start from ID 1
-ALTER SEQUENCE IF EXISTS events_id_seq RESTART WITH 1;
-ALTER SEQUENCE IF EXISTS event_carbon_data_id_seq RESTART WITH 1;
-ALTER SEQUENCE IF EXISTS event_costs_id_seq RESTART WITH 1;
+DO $$
+BEGIN
+    -- Reset event-related sequences if they exist
+    IF EXISTS (SELECT 1 FROM pg_class WHERE relname = 'events_id_seq') THEN
+        ALTER SEQUENCE events_id_seq RESTART WITH 1;
+    END IF;
+
+    IF EXISTS (SELECT 1 FROM pg_class WHERE relname = 'event_carbon_data_id_seq') THEN
+        ALTER SEQUENCE event_carbon_data_id_seq RESTART WITH 1;
+    END IF;
+
+    IF EXISTS (SELECT 1 FROM pg_class WHERE relname = 'event_costs_id_seq') THEN
+        ALTER SEQUENCE event_costs_id_seq RESTART WITH 1;
+    END IF;
+END $$;
 
 -- ============================================
 -- Rollback (for reference - not auto-executed)

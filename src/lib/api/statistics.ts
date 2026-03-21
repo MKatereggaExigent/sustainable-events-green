@@ -1,4 +1,5 @@
-import { apiClient } from './client';
+// Use relative path for production (nginx will proxy), absolute for local dev
+const API_URL = import.meta.env.VITE_API_URL || '/api';
 
 export interface PlatformStatistics {
   eventsTracked: number;
@@ -16,12 +17,19 @@ export interface PlatformStatistics {
  */
 export async function getPlatformStatistics(): Promise<PlatformStatistics> {
   try {
-    const response = await apiClient.get<{ success: boolean; data: PlatformStatistics }>('/statistics');
-    
-    if (response.data.success) {
-      return response.data.data;
+    const response = await fetch(`${API_URL}/statistics`);
+
+    if (!response.ok) {
+      console.warn('Failed to fetch statistics, using defaults');
+      return getDefaultStatistics();
     }
-    
+
+    const data = await response.json();
+
+    if (data.success && data.data) {
+      return data.data;
+    }
+
     // Return zeros if API fails
     return getDefaultStatistics();
   } catch (error) {
