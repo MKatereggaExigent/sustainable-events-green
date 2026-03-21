@@ -4,7 +4,7 @@
 -- 1. Green Score Card Certificates
 CREATE TABLE IF NOT EXISTS certificates (
     id SERIAL PRIMARY KEY,
-    event_id INTEGER NOT NULL REFERENCES events(id) ON DELETE CASCADE,
+    event_id UUID NOT NULL REFERENCES events(id) ON DELETE CASCADE,
     organization_id INTEGER NOT NULL REFERENCES organizations(id),
     certificate_number VARCHAR(50) UNIQUE NOT NULL,
     sustainability_score INTEGER NOT NULL,
@@ -17,14 +17,14 @@ CREATE TABLE IF NOT EXISTS certificates (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE INDEX idx_certificates_event_id ON certificates(event_id);
-CREATE INDEX idx_certificates_org_id ON certificates(organization_id);
-CREATE INDEX idx_certificates_number ON certificates(certificate_number);
+CREATE INDEX IF NOT EXISTS idx_certificates_event_id ON certificates(event_id);
+CREATE INDEX IF NOT EXISTS idx_certificates_org_id ON certificates(organization_id);
+CREATE INDEX IF NOT EXISTS idx_certificates_number ON certificates(certificate_number);
 
 -- 2. Tax Incentive Calculations (South Africa)
 CREATE TABLE IF NOT EXISTS tax_incentives (
     id SERIAL PRIMARY KEY,
-    event_id INTEGER NOT NULL REFERENCES events(id) ON DELETE CASCADE,
+    event_id UUID NOT NULL REFERENCES events(id) ON DELETE CASCADE,
     organization_id INTEGER NOT NULL REFERENCES organizations(id),
     carbon_reduction_kg DECIMAL(10, 2) NOT NULL,
     investment_amount_zar DECIMAL(12, 2) NOT NULL,
@@ -37,8 +37,8 @@ CREATE TABLE IF NOT EXISTS tax_incentives (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE INDEX idx_tax_incentives_event_id ON tax_incentives(event_id);
-CREATE INDEX idx_tax_incentives_org_id ON tax_incentives(organization_id);
+CREATE INDEX IF NOT EXISTS idx_tax_incentives_event_id ON tax_incentives(event_id);
+CREATE INDEX IF NOT EXISTS idx_tax_incentives_org_id ON tax_incentives(organization_id);
 
 -- 3. Carbon Offset Marketplace
 CREATE TABLE IF NOT EXISTS carbon_offsets (
@@ -57,13 +57,13 @@ CREATE TABLE IF NOT EXISTS carbon_offsets (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE INDEX idx_carbon_offsets_type ON carbon_offsets(project_type);
-CREATE INDEX idx_carbon_offsets_active ON carbon_offsets(is_active);
+CREATE INDEX IF NOT EXISTS idx_carbon_offsets_type ON carbon_offsets(project_type);
+CREATE INDEX IF NOT EXISTS idx_carbon_offsets_active ON carbon_offsets(is_active);
 
 -- 4. Carbon Offset Purchases
 CREATE TABLE IF NOT EXISTS offset_purchases (
     id SERIAL PRIMARY KEY,
-    event_id INTEGER NOT NULL REFERENCES events(id) ON DELETE CASCADE,
+    event_id UUID NOT NULL REFERENCES events(id) ON DELETE CASCADE,
     organization_id INTEGER NOT NULL REFERENCES organizations(id),
     offset_id INTEGER NOT NULL REFERENCES carbon_offsets(id),
     tons_purchased DECIMAL(10, 2) NOT NULL,
@@ -75,8 +75,8 @@ CREATE TABLE IF NOT EXISTS offset_purchases (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE INDEX idx_offset_purchases_event_id ON offset_purchases(event_id);
-CREATE INDEX idx_offset_purchases_org_id ON offset_purchases(organization_id);
+CREATE INDEX IF NOT EXISTS idx_offset_purchases_event_id ON offset_purchases(event_id);
+CREATE INDEX IF NOT EXISTS idx_offset_purchases_org_id ON offset_purchases(organization_id);
 
 -- 5. Supplier Carbon Tracking
 CREATE TABLE IF NOT EXISTS suppliers (
@@ -97,14 +97,14 @@ CREATE TABLE IF NOT EXISTS suppliers (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE INDEX idx_suppliers_category ON suppliers(category);
-CREATE INDEX idx_suppliers_carbon_score ON suppliers(carbon_score);
-CREATE INDEX idx_suppliers_verified ON suppliers(is_verified);
+CREATE INDEX IF NOT EXISTS idx_suppliers_category ON suppliers(category);
+CREATE INDEX IF NOT EXISTS idx_suppliers_carbon_score ON suppliers(carbon_score);
+CREATE INDEX IF NOT EXISTS idx_suppliers_verified ON suppliers(is_verified);
 
 -- 6. Event Supplier Relationships
 CREATE TABLE IF NOT EXISTS event_suppliers (
     id SERIAL PRIMARY KEY,
-    event_id INTEGER NOT NULL REFERENCES events(id) ON DELETE CASCADE,
+    event_id UUID NOT NULL REFERENCES events(id) ON DELETE CASCADE,
     supplier_id INTEGER NOT NULL REFERENCES suppliers(id),
     category VARCHAR(100) NOT NULL,
     cost_zar DECIMAL(12, 2),
@@ -114,8 +114,8 @@ CREATE TABLE IF NOT EXISTS event_suppliers (
     UNIQUE(event_id, supplier_id, category)
 );
 
-CREATE INDEX idx_event_suppliers_event_id ON event_suppliers(event_id);
-CREATE INDEX idx_event_suppliers_supplier_id ON event_suppliers(supplier_id);
+CREATE INDEX IF NOT EXISTS idx_event_suppliers_event_id ON event_suppliers(event_id);
+CREATE INDEX IF NOT EXISTS idx_event_suppliers_supplier_id ON event_suppliers(supplier_id);
 
 -- 7. Industry Benchmarks
 CREATE TABLE IF NOT EXISTS industry_benchmarks (
@@ -131,13 +131,13 @@ CREATE TABLE IF NOT EXISTS industry_benchmarks (
     metadata JSONB
 );
 
-CREATE INDEX idx_benchmarks_event_type ON industry_benchmarks(event_type);
-CREATE INDEX idx_benchmarks_attendee_range ON industry_benchmarks(attendee_range);
+CREATE INDEX IF NOT EXISTS idx_benchmarks_event_type ON industry_benchmarks(event_type);
+CREATE INDEX IF NOT EXISTS idx_benchmarks_attendee_range ON industry_benchmarks(attendee_range);
 
 -- 8. AI Recommendations (GPT-powered)
 CREATE TABLE IF NOT EXISTS ai_recommendations (
     id SERIAL PRIMARY KEY,
-    event_id INTEGER NOT NULL REFERENCES events(id) ON DELETE CASCADE,
+    event_id UUID NOT NULL REFERENCES events(id) ON DELETE CASCADE,
     organization_id INTEGER NOT NULL REFERENCES organizations(id),
     recommendations JSONB NOT NULL, -- array of AI-generated recommendations
     gpt_model VARCHAR(50),
@@ -148,6 +148,6 @@ CREATE TABLE IF NOT EXISTS ai_recommendations (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE INDEX idx_ai_recommendations_event_id ON ai_recommendations(event_id);
-CREATE INDEX idx_ai_recommendations_org_id ON ai_recommendations(organization_id);
+CREATE INDEX IF NOT EXISTS idx_ai_recommendations_event_id ON ai_recommendations(event_id);
+CREATE INDEX IF NOT EXISTS idx_ai_recommendations_org_id ON ai_recommendations(organization_id);
 
