@@ -4,6 +4,8 @@ import { generateTokens, hashToken, verifyRefreshToken, JwtTokens, TokenPayload 
 import { config } from '../config';
 import { v4 as uuidv4 } from 'uuid';
 import { logger } from '../utils/logger';
+import { emailService } from './email.service';
+import { generateSecureToken } from '../utils/tokens';
 
 export interface RegisterInput {
   email: string;
@@ -99,6 +101,23 @@ export async function register(input: RegisterInput): Promise<AuthResult> {
 
     // Store refresh token
     await storeRefreshToken(client, user.id, tokens.refreshToken);
+
+    // Generate and send email verification token
+    const verificationToken = generateSecureToken();
+    const expiresAt = new Date(Date.now() + config.security.emailVerificationTokenExpiry);
+
+    await client.query(
+      `INSERT INTO email_verification_tokens (user_id, token, expires_at)
+       VALUES ($1, $2, $3)`,
+      [user.id, verificationToken, expiresAt]
+    );
+
+    // Send verification email (don't await to avoid blocking registration)
+    emailService.sendVerificationEmail(
+      user.email,
+      user.first_name || '',
+      verificationToken
+    ).catch(err => logger.error('Failed to send verification email:', err));
 
     return {
       user: {
@@ -320,6 +339,190 @@ export async function findOrCreateOAuthUser(
       tokens,
       organization: organization ? { id: organization.id, name: organization.name, slug: organization.slug } : undefined,
     };
+  });
+}
+
+// ============================================
+// EMAIL VERIFICATION
+// ============================================
+
+export async function verifyEmail(token: string): Promise<{ success: boolean; message: string }> {
+  return transaction(async (client) => {
+    // Find token
+    const tokens = await client.query(
+      `SELECT id, user_id, expires_at, used_at FROM email_verification_tokens
+       WHERE token = $1`,
+      [token]
+    );
+
+    if (tokens.rows.length === 0) {
+      return { success: false, message: 'Invalid verification token' };
+    }
+
+    const tokenData = tokens.rows[0];
+
+    if (tokenData.used_at) {
+      return { success: false, message: 'Token already used' };
+    }
+
+    if (new Date() > new Date(tokenData.expires_at)) {
+      return { success: false, message: 'Token expired' };
+    }
+
+    // Mark token as used
+    await client.query(
+      'UPDATE email_verification_tokens SET used_at = CURRENT_TIMESTAMP WHERE id = $1',
+      [tokenData.id]
+    );
+
+    // Update user
+    await client.query(
+      `UPDATE users
+       SET is_email_verified = true, email_verified_at = CURRENT_TIMESTAMP
+       WHERE id = $1`,
+      [tokenData.user_id]
+    );
+
+    // Log security event
+    await client.query(
+      `INSERT INTO security_events (user_id, event_type)
+       VALUES ($1, 'email_verified')`,
+      [tokenData.user_id]
+    );
+
+    return { success: true, message: 'Email verified successfully' };
+  });
+}
+
+export async function resendVerificationEmail(email: string): Promise<void> {
+  const users = await query<any>(
+    'SELECT id, email, first_name, is_email_verified FROM users WHERE email = $1',
+    [email.toLowerCase()]
+  );
+
+  if (users.length === 0) {
+    throw new Error('User not found');
+  }
+
+  const user = users[0];
+
+  if (user.is_email_verified) {
+    throw new Error('Email already verified');
+  }
+
+  // Invalidate old tokens
+  await query(
+    'UPDATE email_verification_tokens SET used_at = CURRENT_TIMESTAMP WHERE user_id = $1 AND used_at IS NULL',
+    [user.id]
+  );
+
+  // Generate new token
+  const verificationToken = generateSecureToken();
+  const expiresAt = new Date(Date.now() + config.security.emailVerificationTokenExpiry);
+
+  await query(
+    `INSERT INTO email_verification_tokens (user_id, token, expires_at)
+     VALUES ($1, $2, $3)`,
+    [user.id, verificationToken, expiresAt]
+  );
+
+  // Send email
+  await emailService.sendVerificationEmail(user.email, user.first_name || '', verificationToken);
+}
+
+// ============================================
+// PASSWORD RESET
+// ============================================
+
+export async function requestPasswordReset(email: string, ipAddress?: string, userAgent?: string): Promise<void> {
+  const users = await query<any>(
+    'SELECT id, email, first_name FROM users WHERE email = $1',
+    [email.toLowerCase()]
+  );
+
+  // Don't reveal if user exists or not (security best practice)
+  if (users.length === 0) {
+    logger.info(`Password reset requested for non-existent email: ${email}`);
+    return;
+  }
+
+  const user = users[0];
+
+  // Generate reset token
+  const resetToken = generateSecureToken();
+  const expiresAt = new Date(Date.now() + config.security.passwordResetTokenExpiry);
+
+  await query(
+    `INSERT INTO password_reset_tokens (user_id, token, expires_at, ip_address, user_agent)
+     VALUES ($1, $2, $3, $4, $5)`,
+    [user.id, resetToken, expiresAt, ipAddress, userAgent]
+  );
+
+  // Send email
+  await emailService.sendPasswordResetEmail(user.email, user.first_name || '', resetToken);
+
+  // Log security event
+  await query(
+    `INSERT INTO security_events (user_id, event_type, ip_address, user_agent)
+     VALUES ($1, 'password_reset_requested', $2, $3)`,
+    [user.id, ipAddress, userAgent]
+  );
+}
+
+export async function resetPassword(token: string, newPassword: string): Promise<{ success: boolean; message: string }> {
+  return transaction(async (client) => {
+    // Find token
+    const tokens = await client.query(
+      `SELECT id, user_id, expires_at, used_at FROM password_reset_tokens
+       WHERE token = $1`,
+      [token]
+    );
+
+    if (tokens.rows.length === 0) {
+      return { success: false, message: 'Invalid reset token' };
+    }
+
+    const tokenData = tokens.rows[0];
+
+    if (tokenData.used_at) {
+      return { success: false, message: 'Token already used' };
+    }
+
+    if (new Date() > new Date(tokenData.expires_at)) {
+      return { success: false, message: 'Token expired' };
+    }
+
+    // Hash new password
+    const passwordHash = await bcrypt.hash(newPassword, config.bcryptRounds);
+
+    // Update password
+    await client.query(
+      `UPDATE users
+       SET password_hash = $1, password_reset_at = CURRENT_TIMESTAMP
+       WHERE id = $2`,
+      [passwordHash, tokenData.user_id]
+    );
+
+    // Mark token as used
+    await client.query(
+      'UPDATE password_reset_tokens SET used_at = CURRENT_TIMESTAMP WHERE id = $1',
+      [tokenData.id]
+    );
+
+    // Revoke all refresh tokens (force re-login)
+    await client.query(
+      'UPDATE refresh_tokens SET revoked_at = CURRENT_TIMESTAMP WHERE user_id = $1 AND revoked_at IS NULL',
+      [tokenData.user_id]
+    );
+
+    // Log security event
+    await client.query(
+      `INSERT INTO security_events (user_id, event_type)
+       VALUES ($1, 'password_reset_completed')`,
+      [tokenData.user_id]
+    );
+
+    return { success: true, message: 'Password reset successfully' };
   });
 }
 

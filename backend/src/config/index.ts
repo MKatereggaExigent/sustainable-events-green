@@ -64,6 +64,26 @@ export const config = {
     callbackUrl: process.env.PAYSTACK_CALLBACK_URL || 'https://ecobserve.com/api/payments/callback',
     webhookUrl: process.env.PAYSTACK_WEBHOOK_URL || 'https://ecobserve.com/api/payments/webhook',
   },
+
+  // Email Configuration
+  email: {
+    host: process.env.EMAIL_HOST || 'smtp.gmail.com',
+    port: parseInt(process.env.EMAIL_PORT || '465', 10),
+    secure: process.env.EMAIL_USE_SSL === 'true' || process.env.EMAIL_USE_SSL === 'True',
+    auth: {
+      user: process.env.EMAIL_HOST_USER || '',
+      pass: process.env.EMAIL_HOST_PASSWORD || '',
+    },
+    from: process.env.DEFAULT_FROM_EMAIL || 'no-reply@ecobserve.com',
+  },
+
+  // Security
+  security: {
+    emailVerificationTokenExpiry: 24 * 60 * 60 * 1000, // 24 hours
+    passwordResetTokenExpiry: 60 * 60 * 1000, // 1 hour
+    maxLoginAttempts: 5,
+    lockoutDuration: 15 * 60 * 1000, // 15 minutes
+  },
 };
 
 export default config;

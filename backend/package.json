@@ -14,6 +14,8 @@
     "lint": "eslint src/**/*.ts"
   },
   "dependencies": {
+    "@types/nodemailer": "^7.0.11",
+    "@types/qrcode": "^1.5.6",
     "bcryptjs": "^2.4.3",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
@@ -24,11 +26,14 @@
     "helmet": "^7.1.0",
     "ioredis": "^5.4.1",
     "jsonwebtoken": "^9.0.2",
+    "nodemailer": "^8.0.3",
     "passport": "^0.7.0",
     "passport-github2": "^0.1.12",
     "passport-google-oauth20": "^2.0.0",
     "paystack": "^2.0.1",
     "pg": "^8.12.0",
+    "qrcode": "^1.5.4",
+    "speakeasy": "^2.0.0",
     "uuid": "^10.0.0",
     "winston": "^3.14.2"
   },
