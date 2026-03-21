@@ -46,7 +46,7 @@ export const ExplorerOnboarding: React.FC = () => {
           <div className="bg-green-50 border border-green-200 rounded-lg p-3 text-sm text-left">
             <p className="font-semibold text-green-800 mb-1">Your Explorer Plan includes:</p>
             <ul className="text-green-700 space-y-1 text-xs">
-              <li>✅ 3 events per month</li>
+              <li>✅ 1 event per month</li>
               <li>✅ Carbon footprint calculator</li>
               <li>✅ Sustainability scoring</li>
               <li>✅ Basic recommendations</li>
@@ -108,7 +108,7 @@ export const ExplorerOnboarding: React.FC = () => {
             Ready to Get Started! 🚀
           </h3>
           <p className="text-gray-600 mb-3">
-            You can create up to <strong>3 events this month</strong> with your Explorer plan.
+            You can create <strong>1 event per month</strong> with your Explorer plan.
           </p>
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-sm">
             <p className="font-semibold text-blue-800 mb-1">💡 Want more?</p>

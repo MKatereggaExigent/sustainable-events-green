@@ -64,10 +64,10 @@ const Pricing: React.FC = () => {
         amount: 0,
         currency: 'ZAR',
         interval: 'monthly',
-        maxEvents: 3,
+        maxEvents: 1,
         maxUsers: 1,
         features: [
-          'Event Footprint Calculator (3 events/month)',
+          'Event Footprint Calculator (1 event/month)',
           'Basic carbon, water, waste calculations',
           'Simple sustainability score',
           'Basic recommendations',

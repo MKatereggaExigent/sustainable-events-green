@@ -78,8 +78,8 @@ CREATE TABLE subscription_plans (
 INSERT INTO subscription_plans (code, name, description, amount, currency, interval, features, max_events, max_users) VALUES
 -- Explorer (Free) - Lead generation tier
 ('explorer', 'Explorer', 'Perfect for students and individuals testing sustainability', 0.00, 'ZAR', 'monthly',
- '["Event Footprint Calculator (3 events/month)", "Basic carbon, water, waste calculations", "Simple sustainability score", "Basic recommendations", "FAQ & Resources access", "View success stories"]'::jsonb,
- 3, 1),
+ '["Event Footprint Calculator (1 event/month)", "Basic carbon, water, waste calculations", "Simple sustainability score", "Basic recommendations", "FAQ & Resources access", "View success stories"]'::jsonb,
+ 1, 1),
 
 -- Planner (Premium) - Professional tier
 ('planner_monthly', 'Planner Monthly', 'For professional event planners and agencies', 499.00, 'ZAR', 'monthly',

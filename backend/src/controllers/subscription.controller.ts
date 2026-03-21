@@ -39,10 +39,10 @@ export async function getSubscriptionUsage(req: Request, res: Response) {
     let subscription = {
       planCode: 'explorer',
       planName: 'Explorer',
-      maxEvents: 3,
+      maxEvents: 1,
       maxUsers: 1,
       features: [
-        'Event Footprint Calculator (3 events/month)',
+        'Event Footprint Calculator (1 event/month)',
         'Basic carbon, water, waste calculations',
         'Simple sustainability score',
         'Basic recommendations',

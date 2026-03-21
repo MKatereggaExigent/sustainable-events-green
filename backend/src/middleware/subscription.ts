@@ -32,7 +32,7 @@ export function enforceSubscriptionLimits(resource: 'event' | 'user') {
       );
 
       // If no subscription found, default to Explorer (free) tier
-      let maxEvents = 3;
+      let maxEvents = 1;
       let maxUsers = 1;
       let planCode = 'explorer';
 
