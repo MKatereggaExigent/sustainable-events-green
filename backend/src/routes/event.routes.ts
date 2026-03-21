@@ -2,6 +2,7 @@ import { Router } from 'express';
 import * as eventController from '../controllers/event.controller';
 import { authenticate, requireOrganization } from '../middleware/auth';
 import { loadUserPermissions, requirePermission } from '../middleware/rbac';
+import { enforceSubscriptionLimits, requireActiveSubscription } from '../middleware/subscription';
 
 const router = Router();
 
@@ -9,6 +10,7 @@ const router = Router();
 router.use(authenticate);
 router.use(loadUserPermissions);
 router.use(requireOrganization);
+router.use(requireActiveSubscription); // Check subscription is active
 
 // GET /api/events - List all events
 router.get('/', requirePermission('event:read'), eventController.getEvents);
@@ -16,10 +18,11 @@ router.get('/', requirePermission('event:read'), eventController.getEvents);
 // GET /api/events/:id - Get single event
 router.get('/:id', requirePermission('event:read'), eventController.getEvent);
 
-// POST /api/events - Create event
+// POST /api/events - Create event (with subscription limit enforcement)
 router.post(
   '/',
   requirePermission('event:create'),
+  enforceSubscriptionLimits('event'), // ⭐ Payment wall: Check if user can create more events
   eventController.createEventValidation,
   eventController.createEvent
 );
