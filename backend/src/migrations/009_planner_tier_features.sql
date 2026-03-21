@@ -5,7 +5,7 @@
 CREATE TABLE IF NOT EXISTS certificates (
     id SERIAL PRIMARY KEY,
     event_id UUID NOT NULL REFERENCES events(id) ON DELETE CASCADE,
-    organization_id INTEGER NOT NULL REFERENCES organizations(id),
+    organization_id UUID NOT NULL REFERENCES organizations(id),
     certificate_number VARCHAR(50) UNIQUE NOT NULL,
     sustainability_score INTEGER NOT NULL,
     carbon_footprint_kg DECIMAL(10, 2) NOT NULL,
@@ -25,7 +25,7 @@ CREATE INDEX IF NOT EXISTS idx_certificates_number ON certificates(certificate_n
 CREATE TABLE IF NOT EXISTS tax_incentives (
     id SERIAL PRIMARY KEY,
     event_id UUID NOT NULL REFERENCES events(id) ON DELETE CASCADE,
-    organization_id INTEGER NOT NULL REFERENCES organizations(id),
+    organization_id UUID NOT NULL REFERENCES organizations(id),
     carbon_reduction_kg DECIMAL(10, 2) NOT NULL,
     investment_amount_zar DECIMAL(12, 2) NOT NULL,
     section_12l_deduction DECIMAL(12, 2),
@@ -64,7 +64,7 @@ CREATE INDEX IF NOT EXISTS idx_carbon_offsets_active ON carbon_offsets(is_active
 CREATE TABLE IF NOT EXISTS offset_purchases (
     id SERIAL PRIMARY KEY,
     event_id UUID NOT NULL REFERENCES events(id) ON DELETE CASCADE,
-    organization_id INTEGER NOT NULL REFERENCES organizations(id),
+    organization_id UUID NOT NULL REFERENCES organizations(id),
     offset_id INTEGER NOT NULL REFERENCES carbon_offsets(id),
     tons_purchased DECIMAL(10, 2) NOT NULL,
     total_cost_zar DECIMAL(12, 2) NOT NULL,
@@ -138,7 +138,7 @@ CREATE INDEX IF NOT EXISTS idx_benchmarks_attendee_range ON industry_benchmarks(
 CREATE TABLE IF NOT EXISTS ai_recommendations (
     id SERIAL PRIMARY KEY,
     event_id UUID NOT NULL REFERENCES events(id) ON DELETE CASCADE,
-    organization_id INTEGER NOT NULL REFERENCES organizations(id),
+    organization_id UUID NOT NULL REFERENCES organizations(id),
     recommendations JSONB NOT NULL, -- array of AI-generated recommendations
     gpt_model VARCHAR(50),
     prompt_tokens INTEGER,
