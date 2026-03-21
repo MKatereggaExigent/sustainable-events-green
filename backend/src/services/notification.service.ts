@@ -1,4 +1,4 @@
-import { sendEmail } from './email.service';
+import { emailService } from './email.service';
 import { query } from '../config/database';
 import { logger } from '../utils/logger';
 
@@ -34,7 +34,7 @@ export async function sendApproachingLimitNotification(data: LimitNotificationDa
     const owner = ownerResult[0];
     const remaining = data.limit - data.currentUsage;
 
-    await sendEmail({
+    await emailService.sendCustomEmail({
       to: owner.email,
       subject: `⚠️ Approaching ${data.planName} Plan Limit`,
       html: `
@@ -98,7 +98,7 @@ export async function sendLimitReachedNotification(data: LimitNotificationData):
 
     const owner = ownerResult[0];
 
-    await sendEmail({
+    await emailService.sendCustomEmail({
       to: owner.email,
       subject: `🚫 ${data.planName} Plan Limit Reached`,
       html: `

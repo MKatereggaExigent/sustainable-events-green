@@ -5,16 +5,17 @@ import { generateBasicRecommendations, EventInputs } from '../services/recommend
  * Generate basic recommendations based on event inputs
  * POST /api/recommendations/generate
  */
-export async function generateRecommendations(req: Request, res: Response) {
+export async function generateRecommendations(req: Request, res: Response): Promise<void> {
   try {
     const inputs: EventInputs = req.body;
 
     // Validate inputs
     if (!inputs.venue || !inputs.fnb || !inputs.transport || !inputs.materials) {
-      return res.status(400).json({
+      res.status(400).json({
         success: false,
         error: 'Missing required event inputs (venue, fnb, transport, materials)',
       });
+      return;
     }
 
     const recommendations = generateBasicRecommendations(inputs);

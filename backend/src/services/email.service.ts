@@ -166,7 +166,7 @@ class EmailService {
     });
   }
 
-  private async sendEmail(options: { to: string; subject: string; html: string }): Promise<void> {
+  async sendCustomEmail(options: { to: string; subject: string; html: string }): Promise<void> {
     try {
       await this.transporter.sendMail({
         from: `"EcobServe" <${config.email.from}>`,
@@ -179,6 +179,10 @@ class EmailService {
       logger.error('Failed to send email:', error);
       throw new Error('Failed to send email');
     }
+  }
+
+  private async sendEmail(options: { to: string; subject: string; html: string }): Promise<void> {
+    return this.sendCustomEmail(options);
   }
 }
 

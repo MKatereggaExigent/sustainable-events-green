@@ -3,16 +3,6 @@ import { verifyAccessToken, TokenPayload } from '../utils/jwt';
 import { query } from '../config/database';
 import { logger } from '../utils/logger';
 
-// Extend Express Request type
-declare global {
-  namespace Express {
-    interface Request {
-      user?: TokenPayload & { permissions?: string[] };
-      organizationId?: string;
-    }
-  }
-}
-
 export async function authenticate(req: Request, res: Response, next: NextFunction): Promise<void> {
   try {
     const authHeader = req.headers.authorization;

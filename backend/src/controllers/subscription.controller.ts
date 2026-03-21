@@ -67,7 +67,7 @@ export async function getSubscriptionUsage(req: Request, res: Response) {
         currency: sub.currency,
         interval: sub.interval,
         status: sub.status,
-        nextPaymentDate: sub.next_payment_date,
+        nextPaymentDate: sub.next_payment_date || null,
       };
     }
 
