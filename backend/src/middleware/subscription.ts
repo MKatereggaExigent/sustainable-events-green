@@ -216,3 +216,77 @@ export async function requireActiveSubscription(req: Request, res: Response, nex
   }
 }
 
+/**
+ * Middleware to require a specific subscription tier or higher
+ * Tier hierarchy: explorer < planner < impact
+ */
+export function requireSubscription(requiredTier: 'explorer' | 'planner' | 'impact') {
+  return async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      if (!req.organizationId) {
+        res.status(400).json({ error: 'Organization context required' });
+        return;
+      }
+
+      // Get organization's subscription tier
+      const orgResult = await query<{
+        subscription_tier: string;
+        subscription_expires_at: string | null;
+      }>(
+        'SELECT subscription_tier, subscription_expires_at FROM organizations WHERE id = $1',
+        [req.organizationId]
+      );
+
+      if (orgResult.length === 0) {
+        res.status(404).json({ error: 'Organization not found' });
+        return;
+      }
+
+      const org = orgResult[0];
+      const currentTier = org.subscription_tier || 'explorer';
+
+      // Define tier hierarchy
+      const tierHierarchy: { [key: string]: number } = {
+        explorer: 1,
+        planner: 2,
+        impact: 3,
+      };
+
+      const currentTierLevel = tierHierarchy[currentTier] || 1;
+      const requiredTierLevel = tierHierarchy[requiredTier] || 1;
+
+      // Check if current tier meets requirement
+      if (currentTierLevel < requiredTierLevel) {
+        res.status(403).json({
+          error: 'Subscription tier required',
+          message: `This feature requires ${requiredTier} tier or higher. Your current tier: ${currentTier}`,
+          currentTier,
+          requiredTier,
+          upgradeUrl: '/pricing',
+        });
+        return;
+      }
+
+      // Check if paid subscription has expired
+      if (currentTier !== 'explorer' && org.subscription_expires_at) {
+        const expiresAt = new Date(org.subscription_expires_at);
+        if (expiresAt < new Date()) {
+          res.status(403).json({
+            error: 'Subscription expired',
+            message: 'Your subscription has expired. Please renew to continue using premium features.',
+            expiresAt: org.subscription_expires_at,
+            renewUrl: '/pricing',
+          });
+          return;
+        }
+      }
+
+      next();
+    } catch (error) {
+      logger.error('Subscription tier check error:', error);
+      // Fail open
+      next();
+    }
+  };
+}
+
