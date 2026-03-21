@@ -21,8 +21,8 @@ CREATE INDEX IF NOT EXISTS idx_certificates_event_id ON certificates(event_id);
 CREATE INDEX IF NOT EXISTS idx_certificates_org_id ON certificates(organization_id);
 CREATE INDEX IF NOT EXISTS idx_certificates_number ON certificates(certificate_number);
 
--- 2. Tax Incentive Calculations (South Africa)
-CREATE TABLE IF NOT EXISTS tax_incentives (
+-- 2. Tax Incentive Calculations (South Africa) - Event-specific calculations
+CREATE TABLE IF NOT EXISTS event_tax_calculations (
     id SERIAL PRIMARY KEY,
     event_id UUID NOT NULL REFERENCES events(id) ON DELETE CASCADE,
     organization_id UUID NOT NULL REFERENCES organizations(id),
@@ -37,8 +37,8 @@ CREATE TABLE IF NOT EXISTS tax_incentives (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE INDEX IF NOT EXISTS idx_tax_incentives_event_id ON tax_incentives(event_id);
-CREATE INDEX IF NOT EXISTS idx_tax_incentives_org_id ON tax_incentives(organization_id);
+CREATE INDEX IF NOT EXISTS idx_event_tax_calc_event_id ON event_tax_calculations(event_id);
+CREATE INDEX IF NOT EXISTS idx_event_tax_calc_org_id ON event_tax_calculations(organization_id);
 
 -- 3. Carbon Offset Marketplace (populated from real public APIs)
 CREATE TABLE IF NOT EXISTS carbon_offsets (

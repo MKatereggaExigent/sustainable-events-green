@@ -63,7 +63,7 @@ export async function calculateTaxIncentives(input: TaxIncentiveInput): Promise<
 
     // Save to database
     await query(
-      `INSERT INTO tax_incentives (
+      `INSERT INTO event_tax_calculations (
         event_id, organization_id, carbon_reduction_kg, investment_amount_zar,
         section_12l_deduction, section_12b_allowance, total_tax_benefit, tax_year, metadata
       ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
@@ -151,7 +151,7 @@ function getCurrentTaxYear(): string {
  */
 export async function getTaxIncentiveByEventId(eventId: number): Promise<any> {
   const result = await query(
-    'SELECT * FROM tax_incentives WHERE event_id = $1 ORDER BY created_at DESC LIMIT 1',
+    'SELECT * FROM event_tax_calculations WHERE event_id = $1 ORDER BY created_at DESC LIMIT 1',
     [eventId]
   );
   return result[0] || null;
@@ -161,16 +161,16 @@ export async function getTaxIncentiveByEventId(eventId: number): Promise<any> {
  * Get all tax incentives for an organization
  */
 export async function getTaxIncentivesByOrganization(organizationId: number, taxYear?: string): Promise<any[]> {
-  let sql = 'SELECT * FROM tax_incentives WHERE organization_id = $1';
+  let sql = 'SELECT * FROM event_tax_calculations WHERE organization_id = $1';
   const params: any[] = [organizationId];
-  
+
   if (taxYear) {
     sql += ' AND tax_year = $2';
     params.push(taxYear);
   }
-  
+
   sql += ' ORDER BY created_at DESC';
-  
+
   return await query(sql, params);
 }
 
