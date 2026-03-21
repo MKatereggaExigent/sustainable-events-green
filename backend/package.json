@@ -9,6 +9,9 @@
     "start": "node dist/index.js",
     "migrate": "node dist/migrations/run.js",
     "migrate:dev": "ts-node src/migrations/run.ts",
+    "migrate:create": "./scripts/create-migration.sh",
+    "migrate:check": "./scripts/check-migrations.sh",
+    "migrate:deploy": "./scripts/deploy-migration.sh",
     "seed": "node dist/migrations/seed.js",
     "seed:dev": "ts-node src/migrations/seed.ts",
     "lint": "eslint src/**/*.ts"
