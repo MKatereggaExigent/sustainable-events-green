@@ -1,19 +1,20 @@
-import speakeasy from 'speakeasy';
+import { authenticator } from 'otplib';
 import QRCode from 'qrcode';
+import crypto from 'crypto';
 
 /**
  * Generate a new 2FA secret
  */
 export function generate2FASecret(email: string): { secret: string; otpauthUrl: string } {
-  const secret = speakeasy.generateSecret({
-    name: `EcobServe (${email})`,
-    issuer: 'EcobServe',
-    length: 32,
-  });
+  // Generate a random base32 secret
+  const secret = authenticator.generateSecret();
+
+  // Create otpauth URL
+  const otpauthUrl = authenticator.keyuri(email, 'EcobServe', secret);
 
   return {
-    secret: secret.base32,
-    otpauthUrl: secret.otpauth_url || '',
+    secret,
+    otpauthUrl,
   };
 }
 
@@ -32,21 +33,17 @@ export async function generateQRCode(otpauthUrl: string): Promise<string> {
  * Verify a TOTP token
  */
 export function verify2FAToken(token: string, secret: string): boolean {
-  return speakeasy.totp.verify({
-    secret,
-    encoding: 'base32',
-    token,
-    window: 2, // Allow 2 time steps before/after for clock drift
-  });
+  try {
+    return authenticator.verify({ token, secret });
+  } catch (error) {
+    return false;
+  }
 }
 
 /**
  * Generate a TOTP token (for testing)
  */
 export function generate2FAToken(secret: string): string {
-  return speakeasy.totp({
-    secret,
-    encoding: 'base32',
-  });
+  return authenticator.generate(secret);
 }
 
