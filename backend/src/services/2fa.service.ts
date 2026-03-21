@@ -68,7 +68,8 @@ export async function enable2FA(userId: string, token: string): Promise<void> {
     }
 
     // Verify token
-    if (!verify2FAToken(token, secret)) {
+    const isValid = await verify2FAToken(token, secret);
+    if (!isValid) {
       throw new Error('Invalid verification code');
     }
 
@@ -166,7 +167,8 @@ export async function verify2FA(userId: string, token: string): Promise<boolean>
   const { secret, backup_codes } = result[0];
 
   // Try TOTP token first
-  if (verify2FAToken(token, secret)) {
+  const isValid = await verify2FAToken(token, secret);
+  if (isValid) {
     // Update last used
     await query(
       'UPDATE user_2fa SET last_used_at = CURRENT_TIMESTAMP WHERE user_id = $1',

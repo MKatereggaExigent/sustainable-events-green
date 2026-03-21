@@ -1,4 +1,4 @@
-import { authenticator } from 'otplib';
+import { TOTP, generateSecret, generateURI } from 'otplib';
 import QRCode from 'qrcode';
 import crypto from 'crypto';
 
@@ -7,10 +7,15 @@ import crypto from 'crypto';
  */
 export function generate2FASecret(email: string): { secret: string; otpauthUrl: string } {
   // Generate a random base32 secret
-  const secret = authenticator.generateSecret();
+  const secret = generateSecret();
 
   // Create otpauth URL
-  const otpauthUrl = authenticator.keyuri(email, 'EcobServe', secret);
+  const otpauthUrl = generateURI({
+    issuer: 'EcobServe',
+    label: email,
+    secret,
+    strategy: 'totp',
+  });
 
   return {
     secret,
@@ -32,9 +37,11 @@ export async function generateQRCode(otpauthUrl: string): Promise<string> {
 /**
  * Verify a TOTP token
  */
-export function verify2FAToken(token: string, secret: string): boolean {
+export async function verify2FAToken(token: string, secret: string): Promise<boolean> {
   try {
-    return authenticator.verify({ token, secret });
+    const totp = new TOTP({ secret });
+    const result = await totp.verify(token);
+    return result.valid;
   } catch (error) {
     return false;
   }
@@ -43,7 +50,8 @@ export function verify2FAToken(token: string, secret: string): boolean {
 /**
  * Generate a TOTP token (for testing)
  */
-export function generate2FAToken(secret: string): string {
-  return authenticator.generate(secret);
+export async function generate2FAToken(secret: string): Promise<string> {
+  const totp = new TOTP({ secret });
+  return await totp.generate();
 }
 
