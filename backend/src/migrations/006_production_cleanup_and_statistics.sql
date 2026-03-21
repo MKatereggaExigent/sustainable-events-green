@@ -27,10 +27,10 @@ ON CONFLICT (id) DO NOTHING;
 
 -- 2. Clean up dummy/test data from events table
 -- Keep the table structure but remove all test/dummy events
-TRUNCATE TABLE event_carbon_data CASCADE;
-TRUNCATE TABLE event_costs CASCADE;
-TRUNCATE TABLE event_incentives CASCADE;
-TRUNCATE TABLE events CASCADE;
+TRUNCATE TABLE IF EXISTS event_carbon_data CASCADE;
+TRUNCATE TABLE IF EXISTS event_costs CASCADE;
+TRUNCATE TABLE IF EXISTS event_tax_incentives CASCADE;
+TRUNCATE TABLE IF EXISTS events CASCADE;
 
 -- 3. Clean up test users (keep only admin users with role_id = 1)
 -- First, remove user sessions
