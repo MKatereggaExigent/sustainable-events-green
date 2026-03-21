@@ -47,27 +47,33 @@ echo ""
 echo -e "${BLUE}🚀 Starting deployment...${NC}"
 echo ""
 
-# Step 1: Build the backend
-echo -e "${YELLOW}Step 1/4: Building backend...${NC}"
+# Step 1: Install dependencies
+echo -e "${YELLOW}Step 1/5: Installing dependencies...${NC}"
+npm install
+echo -e "${GREEN}✅ Dependencies installed${NC}"
+echo ""
+
+# Step 2: Build the backend
+echo -e "${YELLOW}Step 2/5: Building backend...${NC}"
 npm run build
 echo -e "${GREEN}✅ Build complete${NC}"
 echo ""
 
-# Step 2: Rebuild Docker image
-echo -e "${YELLOW}Step 2/4: Rebuilding Docker image...${NC}"
+# Step 3: Rebuild Docker image
+echo -e "${YELLOW}Step 3/5: Rebuilding Docker image...${NC}"
 cd ..
 docker-compose build --no-cache backend
 echo -e "${GREEN}✅ Docker image rebuilt${NC}"
 echo ""
 
-# Step 3: Stop backend container
-echo -e "${YELLOW}Step 3/4: Stopping backend container...${NC}"
+# Step 4: Stop backend container
+echo -e "${YELLOW}Step 4/5: Stopping backend container...${NC}"
 docker-compose stop backend
 echo -e "${GREEN}✅ Backend stopped${NC}"
 echo ""
 
-# Step 4: Start backend (migrations will run automatically)
-echo -e "${YELLOW}Step 4/4: Starting backend with migrations...${NC}"
+# Step 5: Start backend (migrations will run automatically)
+echo -e "${YELLOW}Step 5/5: Starting backend with migrations...${NC}"
 docker-compose up -d backend
 echo -e "${GREEN}✅ Backend started${NC}"
 echo ""
