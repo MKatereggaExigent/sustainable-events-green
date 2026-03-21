@@ -12,6 +12,7 @@ import CarbonCalculator from './ecobserve/CarbonCalculator';
 import CostSavingsCalculator from './ecobserve/CostSavingsCalculator';
 import DashboardMetrics from './ecobserve/DashboardMetrics';
 import AlternativesSection from './ecobserve/AlternativesSection';
+import BasicRecommendations from './ecobserve/BasicRecommendations';
 import GreenScoreCard from './ecobserve/GreenScoreCard';
 import EventPortfolio from './ecobserve/EventPortfolio';
 import ResourceLibrary from './ecobserve/ResourceLibrary';
@@ -215,6 +216,9 @@ const AppLayout: React.FC = () => {
           />
         </AuthGate>
       </div>
+
+      {/* Free Feature: Basic Recommendations - Available to Explorer */}
+      <BasicRecommendations inputs={inputs} />
 
       {/* Premium Feature: Cost & Savings Calculator - Requires Planner */}
       <div ref={costsavingsRef}>

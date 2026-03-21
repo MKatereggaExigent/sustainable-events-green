@@ -74,6 +74,21 @@ export const ExplorerOnboarding: React.FC = () => {
       placement: 'bottom',
     },
     {
+      target: '[data-tour="recommendations"]',
+      content: (
+        <div>
+          <h4 className="font-semibold text-emerald-700 mb-2">Basic Recommendations</h4>
+          <p className="text-sm text-gray-600 mb-2">
+            Get personalized sustainability tips based on your event inputs!
+          </p>
+          <p className="text-xs text-gray-500">
+            See actionable recommendations with cost impact and carbon savings potential.
+          </p>
+        </div>
+      ),
+      placement: 'top',
+    },
+    {
       target: '[data-tour="resources"]',
       content: (
         <div>

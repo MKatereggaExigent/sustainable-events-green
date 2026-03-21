@@ -10,6 +10,7 @@ import paymentRoutes from './payment.routes';
 import statisticsRoutes from './statistics.routes';
 import subscriptionRoutes from './subscription.routes';
 import analyticsRoutes from './analytics.routes';
+import recommendationsRoutes from './recommendations.routes';
 
 const router = Router();
 
@@ -30,6 +31,7 @@ router.use('/payments', paymentRoutes);
 router.use('/statistics', statisticsRoutes);
 router.use('/subscription', subscriptionRoutes);
 router.use('/analytics', analyticsRoutes);
+router.use('/recommendations', recommendationsRoutes);
 
 export default router;
 
