@@ -36,7 +36,18 @@ export async function getSubscriptionUsage(req: Request, res: Response) {
     );
 
     // Default to Explorer if no subscription found
-    let subscription = {
+    let subscription: {
+      planCode: string;
+      planName: string;
+      maxEvents: number;
+      maxUsers: number;
+      features: string[];
+      amount: number;
+      currency: string;
+      interval: string;
+      status: string;
+      nextPaymentDate: string | null;
+    } = {
       planCode: 'explorer',
       planName: 'Explorer',
       maxEvents: 1,
