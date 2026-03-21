@@ -4,93 +4,20 @@ import { EventPortfolioItem, fetchEventPortfolio } from '@/lib/carbonData';
 import { isAuthenticated } from '@/services/api';
 import { useSettings } from '@/contexts/SettingsContext';
 
-// Sample showcase data for unauthenticated users
-const sampleShowcaseEvents: EventPortfolioItem[] = [
-  {
-    id: '1',
-    name: 'TechSummit 2026',
-    type: 'Conference',
-    attendees: 500,
-    greenScore: 82,
-    carbonSaved: 2400,
-    image: 'https://d64gsuwffb70l.cloudfront.net/698e531497195c23a2bf3a5d_1770935170810_9bb2a2c0.jpg',
-    date: 'Jan 2026',
-    highlights: ['100% renewable energy', 'Plant-based catering', 'Zero single-use plastics'],
-  },
-  {
-    id: '2',
-    name: 'GreenGala Awards',
-    type: 'Gala',
-    attendees: 300,
-    greenScore: 91,
-    carbonSaved: 1800,
-    image: 'https://d64gsuwffb70l.cloudfront.net/698e531497195c23a2bf3a5d_1770935178323_820d0929.png',
-    date: 'Dec 2025',
-    highlights: ['Living plant decor', 'Local organic menu', 'Carbon offset program'],
-  },
-  {
-    id: '3',
-    name: 'Innovation Expo',
-    type: 'Exhibition',
-    attendees: 1200,
-    greenScore: 74,
-    carbonSaved: 5600,
-    image: 'https://d64gsuwffb70l.cloudfront.net/698e531497195c23a2bf3a5d_1770935174723_29147074.jpg',
-    date: 'Nov 2025',
-    highlights: ['Shuttle bus service', 'Digital-only materials', 'Reusable booth structures'],
-  },
-  {
-    id: '4',
-    name: 'Wellness Retreat',
-    type: 'Retreat',
-    attendees: 80,
-    greenScore: 95,
-    carbonSaved: 450,
-    image: 'https://d64gsuwffb70l.cloudfront.net/698e531497195c23a2bf3a5d_1770935174100_64e94e69.jpg',
-    date: 'Oct 2025',
-    highlights: ['Solar-powered venue', 'Farm-to-table dining', 'Zero waste achieved'],
-  },
-  {
-    id: '5',
-    name: 'Product Launch 2025',
-    type: 'Launch Event',
-    attendees: 250,
-    greenScore: 78,
-    carbonSaved: 1200,
-    image: 'https://d64gsuwffb70l.cloudfront.net/698e531497195c23a2bf3a5d_1770935174762_bec7a0c0.jpg',
-    date: 'Sep 2025',
-    highlights: ['Hybrid format', 'Compostable packaging', 'EV shuttle service'],
-  },
-  {
-    id: '6',
-    name: 'Annual Fundraiser',
-    type: 'Charity Event',
-    attendees: 400,
-    greenScore: 87,
-    carbonSaved: 2100,
-    image: 'https://d64gsuwffb70l.cloudfront.net/698e531497195c23a2bf3a5d_1770935236978_f4bb10b8.png',
-    date: 'Aug 2025',
-    highlights: ['Tree planting gifts', 'Local sourcing only', 'Renewable energy venue'],
-  },
-];
-
 const EventPortfolio: React.FC = () => {
   const { convertValue, getUnit, maskValue } = useSettings();
-  const [events, setEvents] = useState<EventPortfolioItem[]>(sampleShowcaseEvents);
+  const [events, setEvents] = useState<EventPortfolioItem[]>([]);
   const [loading, setLoading] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState<EventPortfolioItem | null>(null);
   const [filter, setFilter] = useState('all');
 
   useEffect(() => {
-    // If authenticated, try to load user's events to add to the showcase
+    // Load user's events if authenticated
     if (isAuthenticated()) {
       setLoading(true);
       fetchEventPortfolio()
         .then((userEvents) => {
-          if (userEvents.length > 0) {
-            // Combine user events with sample events
-            setEvents([...userEvents, ...sampleShowcaseEvents]);
-          }
+          setEvents(userEvents);
         })
         .catch(console.error)
         .finally(() => setLoading(false));
@@ -137,9 +64,25 @@ const EventPortfolio: React.FC = () => {
           ))}
         </div>
 
+        {/* Empty state */}
+        {filtered.length === 0 && !loading && (
+          <div className="text-center py-16">
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-gray-100 rounded-full mb-4">
+              <Award className="w-8 h-8 text-gray-400" />
+            </div>
+            <h3 className="text-xl font-semibold text-gray-900 mb-2">No Events Yet</h3>
+            <p className="text-gray-600 max-w-md mx-auto">
+              {isAuthenticated()
+                ? "Start planning your first sustainable event to see it showcased here!"
+                : "Sign in to create and track your sustainable events."}
+            </p>
+          </div>
+        )}
+
         {/* Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filtered.map((event) => (
+        {filtered.length > 0 && (
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filtered.map((event) => (
             <div
               key={event.id}
               className="group bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-xl transition-all cursor-pointer"
@@ -205,11 +148,13 @@ const EventPortfolio: React.FC = () => {
                 </div>
               </div>
             </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
 
         {/* Aggregate stats */}
-        <div className="mt-12 bg-gradient-to-r from-emerald-600 to-teal-600 rounded-3xl p-8 text-white">
+        {events.length > 0 && (
+          <div className="mt-12 bg-gradient-to-r from-emerald-600 to-teal-600 rounded-3xl p-8 text-white">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
             <div>
               <div className="text-3xl font-bold">{maskValue(events.length)}</div>
@@ -234,7 +179,8 @@ const EventPortfolio: React.FC = () => {
               <div className="text-emerald-200 text-sm mt-1">Avg Green Score</div>
             </div>
           </div>
-        </div>
+          </div>
+        )}
       </div>
 
       {/* Event detail modal */}
