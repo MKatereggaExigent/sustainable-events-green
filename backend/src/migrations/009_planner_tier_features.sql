@@ -40,16 +40,17 @@ CREATE TABLE IF NOT EXISTS tax_incentives (
 CREATE INDEX IF NOT EXISTS idx_tax_incentives_event_id ON tax_incentives(event_id);
 CREATE INDEX IF NOT EXISTS idx_tax_incentives_org_id ON tax_incentives(organization_id);
 
--- 3. Carbon Offset Marketplace
+-- 3. Carbon Offset Marketplace (populated from real public APIs)
 CREATE TABLE IF NOT EXISTS carbon_offsets (
     id SERIAL PRIMARY KEY,
-    project_name VARCHAR(255) NOT NULL,
+    project_name VARCHAR(255) NOT NULL UNIQUE,
     project_type VARCHAR(100) NOT NULL, -- reforestation, renewable_energy, etc.
     location VARCHAR(255) NOT NULL,
     certification VARCHAR(100), -- VCS, Gold Standard, etc.
     price_per_ton_zar DECIMAL(10, 2) NOT NULL,
     available_tons DECIMAL(10, 2) NOT NULL,
     description TEXT,
+    project_url TEXT,
     image_url TEXT,
     is_active BOOLEAN DEFAULT true,
     metadata JSONB,
