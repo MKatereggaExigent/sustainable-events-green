@@ -7,6 +7,7 @@ import organizationRoutes from './organization.routes';
 import tourRoutes from './tour.routes';
 import settingsRoutes from './settings.routes';
 import paymentRoutes from './payment.routes';
+import statisticsRoutes from './statistics.routes';
 
 const router = Router();
 
@@ -24,6 +25,7 @@ router.use('/organizations', organizationRoutes);
 router.use('/tour', tourRoutes);
 router.use('/settings', settingsRoutes);
 router.use('/payments', paymentRoutes);
+router.use('/statistics', statisticsRoutes);
 
 export default router;
 

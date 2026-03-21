@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Calculator, BarChart3, Lightbulb, Share2, TreePine, Shield,
   Zap, Globe, Users, Leaf, Eye, Heart
 } from 'lucide-react';
 import BrandLogo from './BrandLogo';
+import { getPlatformStatistics, PlatformStatistics } from '@/lib/api/statistics';
 
 interface FeaturesSectionProps {
   onNavigate: (section: string) => void;
@@ -60,14 +61,28 @@ const features = [
   },
 ];
 
-const stats = [
-  { icon: Globe, value: '50+', label: 'Countries' },
-  { icon: Users, value: '4,800+', label: 'Active Planners' },
-  { icon: TreePine, value: '12K+', label: 'Trees Planted' },
-  { icon: Zap, value: '8.2M', label: 'kg CO₂ Offset' },
-];
-
 const FeaturesSection: React.FC<FeaturesSectionProps> = ({ onNavigate }) => {
+  const [stats, setStats] = useState<PlatformStatistics>({
+    eventsTracked: 0,
+    co2OffsetKg: 0,
+    plannersActive: 0,
+    avgSatisfaction: 0,
+    countries: 0,
+    treesPlanted: 0,
+    waterSavedLiters: 0,
+    eventsThisMonth: 0,
+  });
+
+  useEffect(() => {
+    getPlatformStatistics().then(setStats);
+  }, []);
+
+  const displayStats = [
+    { icon: Globe, value: stats.countries > 0 ? `${stats.countries}+` : '0', label: 'Countries' },
+    { icon: Users, value: stats.plannersActive > 0 ? `${stats.plannersActive.toLocaleString()}+` : '0', label: 'Active Planners' },
+    { icon: TreePine, value: stats.treesPlanted > 0 ? `${(stats.treesPlanted / 1000).toFixed(1)}K+` : '0', label: 'Trees Planted' },
+    { icon: Zap, value: stats.co2OffsetKg > 0 ? `${(stats.co2OffsetKg / 1000000).toFixed(1)}M` : '0', label: 'kg CO₂ Tracked' },
+  ];
   return (
     <section className="py-24 bg-white" data-tour="features-section">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -141,8 +156,9 @@ const FeaturesSection: React.FC<FeaturesSectionProps> = ({ onNavigate }) => {
         </div>
 
         {/* Stats */}
-        <div className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-6">
-          {stats.map((stat, i) => {
+        {(stats.plannersActive > 0 || stats.eventsTracked > 0) && (
+          <div className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-6">
+            {displayStats.map((stat, i) => {
             const Icon = stat.icon;
             return (
               <div key={i} className="text-center p-6 bg-white rounded-2xl border border-gray-100 shadow-sm">
@@ -152,7 +168,8 @@ const FeaturesSection: React.FC<FeaturesSectionProps> = ({ onNavigate }) => {
               </div>
             );
           })}
-        </div>
+          </div>
+        )}
 
         {/* Core Values Banner */}
         <div className="mt-20 bg-gradient-to-r from-emerald-600 via-teal-600 to-blue-600 rounded-3xl p-8 md:p-12 text-white">

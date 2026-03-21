@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { ArrowRight, TreePine, Droplets, Recycle, Compass, Leaf, Eye, Users } from 'lucide-react';
 import { useTour } from '@/contexts/TourContext';
 import BrandLogo from './BrandLogo';
+import { getPlatformStatistics, PlatformStatistics } from '@/lib/api/statistics';
 
 interface HeroSectionProps {
   onNavigate: (section: string) => void;
@@ -39,6 +40,21 @@ const AnimatedCounter: React.FC<{ target: number; suffix: string; label: string 
 
 const HeroSection: React.FC<HeroSectionProps> = ({ onNavigate }) => {
   const { startTour } = useTour();
+  const [stats, setStats] = useState<PlatformStatistics>({
+    eventsTracked: 0,
+    co2OffsetKg: 0,
+    plannersActive: 0,
+    avgSatisfaction: 0,
+    countries: 0,
+    treesPlanted: 0,
+    waterSavedLiters: 0,
+    eventsThisMonth: 0,
+  });
+
+  useEffect(() => {
+    // Fetch platform statistics on mount
+    getPlatformStatistics().then(setStats);
+  }, []);
 
   return (
     <section className="relative min-h-screen flex items-center overflow-hidden">
@@ -73,12 +89,14 @@ const HeroSection: React.FC<HeroSectionProps> = ({ onNavigate }) => {
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           {/* Left content */}
           <div className="space-y-8">
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-500/20 border border-emerald-400/30 rounded-full backdrop-blur-sm">
-              <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse" />
-              <span className="text-emerald-300 text-sm font-medium">
-                2,847 events made sustainable this month
-              </span>
-            </div>
+            {stats.eventsThisMonth > 0 && (
+              <div className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-500/20 border border-emerald-400/30 rounded-full backdrop-blur-sm">
+                <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse" />
+                <span className="text-emerald-300 text-sm font-medium">
+                  {stats.eventsThisMonth.toLocaleString()} events made sustainable this month
+                </span>
+              </div>
+            )}
 
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white leading-tight">
               Plan Events That{' '}
@@ -114,20 +132,26 @@ const HeroSection: React.FC<HeroSectionProps> = ({ onNavigate }) => {
             </div>
 
             {/* Trust badges */}
-            <div className="flex flex-wrap items-center gap-6 pt-4">
-              <div className="flex items-center gap-2 text-gray-400 text-sm">
-                <TreePine className="w-4 h-4 text-emerald-400" />
-                <span>12,000+ trees planted</span>
+            {(stats.treesPlanted > 0 || stats.waterSavedLiters > 0) && (
+              <div className="flex flex-wrap items-center gap-6 pt-4">
+                {stats.treesPlanted > 0 && (
+                  <div className="flex items-center gap-2 text-gray-400 text-sm">
+                    <TreePine className="w-4 h-4 text-emerald-400" />
+                    <span>{stats.treesPlanted.toLocaleString()}+ trees planted</span>
+                  </div>
+                )}
+                {stats.waterSavedLiters > 0 && (
+                  <div className="flex items-center gap-2 text-gray-400 text-sm">
+                    <Droplets className="w-4 h-4 text-blue-400" />
+                    <span>{(stats.waterSavedLiters / 1000000).toFixed(1)}M liters water saved</span>
+                  </div>
+                )}
+                <div className="flex items-center gap-2 text-gray-400 text-sm">
+                  <Recycle className="w-4 h-4 text-amber-400" />
+                  <span>Sustainability focused</span>
+                </div>
               </div>
-              <div className="flex items-center gap-2 text-gray-400 text-sm">
-                <Droplets className="w-4 h-4 text-blue-400" />
-                <span>5M liters water saved</span>
-              </div>
-              <div className="flex items-center gap-2 text-gray-400 text-sm">
-                <Recycle className="w-4 h-4 text-amber-400" />
-                <span>Zero waste certified</span>
-              </div>
-            </div>
+            )}
           </div>
 
           {/* Right - Globe */}
@@ -140,27 +164,33 @@ const HeroSection: React.FC<HeroSectionProps> = ({ onNavigate }) => {
                 className="relative w-96 h-96 object-contain drop-shadow-2xl animate-[spin_60s_linear_infinite]"
               />
               {/* Floating stat cards */}
-              <div className="absolute -top-4 -right-4 bg-white/95 backdrop-blur-sm rounded-2xl p-4 shadow-xl animate-bounce" style={{ animationDuration: '3s' }}>
-                <div className="text-2xl font-bold text-emerald-600">-47%</div>
-                <div className="text-xs text-gray-500">Avg carbon reduction</div>
-              </div>
-              <div className="absolute -bottom-4 -left-4 bg-white/95 backdrop-blur-sm rounded-2xl p-4 shadow-xl animate-bounce" style={{ animationDuration: '4s', animationDelay: '1s' }}>
-                <div className="text-2xl font-bold text-blue-600">8.2M</div>
-                <div className="text-xs text-gray-500">kg CO₂ offset</div>
-              </div>
+              {stats.avgSatisfaction > 0 && (
+                <div className="absolute -top-4 -right-4 bg-white/95 backdrop-blur-sm rounded-2xl p-4 shadow-xl animate-bounce" style={{ animationDuration: '3s' }}>
+                  <div className="text-2xl font-bold text-emerald-600">{stats.avgSatisfaction}%</div>
+                  <div className="text-xs text-gray-500">Avg green score</div>
+                </div>
+              )}
+              {stats.co2OffsetKg > 0 && (
+                <div className="absolute -bottom-4 -left-4 bg-white/95 backdrop-blur-sm rounded-2xl p-4 shadow-xl animate-bounce" style={{ animationDuration: '4s', animationDelay: '1s' }}>
+                  <div className="text-2xl font-bold text-blue-600">{(stats.co2OffsetKg / 1000000).toFixed(1)}M</div>
+                  <div className="text-xs text-gray-500">kg CO₂ tracked</div>
+                </div>
+              )}
             </div>
           </div>
         </div>
 
         {/* Stats bar */}
-        <div className="mt-16 bg-white/10 backdrop-blur-md border border-white/10 rounded-3xl p-8">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            <AnimatedCounter target={15420} suffix="+" label="Events Tracked" />
-            <AnimatedCounter target={8200} suffix="t" label="CO₂ Offset" />
-            <AnimatedCounter target={4800} suffix="+" label="Planners Active" />
-            <AnimatedCounter target={92} suffix="%" label="Avg Satisfaction" />
+        {(stats.eventsTracked > 0 || stats.plannersActive > 0) && (
+          <div className="mt-16 bg-white/10 backdrop-blur-md border border-white/10 rounded-3xl p-8">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+              <AnimatedCounter target={stats.eventsTracked} suffix="+" label="Events Tracked" />
+              <AnimatedCounter target={Math.round(stats.co2OffsetKg / 1000)} suffix="t" label="CO₂ Tracked" />
+              <AnimatedCounter target={stats.plannersActive} suffix="+" label="Planners Active" />
+              <AnimatedCounter target={stats.avgSatisfaction} suffix="%" label="Avg Green Score" />
+            </div>
           </div>
-        </div>
+        )}
 
         {/* About / Brand Story Section */}
         <div className="mt-20 bg-white/5 backdrop-blur-md border border-white/10 rounded-3xl p-8 md:p-12">
