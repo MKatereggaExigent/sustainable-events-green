@@ -11,6 +11,7 @@ import statisticsRoutes from './statistics.routes';
 import subscriptionRoutes from './subscription.routes';
 import analyticsRoutes from './analytics.routes';
 import recommendationsRoutes from './recommendations.routes';
+import plannerRoutes from './planner.routes';
 
 const router = Router();
 
@@ -32,6 +33,7 @@ router.use('/statistics', statisticsRoutes);
 router.use('/subscription', subscriptionRoutes);
 router.use('/analytics', analyticsRoutes);
 router.use('/recommendations', recommendationsRoutes);
+router.use('/planner', plannerRoutes);
 
 export default router;
 
