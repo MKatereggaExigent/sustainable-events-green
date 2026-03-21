@@ -1,4 +1,4 @@
-import { apiClient } from './client';
+const API_URL = import.meta.env.VITE_API_URL || '/api';
 
 export interface SubscriptionUsage {
   subscription: {
@@ -41,7 +41,30 @@ export const subscriptionApi = {
    * Get current subscription usage statistics
    */
   async getUsage(): Promise<{ data?: SubscriptionUsage; error?: string }> {
-    return apiClient.get<SubscriptionUsage>('/subscription/usage');
+    try {
+      const response = await fetch(`${API_URL}/subscription/usage`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
+        },
+      });
+
+      if (!response.ok) {
+        return { error: 'Failed to fetch subscription usage' };
+      }
+
+      const result = await response.json();
+
+      if (result.success && result.data) {
+        return { data: result.data };
+      }
+
+      return { error: 'Invalid response format' };
+    } catch (error) {
+      console.error('Subscription API error:', error);
+      return { error: 'Network error' };
+    }
   },
 };
 

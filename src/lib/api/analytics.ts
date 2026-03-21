@@ -1,5 +1,3 @@
-import { apiClient } from './client';
-
 export const analyticsApi = {
   /**
    * Track when user clicks upgrade button
