@@ -40,7 +40,15 @@ const Pricing: React.FC = () => {
       // Use relative API path (works with nginx proxy in production)
       const API_URL = import.meta.env.VITE_API_URL || '/api';
 
-      const response = await fetch(`${API_URL}/payments/plans`);
+      // Add timeout to prevent infinite loading
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
+
+      const response = await fetch(`${API_URL}/payments/plans`, {
+        signal: controller.signal
+      });
+      clearTimeout(timeoutId);
+
       const data = await response.json();
       if (data.success && data.data && data.data.length > 0) {
         setPlans(data.data);
@@ -318,8 +326,13 @@ const Pricing: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin text-emerald-500" />
+      <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-blue-50">
+        <Navbar onNavigate={(section) => navigate(`/#${section}`)} />
+        <div className="min-h-screen flex flex-col items-center justify-center">
+          <Loader2 className="w-12 h-12 animate-spin text-emerald-500 mb-4" />
+          <p className="text-gray-600 text-lg">Loading pricing plans...</p>
+        </div>
+        <Footer onNavigate={(section) => navigate(`/#${section}`)} />
       </div>
     );
   }
