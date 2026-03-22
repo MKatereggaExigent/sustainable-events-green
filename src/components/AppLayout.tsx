@@ -203,13 +203,19 @@ const AppLayout: React.FC = () => {
         </AuthGate>
       </div>
 
-      {/* Free Feature: Event Footprint Calculator - Available to all users including Explorer */}
+      {/* Event Footprint Calculator - Requires Login (Explorer tier minimum) */}
       <div ref={calculatorRef} data-tour="calculator">
-        <CarbonCalculator
-          onComplete={handleCalculatorComplete}
-          inputs={inputs}
-          setInputs={setInputs}
-        />
+        <AuthGate
+          feature="Event Footprint Calculator"
+          description="Calculate your event's carbon footprint with real-time metrics and actionable insights. Login required to track your usage."
+          requiredTier="explorer"
+        >
+          <CarbonCalculator
+            onComplete={handleCalculatorComplete}
+            inputs={inputs}
+            setInputs={setInputs}
+          />
+        </AuthGate>
       </div>
 
       {/* Free Feature: Basic Recommendations - Available to Explorer */}

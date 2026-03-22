@@ -63,7 +63,27 @@ export async function login(req: Request, res: Response) {
     }
 
     const result = await authService.login(req.body);
-    
+
+    // Track user login with IP, location, and device info
+    const ipAddress = (req.headers['x-forwarded-for'] as string)?.split(',')[0]?.trim()
+      || (req.headers['x-real-ip'] as string)
+      || req.socket.remoteAddress
+      || 'unknown';
+
+    const userAgent = req.headers['user-agent'] || 'unknown';
+    const deviceFingerprint = req.headers['x-device-fingerprint'] as string;
+
+    // Import tracking service dynamically to avoid circular dependencies
+    import('../services/user-tracking.service').then(({ trackUserLogin }) => {
+      trackUserLogin({
+        userId: result.user.id,
+        email: result.user.email,
+        ipAddress,
+        userAgent,
+        deviceFingerprint,
+      }).catch(err => logger.error('Failed to track login:', err));
+    });
+
     res.cookie('refreshToken', result.tokens.refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
