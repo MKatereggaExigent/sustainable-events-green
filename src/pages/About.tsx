@@ -1,9 +1,13 @@
 import React from 'react';
 import { Heart, Eye, Users, Globe, Award, TrendingUp, Target, Sparkles } from 'lucide-react';
+import Navbar from '@/components/ecobserve/Navbar';
+import Footer from '@/components/ecobserve/Footer';
 
 const About: React.FC = () => {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-emerald-50">
+    <div className="min-h-screen bg-white">
+      <Navbar onNavigate={() => {}} activeSection="" />
+      <div className="bg-gradient-to-br from-gray-50 to-emerald-50 pt-20">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         {/* Header */}
         <div className="text-center mb-16">
@@ -255,6 +259,8 @@ const About: React.FC = () => {
           </section>
         </div>
       </div>
+      </div>
+      <Footer />
     </div>
   );
 };

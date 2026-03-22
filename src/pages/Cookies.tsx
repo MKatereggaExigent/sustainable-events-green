@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { Cookie, Check, X, Settings, Info, Mail } from 'lucide-react';
+import Navbar from '@/components/ecobserve/Navbar';
+import Footer from '@/components/ecobserve/Footer';
 
 const Cookies: React.FC = () => {
   const [preferences, setPreferences] = useState({
@@ -45,8 +47,10 @@ const Cookies: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-orange-50">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+    <div className="min-h-screen bg-white">
+      <Navbar onNavigate={() => {}} activeSection="" />
+      <div className="bg-gradient-to-br from-gray-50 to-orange-50 pt-20">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         {/* Header */}
         <div className="text-center mb-12">
           <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-orange-500 to-amber-600 rounded-2xl mb-6">
@@ -287,7 +291,9 @@ const Cookies: React.FC = () => {
             </div>
           </section>
         </div>
+        </div>
       </div>
+      <Footer />
     </div>
   );
 };

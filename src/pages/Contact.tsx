@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { Mail, Phone, MapPin, Clock, Send, MessageSquare, Briefcase, Users, Globe } from 'lucide-react';
+import Navbar from '@/components/ecobserve/Navbar';
+import Footer from '@/components/ecobserve/Footer';
 
 const Contact: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -35,8 +37,10 @@ const Contact: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+    <div className="min-h-screen bg-white">
+      <Navbar onNavigate={() => {}} activeSection="" />
+      <div className="bg-gradient-to-br from-gray-50 to-blue-50 pt-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         {/* Header */}
         <div className="text-center mb-16">
           <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-3xl mb-6">
@@ -293,7 +297,9 @@ const Contact: React.FC = () => {
             </div>
           </div>
         </div>
+        </div>
       </div>
+      <Footer />
     </div>
   );
 };
