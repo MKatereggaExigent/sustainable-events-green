@@ -15,6 +15,12 @@ COPY . .
 # Build the application
 RUN npm run build
 
+# Inject build timestamp for cache busting
+RUN BUILD_TIME=$(date +%s) && \
+    BUILD_DATE=$(date -u +"%Y-%m-%d %H:%M:%S UTC") && \
+    sed -i "s/BUILD_VERSION_PLACEHOLDER/${BUILD_TIME}/g" /app/dist/index.html && \
+    echo "{\"version\":\"${BUILD_TIME}\",\"buildTime\":\"${BUILD_DATE}\"}" > /app/dist/version.json
+
 # Production stage
 FROM nginx:stable-alpine AS production
 
