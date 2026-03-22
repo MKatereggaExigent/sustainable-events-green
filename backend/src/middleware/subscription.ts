@@ -218,9 +218,9 @@ export async function requireActiveSubscription(req: Request, res: Response, nex
 
 /**
  * Middleware to require a specific subscription tier or higher
- * Tier hierarchy: explorer < planner < impact
+ * Tier hierarchy: explorer < planner < impact < enterprise
  */
-export function requireSubscription(requiredTier: 'explorer' | 'planner' | 'impact') {
+export function requireSubscription(requiredTier: 'explorer' | 'planner' | 'impact' | 'enterprise') {
   return async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       if (!req.organizationId) {
@@ -250,6 +250,7 @@ export function requireSubscription(requiredTier: 'explorer' | 'planner' | 'impa
         explorer: 1,
         planner: 2,
         impact: 3,
+        enterprise: 4,
       };
 
       const currentTierLevel = tierHierarchy[currentTier] || 1;
@@ -290,3 +291,7 @@ export function requireSubscription(requiredTier: 'explorer' | 'planner' | 'impa
   };
 }
 
+/**
+ * Alias for requireSubscription for cleaner route definitions
+ */
+export const requireTier = requireSubscription;

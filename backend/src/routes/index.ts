@@ -12,6 +12,7 @@ import subscriptionRoutes from './subscription.routes';
 import analyticsRoutes from './analytics.routes';
 import recommendationsRoutes from './recommendations.routes';
 import plannerRoutes from './planner.routes';
+import impactLeaderRoutes from './impact-leader.routes';
 
 const router = Router();
 
@@ -34,6 +35,7 @@ router.use('/subscription', subscriptionRoutes);
 router.use('/analytics', analyticsRoutes);
 router.use('/recommendations', recommendationsRoutes);
 router.use('/planner', plannerRoutes);
+router.use('/impact-leader', impactLeaderRoutes);
 
 export default router;
 
