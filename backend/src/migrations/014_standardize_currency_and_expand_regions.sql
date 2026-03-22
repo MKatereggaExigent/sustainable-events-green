@@ -89,12 +89,7 @@ INSERT INTO regional_cost_factors (region_code, region_name, currency_code, carb
 ('br', 'Brazil', 'BRL', 0.13, 0.020, 0.55, 0.45),
 ('ar', 'Argentina', 'ARS', 4.50, 0.80, 20.00, 12.00),
 ('cl', 'Chile', 'CLP', 20.00, 3.50, 95.00, 110.00)
-ON CONFLICT (region_code) DO UPDATE SET
-    carbon_price_per_kg = EXCLUDED.carbon_price_per_kg,
-    water_cost_per_liter = EXCLUDED.water_cost_per_liter,
-    waste_cost_per_kg = EXCLUDED.waste_cost_per_kg,
-    energy_cost_per_kwh = EXCLUDED.energy_cost_per_kwh,
-    updated_at = CURRENT_TIMESTAMP;
+ON CONFLICT (region_code) DO NOTHING;
 
 -- ============================================
 -- EXPAND TAX INCENTIVES
