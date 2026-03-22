@@ -357,7 +357,7 @@ async function handleSubscriptionEvent(pool: Pool, event: any): Promise<void> {
  */
 export async function getSubscriptionPlans(pool: Pool): Promise<SubscriptionPlan[]> {
   const result = await pool.query(
-    'SELECT * FROM subscription_plans WHERE is_active = true ORDER BY amount ASC'
+    'SELECT * FROM subscription_plans WHERE is_active = true ORDER BY display_order ASC, amount ASC'
   );
 
   return result.rows.map(row => ({
