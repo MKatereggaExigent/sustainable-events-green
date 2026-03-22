@@ -199,3 +199,97 @@ const Cookies: React.FC = () => {
             </div>
           </section>
 
+          {/* Third-Party Cookies */}
+          <section>
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">Third-Party Cookies</h2>
+            <p className="text-gray-700 leading-relaxed mb-4">
+              We use the following third-party services that may set cookies:
+            </p>
+            <ul className="list-disc list-inside text-gray-700 space-y-2 ml-4">
+              <li><strong>Google Analytics:</strong> Website analytics and usage tracking</li>
+              <li><strong>Stripe:</strong> Payment processing and fraud prevention</li>
+              <li><strong>Supabase:</strong> Authentication and database services</li>
+              <li><strong>OpenAI:</strong> AI-powered recommendations</li>
+            </ul>
+            <p className="text-gray-700 leading-relaxed mt-4">
+              These third parties have their own privacy policies. We recommend reviewing them to understand how they use cookies.
+            </p>
+          </section>
+
+          {/* How to Control Cookies */}
+          <section>
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">How to Control Cookies in Your Browser</h2>
+            <p className="text-gray-700 leading-relaxed mb-4">
+              Most web browsers allow you to control cookies through their settings. You can:
+            </p>
+            <ul className="list-disc list-inside text-gray-700 space-y-2 ml-4">
+              <li>View what cookies are stored and delete them individually</li>
+              <li>Block third-party cookies</li>
+              <li>Block cookies from specific websites</li>
+              <li>Block all cookies</li>
+              <li>Delete all cookies when you close your browser</li>
+            </ul>
+            <p className="text-gray-700 leading-relaxed mt-4">
+              Please note that deleting or blocking cookies may impact your experience on our platform and prevent you from using certain features.
+            </p>
+            <div className="mt-4 p-4 bg-orange-50 rounded-xl">
+              <p className="text-sm text-gray-700">
+                <strong>Browser Help:</strong> For instructions on managing cookies in your specific browser, visit your browser's help section or support website.
+              </p>
+            </div>
+          </section>
+
+          {/* Cookie Retention */}
+          <section>
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">Cookie Retention</h2>
+            <div className="space-y-3">
+              <p className="text-gray-700 leading-relaxed">
+                <strong>Session Cookies:</strong> Temporary cookies that are deleted when you close your browser.
+              </p>
+              <p className="text-gray-700 leading-relaxed">
+                <strong>Persistent Cookies:</strong> Remain on your device for a set period or until you delete them. We use persistent cookies for:
+              </p>
+              <ul className="list-disc list-inside text-gray-700 space-y-1 ml-4">
+                <li>Authentication (up to 30 days)</li>
+                <li>Preferences (up to 1 year)</li>
+                <li>Analytics (up to 2 years)</li>
+              </ul>
+            </div>
+          </section>
+
+          {/* Updates to Cookie Policy */}
+          <section>
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">Updates to This Cookie Policy</h2>
+            <p className="text-gray-700 leading-relaxed">
+              We may update this Cookie Policy from time to time to reflect changes in technology, legislation, or our business operations. We will notify you of any significant changes by posting a notice on our website or sending you an email.
+            </p>
+          </section>
+
+          {/* Contact */}
+          <section className="bg-orange-50 rounded-2xl p-6">
+            <div className="flex items-center gap-3 mb-4">
+              <Mail className="w-6 h-6 text-orange-600" />
+              <h2 className="text-2xl font-bold text-gray-900">Questions About Cookies?</h2>
+            </div>
+            <p className="text-gray-700 leading-relaxed mb-4">
+              If you have any questions about our use of cookies, please contact us:
+            </p>
+            <div className="space-y-2 text-gray-700">
+              <p><strong>Email:</strong> <a href="mailto:privacy@ecobserve.com" className="text-orange-600 hover:text-orange-700">privacy@ecobserve.com</a></p>
+              <p><strong>General Inquiries:</strong> <a href="mailto:info@ecobserve.com" className="text-orange-600 hover:text-orange-700">info@ecobserve.com</a></p>
+              <p><strong>Address:</strong> 123 Green Street, San Francisco, CA 94102</p>
+            </div>
+            <div className="mt-4 pt-4 border-t border-orange-200">
+              <p className="text-sm text-gray-600">
+                For more information about how we handle your personal data, please see our{' '}
+                <a href="/privacy" className="text-orange-600 hover:text-orange-700 font-medium">Privacy Policy</a>.
+              </p>
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Cookies;
