@@ -71,9 +71,3 @@ ON CONFLICT (code) DO UPDATE SET
 UPDATE subscription_plans
 SET is_active = true
 WHERE code = 'enterprise';
-
--- Record migration
-INSERT INTO schema_migrations (migration_name, executed_at)
-VALUES ('011_simplify_subscription_plans.sql', CURRENT_TIMESTAMP)
-ON CONFLICT (migration_name) DO NOTHING;
-

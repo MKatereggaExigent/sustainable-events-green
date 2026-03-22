@@ -55,11 +55,6 @@ ON CONFLICT (code) DO UPDATE SET
     updated_at = CURRENT_TIMESTAMP;
 
 UPDATE subscription_plans SET is_active = true WHERE code = 'enterprise';
-
--- Record migration
-INSERT INTO schema_migrations (migration_name, executed_at)
-VALUES ('011_simplify_subscription_plans.sql', CURRENT_TIMESTAMP)
-ON CONFLICT (migration_name) DO NOTHING;
 EOF
 
 echo -e "${GREEN}✅ Migration 011 completed${NC}"
@@ -106,11 +101,6 @@ BEGIN
     RETURN COALESCE(downgrade_count, 0);
 END;
 $$ LANGUAGE plpgsql;
-
--- Record migration
-INSERT INTO schema_migrations (migration_name, executed_at)
-VALUES ('012_subscription_downgrades.sql', CURRENT_TIMESTAMP)
-ON CONFLICT (migration_name) DO NOTHING;
 EOF
 
 echo -e "${GREEN}✅ Migration 012 completed${NC}"
