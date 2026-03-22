@@ -36,12 +36,10 @@ const Pricing: React.FC = () => {
 
   const fetchPlans = async () => {
     try {
-      // Determine API URL based on current domain
-      const apiUrl = window.location.hostname === 'localhost'
-        ? 'http://localhost:8035'
-        : `${window.location.protocol}//${window.location.hostname}`;
+      // Use relative API path (works with nginx proxy in production)
+      const API_URL = import.meta.env.VITE_API_URL || '/api';
 
-      const response = await fetch(`${apiUrl}/api/payments/plans`);
+      const response = await fetch(`${API_URL}/payments/plans`);
       const data = await response.json();
       if (data.success && data.data && data.data.length > 0) {
         setPlans(data.data);
@@ -197,15 +195,11 @@ const Pricing: React.FC = () => {
 
     try {
       const token = localStorage.getItem('accessToken');
+      const API_URL = import.meta.env.VITE_API_URL || '/api';
 
-      // Determine API URL based on current domain
-      const apiUrl = window.location.hostname === 'localhost'
-        ? 'http://localhost:8035'
-        : `${window.location.protocol}//${window.location.hostname}`;
+      console.log('Initializing payment:', { planCode, email: user?.email });
 
-      console.log('Initializing payment:', { planCode, email: user?.email, apiUrl });
-
-      const response = await fetch(`${apiUrl}/api/payments/initialize`, {
+      const response = await fetch(`${API_URL}/payments/initialize`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -242,11 +236,9 @@ const Pricing: React.FC = () => {
 
     try {
       const token = localStorage.getItem('accessToken');
-      const apiUrl = window.location.hostname === 'localhost'
-        ? 'http://localhost:8035'
-        : `${window.location.protocol}//${window.location.hostname}`;
+      const API_URL = import.meta.env.VITE_API_URL || '/api';
 
-      const response = await fetch(`${apiUrl}/api/payments/subscription/downgrade`, {
+      const response = await fetch(`${API_URL}/payments/subscription/downgrade`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
