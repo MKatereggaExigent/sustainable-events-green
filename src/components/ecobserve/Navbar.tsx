@@ -7,7 +7,7 @@ import BrandLogo from './BrandLogo';
 import Settings from './Settings';
 import SubscriptionBadge from './SubscriptionBadge';
 
-// Navbar v1.2 - Fixed icon rendering and dropdown hover (Build: 2026-03-16)
+// Navbar v1.3 - Fixed TrendingUp import and tier badges (Build: 2026-03-22)
 
 interface NavbarProps {
   onNavigate: (section: string) => void;
