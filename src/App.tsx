@@ -7,6 +7,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { TourProvider } from "@/contexts/TourContext";
 import { SettingsProvider } from "@/contexts/SettingsContext";
+import ErrorBoundary from "@/components/ErrorBoundary";
 import Index from "./pages/Index";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
@@ -27,40 +28,42 @@ import NotFound from "./pages/NotFound";
 const queryClient = new QueryClient();
 
 const App = () => (
-  <ThemeProvider defaultTheme="light">
-    <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <SettingsProvider>
-          <TourProvider>
-            <TooltipProvider>
-              <Toaster />
-              <Sonner />
-              <BrowserRouter>
-                <Routes>
-                  <Route path="/" element={<Index />} />
-                  <Route path="/login" element={<Login />} />
-                  <Route path="/register" element={<Register />} />
-                  <Route path="/verify-email" element={<VerifyEmail />} />
-                  <Route path="/forgot-password" element={<ForgotPassword />} />
-                  <Route path="/reset-password" element={<ResetPassword />} />
-                  <Route path="/faq" element={<FAQ />} />
-                  <Route path="/pricing" element={<Pricing />} />
-                  <Route path="/payment/success" element={<PaymentSuccess />} />
-                  <Route path="/payment/failed" element={<PaymentFailed />} />
-                  <Route path="/privacy" element={<Privacy />} />
-                  <Route path="/terms" element={<Terms />} />
-                  <Route path="/cookies" element={<Cookies />} />
-                  <Route path="/about" element={<About />} />
+  <ErrorBoundary>
+    <ThemeProvider defaultTheme="light">
+      <QueryClientProvider client={queryClient}>
+        <AuthProvider>
+          <SettingsProvider>
+            <TourProvider>
+              <TooltipProvider>
+                <Toaster />
+                <Sonner />
+                <BrowserRouter>
+                  <Routes>
+                    <Route path="/" element={<Index />} />
+                    <Route path="/login" element={<Login />} />
+                    <Route path="/register" element={<Register />} />
+                    <Route path="/verify-email" element={<VerifyEmail />} />
+                    <Route path="/forgot-password" element={<ForgotPassword />} />
+                    <Route path="/reset-password" element={<ResetPassword />} />
+                    <Route path="/faq" element={<FAQ />} />
+                    <Route path="/pricing" element={<Pricing />} />
+                    <Route path="/payment/success" element={<PaymentSuccess />} />
+                    <Route path="/payment/failed" element={<PaymentFailed />} />
+                    <Route path="/privacy" element={<Privacy />} />
+                    <Route path="/terms" element={<Terms />} />
+                    <Route path="/cookies" element={<Cookies />} />
+                    <Route path="/about" element={<About />} />
                   <Route path="/contact" element={<Contact />} />
-                  <Route path="*" element={<NotFound />} />
-                </Routes>
-              </BrowserRouter>
-            </TooltipProvider>
-          </TourProvider>
-        </SettingsProvider>
-      </AuthProvider>
-    </QueryClientProvider>
-  </ThemeProvider>
+                    <Route path="*" element={<NotFound />} />
+                  </Routes>
+                </BrowserRouter>
+              </TooltipProvider>
+            </TourProvider>
+          </SettingsProvider>
+        </AuthProvider>
+      </QueryClientProvider>
+    </ThemeProvider>
+  </ErrorBoundary>
 );
 
 export default App;

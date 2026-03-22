@@ -6,6 +6,7 @@ import Navbar from '@/components/ecobserve/Navbar';
 import Footer from '@/components/ecobserve/Footer';
 import DowngradeModal from '@/components/ecobserve/DowngradeModal';
 import AllFeaturesShowcase from '@/components/features/AllFeaturesShowcase';
+import { forceVersionCheck } from '@/utils/versionCheck';
 
 interface Plan {
   id: string;
@@ -32,6 +33,12 @@ const Pricing: React.FC = () => {
   });
 
   useEffect(() => {
+    // Check for version updates when component mounts
+    // This helps catch stale caches when navigating to pricing page
+    forceVersionCheck().catch(err => {
+      console.warn('Version check failed:', err);
+    });
+
     fetchPlans();
   }, []);
 
