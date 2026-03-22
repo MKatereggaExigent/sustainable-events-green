@@ -15,11 +15,23 @@ export interface EventInput {
 }
 
 export interface CarbonDataInput {
-  venue: { type: string; size: string; duration: number; energySource: string };
-  fnb: { guests: number; mealType: string; beverages: string; catering: string };
-  transport: { attendees: number; avgDistance: number; transportMode: string; shuttleService: boolean };
-  materials: { printedMaterials: string; decorations: string; swagBags: boolean; digitalAlternatives: boolean };
-  results: { carbonKg: number; waterLiters: number; wasteKg: number; greenScore: number; breakdown: any };
+  // Support both old format (venue, fnb, etc.) and new format (venue_inputs, fnb_inputs, etc.)
+  venue?: { type: string; size: string; duration: number; energySource: string };
+  fnb?: { guests: number; mealType: string; beverages: string; catering: string };
+  transport?: { attendees: number; avgDistance: number; transportMode: string; shuttleService: boolean };
+  materials?: { printedMaterials: string; decorations: string; swagBags: boolean; digitalAlternatives: boolean };
+  results?: { carbonKg: number; waterLiters: number; wasteKg: number; greenScore: number; breakdown: any };
+
+  // New format from frontend
+  venue_inputs?: { type: string; size: string; duration: number; energySource: string };
+  fnb_inputs?: { guests: number; mealType: string; beverages: string; catering: string };
+  transport_inputs?: { attendees: number; avgDistance: number; transportMode: string; shuttleService: boolean };
+  materials_inputs?: { printedMaterials: string; decorations: string; swagBags: boolean; digitalAlternatives: boolean };
+  carbon_kg?: number;
+  water_liters?: number;
+  waste_kg?: number;
+  green_score?: number;
+  breakdown?: any;
 }
 
 export interface CostDataInput {
@@ -137,8 +149,23 @@ export async function deleteEvent(eventId: string, organizationId: string) {
 }
 
 export async function saveCarbonData(eventId: string, data: CarbonDataInput) {
-  const r = data.results;
-  const b = r.breakdown;
+  // Support both old format and new format from frontend
+  const venue = data.venue_inputs || data.venue;
+  const fnb = data.fnb_inputs || data.fnb;
+  const transport = data.transport_inputs || data.transport;
+  const materials = data.materials_inputs || data.materials;
+
+  // Handle results - can be nested or flat
+  const carbonKg = data.carbon_kg ?? data.results?.carbonKg ?? 0;
+  const waterLiters = data.water_liters ?? data.results?.waterLiters ?? 0;
+  const wasteKg = data.waste_kg ?? data.results?.wasteKg ?? 0;
+  const greenScore = data.green_score ?? data.results?.greenScore ?? 0;
+  const breakdown = data.breakdown ?? data.results?.breakdown ?? { venue: 0, fnb: 0, transport: 0, materials: 0 };
+
+  if (!venue || !fnb || !transport || !materials) {
+    throw new Error('Missing required carbon data inputs');
+  }
+
   await query(
     `INSERT INTO event_carbon_data (event_id, venue_type, venue_size, venue_duration, venue_energy_source,
       fnb_guests, fnb_meal_type, fnb_beverages, fnb_catering, transport_attendees, transport_avg_distance,
@@ -152,11 +179,11 @@ export async function saveCarbonData(eventId: string, data: CarbonDataInput) {
        transport_shuttle_service=$13, materials_printed=$14, materials_decorations=$15, materials_swag_bags=$16,
        materials_digital_alternatives=$17, carbon_kg=$18, water_liters=$19, waste_kg=$20, green_score=$21,
        breakdown_venue=$22, breakdown_fnb=$23, breakdown_transport=$24, breakdown_materials=$25, updated_at=CURRENT_TIMESTAMP`,
-    [eventId, data.venue.type, data.venue.size, data.venue.duration, data.venue.energySource,
-     data.fnb.guests, data.fnb.mealType, data.fnb.beverages, data.fnb.catering,
-     data.transport.attendees, data.transport.avgDistance, data.transport.transportMode, data.transport.shuttleService,
-     data.materials.printedMaterials, data.materials.decorations, data.materials.swagBags, data.materials.digitalAlternatives,
-     r.carbonKg, r.waterLiters, r.wasteKg, r.greenScore, b.venue, b.fnb, b.transport, b.materials]
+    [eventId, venue.type, venue.size, venue.duration, venue.energySource,
+     fnb.guests, fnb.mealType, fnb.beverages, fnb.catering,
+     transport.attendees, transport.avgDistance, transport.transportMode, transport.shuttleService,
+     materials.printedMaterials, materials.decorations, materials.swagBags, materials.digitalAlternatives,
+     carbonKg, waterLiters, wasteKg, greenScore, breakdown.venue, breakdown.fnb, breakdown.transport, breakdown.materials]
   );
 }
 
