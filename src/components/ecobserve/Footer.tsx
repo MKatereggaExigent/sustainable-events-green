@@ -55,10 +55,10 @@ const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
             </div>
             <div className="flex gap-3">
               {[
-                { icon: Twitter, href: '#', label: 'Twitter' },
-                { icon: Linkedin, href: '#', label: 'LinkedIn' },
-                { icon: Github, href: '#', label: 'GitHub' },
-                { icon: Instagram, href: '#', label: 'Instagram' },
+                { icon: Twitter, href: 'https://twitter.com/ecobserve', label: 'Twitter' },
+                { icon: Linkedin, href: 'https://linkedin.com/company/ecobserve', label: 'LinkedIn' },
+                { icon: Github, href: 'https://github.com/ecobserve', label: 'GitHub' },
+                { icon: Instagram, href: 'https://instagram.com/ecobserve', label: 'Instagram' },
               ].map((social) => (
                 <button
                   key={social.label}
@@ -107,16 +107,46 @@ const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
                   FAQs
                 </button>
               </li>
-              {['Guides', 'Blog', 'Case Studies', 'API Docs', 'Certifications'].map((link) => (
-                <li key={link}>
-                  <button
-                    onClick={() => onNavigate('resources')}
-                    className="text-gray-400 text-sm hover:text-emerald-400 transition-colors"
-                  >
-                    {link}
-                  </button>
-                </li>
-              ))}
+              <li>
+                <button
+                  onClick={() => onNavigate('resources')}
+                  className="text-gray-400 text-sm hover:text-emerald-400 transition-colors"
+                >
+                  Guides
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => navigate('/blog')}
+                  className="text-gray-400 text-sm hover:text-emerald-400 transition-colors"
+                >
+                  Blog
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => onNavigate('portfolio')}
+                  className="text-gray-400 text-sm hover:text-emerald-400 transition-colors"
+                >
+                  Case Studies
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => navigate('/api-docs')}
+                  className="text-gray-400 text-sm hover:text-emerald-400 transition-colors"
+                >
+                  API Docs
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => navigate('/certifications')}
+                  className="text-gray-400 text-sm hover:text-emerald-400 transition-colors"
+                >
+                  Certifications
+                </button>
+              </li>
             </ul>
           </div>
 
@@ -124,16 +154,46 @@ const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
           <div>
             <h4 className="font-semibold text-white mb-4">Company</h4>
             <ul className="space-y-3">
-              {['About Us', 'Careers', 'Press', 'Partners', 'Contact'].map((link) => (
-                <li key={link}>
-                  <button
-                    onClick={() => alert(`${link} page coming soon!`)}
-                    className="text-gray-400 text-sm hover:text-emerald-400 transition-colors"
-                  >
-                    {link}
-                  </button>
-                </li>
-              ))}
+              <li>
+                <button
+                  onClick={() => navigate('/about')}
+                  className="text-gray-400 text-sm hover:text-emerald-400 transition-colors"
+                >
+                  About Us
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => navigate('/careers')}
+                  className="text-gray-400 text-sm hover:text-emerald-400 transition-colors"
+                >
+                  Careers
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => navigate('/press')}
+                  className="text-gray-400 text-sm hover:text-emerald-400 transition-colors"
+                >
+                  Press
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => navigate('/partners')}
+                  className="text-gray-400 text-sm hover:text-emerald-400 transition-colors"
+                >
+                  Partners
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={() => navigate('/contact')}
+                  className="text-gray-400 text-sm hover:text-emerald-400 transition-colors"
+                >
+                  Contact
+                </button>
+              </li>
             </ul>
           </div>
 
@@ -143,15 +203,19 @@ const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
             <ul className="space-y-3">
               <li className="flex items-center gap-2 text-gray-400 text-sm">
                 <Mail className="w-4 h-4 text-emerald-500 flex-shrink-0" />
-                hello@ecobserve.app
+                <a href="mailto:info@ecobserve.com" className="hover:text-emerald-400 transition-colors">
+                  info@ecobserve.com
+                </a>
               </li>
               <li className="flex items-center gap-2 text-gray-400 text-sm">
                 <Phone className="w-4 h-4 text-emerald-500 flex-shrink-0" />
-                +1 (555) 123-4567
+                <a href="tel:+15551234567" className="hover:text-emerald-400 transition-colors">
+                  +1 (555) 123-4567
+                </a>
               </li>
               <li className="flex items-start gap-2 text-gray-400 text-sm">
                 <MapPin className="w-4 h-4 text-emerald-500 flex-shrink-0 mt-0.5" />
-                123 Green Street, San Francisco, CA 94102
+                <span>123 Green Street, San Francisco, CA 94102</span>
               </li>
             </ul>
           </div>
@@ -166,15 +230,24 @@ const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
               &copy; {new Date().getFullYear()} {getBrandName()}. All rights reserved.
             </div>
             <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-6">
-              {['Privacy Policy', 'Terms of Service', 'Cookie Settings'].map((link) => (
-                <button
-                  key={link}
-                  onClick={() => alert(`${link} page coming soon!`)}
-                  className="text-gray-500 text-xs sm:text-sm hover:text-emerald-400 transition-colors"
-                >
-                  {link}
-                </button>
-              ))}
+              <button
+                onClick={() => navigate('/privacy')}
+                className="text-gray-500 text-xs sm:text-sm hover:text-emerald-400 transition-colors"
+              >
+                Privacy Policy
+              </button>
+              <button
+                onClick={() => navigate('/terms')}
+                className="text-gray-500 text-xs sm:text-sm hover:text-emerald-400 transition-colors"
+              >
+                Terms of Service
+              </button>
+              <button
+                onClick={() => navigate('/cookies')}
+                className="text-gray-500 text-xs sm:text-sm hover:text-emerald-400 transition-colors"
+              >
+                Cookie Settings
+              </button>
               <button
                 onClick={scrollToTop}
                 className="w-10 h-10 bg-gray-800 rounded-xl flex items-center justify-center hover:bg-emerald-600 transition-colors"
