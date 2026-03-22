@@ -21,7 +21,47 @@ echo -e "${GREEN}✅ Code updated${NC}"
 
 # Step 2: Run migration 011 (simplify subscription plans)
 echo -e "${BLUE}📊 Step 2: Running migration 011 (simplify plans)...${NC}"
-docker exec ecobserve-db psql -U postgres -d ecobserve -f /app/backend/src/migrations/011_simplify_subscription_plans.sql || true
+docker exec ecobserve-db psql -U postgres -d ecobserve << 'EOF'
+-- Migration 011: Simplify Subscription Plans
+
+-- Deactivate old monthly/yearly variants
+UPDATE subscription_plans
+SET is_active = false
+WHERE code IN ('planner_monthly', 'planner_yearly', 'impact_monthly', 'impact_yearly');
+
+-- Ensure the simplified plans exist and are active
+UPDATE subscription_plans SET is_active = true WHERE code = 'explorer';
+UPDATE subscription_plans SET is_active = true WHERE code = 'planner';
+
+-- Create Impact Leader (simplified)
+INSERT INTO subscription_plans (
+    code, name, description, max_events, max_users, features, amount, currency, interval, is_active
+) VALUES (
+    'impact_leader',
+    'Impact Leader',
+    'For large agencies and corporate teams',
+    -1, -1,
+    '["Everything in Planner", "Impact Dashboard with visual analytics", "Industry benchmarking", "Portfolio sustainability tracking", "UN SDG alignment reporting", "Unlimited team members", "Custom branded reports", "Advanced data export (CSV, Excel)", "Priority support", "Multi-location tracking", "Custom event categories"]'::jsonb,
+    1999.00, 'ZAR', 'monthly', true
+)
+ON CONFLICT (code) DO UPDATE SET
+    name = EXCLUDED.name,
+    description = EXCLUDED.description,
+    max_events = EXCLUDED.max_events,
+    max_users = EXCLUDED.max_users,
+    features = EXCLUDED.features,
+    amount = EXCLUDED.amount,
+    is_active = EXCLUDED.is_active,
+    updated_at = CURRENT_TIMESTAMP;
+
+UPDATE subscription_plans SET is_active = true WHERE code = 'enterprise';
+
+-- Record migration
+INSERT INTO schema_migrations (migration_name, executed_at)
+VALUES ('011_simplify_subscription_plans.sql', CURRENT_TIMESTAMP)
+ON CONFLICT (migration_name) DO NOTHING;
+EOF
+
 echo -e "${GREEN}✅ Migration 011 completed${NC}"
 
 # Step 3: Run migration 012 (downgrade tracking)

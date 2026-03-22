@@ -265,7 +265,7 @@ export async function cancelSubscription(req: Request, res: Response) {
  */
 export async function downgradeSubscription(req: Request, res: Response) {
   try {
-    if (!req.organizationId || !req.userId) {
+    if (!req.organizationId || !req.user?.id) {
       return res.status(400).json({ error: 'Organization and user context required' });
     }
 
@@ -282,7 +282,7 @@ export async function downgradeSubscription(req: Request, res: Response) {
     const result = await paymentService.downgradeSubscription(
       pool,
       req.organizationId,
-      req.userId,
+      req.user.id,
       planCode,
       reason
     );
