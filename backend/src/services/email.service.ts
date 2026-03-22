@@ -188,3 +188,8 @@ class EmailService {
 
 export const emailService = new EmailService();
 
+// Export sendEmail function for direct use
+export async function sendEmail(options: { to: string; subject: string; html: string }): Promise<void> {
+  return emailService.sendCustomEmail(options);
+}
+

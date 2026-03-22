@@ -64,3 +64,6 @@ export async function invalidateCachePattern(pattern: string): Promise<void> {
 
 export default redis;
 
+// Export as redisClient for compatibility with rate-limiter
+export const redisClient = redis;
+
