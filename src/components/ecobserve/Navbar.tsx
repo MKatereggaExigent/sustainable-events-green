@@ -7,7 +7,7 @@ import BrandLogo from './BrandLogo';
 import Settings from './Settings';
 import SubscriptionBadge from './SubscriptionBadge';
 
-// Navbar v1.3 - Fixed TrendingUp import and tier badges (Build: 2026-03-22)
+// Navbar v1.4 - Force rebuild with TrendingUp fix (Build: 2026-03-22 18:58 UTC)
 
 interface NavbarProps {
   onNavigate: (section: string) => void;
@@ -196,7 +196,7 @@ const Navbar: React.FC<NavbarProps> = ({ onNavigate, activeSection }) => {
                     }`}
                   >
                     <TrendingUp className="w-3 xl:w-3.5 h-3 xl:h-3.5 flex-shrink-0" />
-                    Results
+                    <span>Results</span>
                     <ChevronDown className={`w-3 h-3 transition-transform ${showResultsDropdown ? 'rotate-180' : ''}`} />
                   </button>
                   {showResultsDropdown && (
