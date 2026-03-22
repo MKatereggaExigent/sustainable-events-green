@@ -96,19 +96,19 @@ ON CONFLICT (region_code) DO NOTHING;
 -- ============================================
 
 -- Add South African and other regional tax incentives
-INSERT INTO tax_incentives (id, name, description, region, category, percentage_credit, max_credit, eligibility_criteria, is_active) VALUES
+INSERT INTO tax_incentives (name, description, region, category, percentage_credit, max_credit, eligibility_criteria, is_active) VALUES
 -- South Africa
-('za-section-12l', 'Section 12L Energy Efficiency Tax Incentive', 'R0.95 per kWh saved through energy efficiency improvements', 'za', 'energy', 95, 18000000, ARRAY['Achieve measurable energy savings', 'Submit application to SANEDI', 'Obtain M&V report from approved provider'], true),
-('za-section-12b', 'Section 12B Renewable Energy Depreciation', '50% accelerated depreciation in year 1 for renewable energy equipment', 'za', 'energy', 50, 50000000, ARRAY['Install renewable energy equipment', 'Equipment must be new', 'Used for business purposes'], true),
-('za-carbon-tax-allowance', 'Carbon Tax Basic Tax-Free Allowance', '60% tax-free allowance on carbon emissions', 'za', 'carbon', 60, 10000000, ARRAY['Register as carbon taxpayer', 'Submit annual emissions report', 'Comply with reporting requirements'], true),
-('za-green-building-incentive', 'Green Building Tax Incentive', 'Deduction for costs of green-rated buildings', 'za', 'general', 55, 25000000, ARRAY['Achieve Green Star SA rating', 'Building must be certified', 'Submit certification to SARS'], true),
+('Section 12L Energy Efficiency Tax Incentive', 'R0.95 per kWh saved through energy efficiency improvements', 'za', 'energy', 95, 18000000, ARRAY['Achieve measurable energy savings', 'Submit application to SANEDI', 'Obtain M&V report from approved provider'], true),
+('Section 12B Renewable Energy Depreciation', '50% accelerated depreciation in year 1 for renewable energy equipment', 'za', 'energy', 50, 50000000, ARRAY['Install renewable energy equipment', 'Equipment must be new', 'Used for business purposes'], true),
+('Carbon Tax Basic Tax-Free Allowance', '60% tax-free allowance on carbon emissions', 'za', 'carbon', 60, 10000000, ARRAY['Register as carbon taxpayer', 'Submit annual emissions report', 'Comply with reporting requirements'], true),
+('Green Building Tax Incentive', 'Deduction for costs of green-rated buildings', 'za', 'general', 55, 25000000, ARRAY['Achieve Green Star SA rating', 'Building must be certified', 'Submit certification to SARS'], true),
 
 -- Nigeria
-('ng-renewable-energy-credit', 'Pioneer Status Tax Holiday', '100% tax holiday for renewable energy projects', 'ng', 'energy', 100, 500000000, ARRAY['Invest in renewable energy', 'Register with NIPC', 'Meet minimum investment threshold'], true),
+('Pioneer Status Tax Holiday', '100% tax holiday for renewable energy projects', 'ng', 'energy', 100, 500000000, ARRAY['Invest in renewable energy', 'Register with NIPC', 'Meet minimum investment threshold'], true),
 
 -- Kenya
-('ke-vat-exemption', 'VAT Exemption on Solar Equipment', 'VAT exemption on solar and renewable energy equipment', 'ke', 'energy', 16, 10000000, ARRAY['Purchase certified solar equipment', 'Equipment for business use'], true)
-ON CONFLICT (id) DO NOTHING;
+('VAT Exemption on Solar Equipment', 'VAT exemption on solar and renewable energy equipment', 'ke', 'energy', 16, 10000000, ARRAY['Purchase certified solar equipment', 'Equipment for business use'], true)
+ON CONFLICT (name, region) DO NOTHING;
 
 -- ============================================
 -- UPDATE USER SETTINGS DEFAULT CURRENCY
