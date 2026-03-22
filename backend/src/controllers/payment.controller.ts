@@ -259,3 +259,45 @@ export async function cancelSubscription(req: Request, res: Response) {
   }
 }
 
+/**
+ * Downgrade subscription
+ * POST /api/payments/subscription/downgrade
+ */
+export async function downgradeSubscription(req: Request, res: Response) {
+  try {
+    if (!req.organizationId || !req.userId) {
+      return res.status(400).json({ error: 'Organization and user context required' });
+    }
+
+    const { planCode, reason } = req.body;
+
+    if (!planCode) {
+      return res.status(400).json({ error: 'Plan code is required' });
+    }
+
+    if (!reason || reason.trim().length < 10) {
+      return res.status(400).json({ error: 'Please provide a reason for downgrading (minimum 10 characters)' });
+    }
+
+    const result = await paymentService.downgradeSubscription(
+      pool,
+      req.organizationId,
+      req.userId,
+      planCode,
+      reason
+    );
+
+    if (!result.success) {
+      return res.status(400).json({ error: result.error });
+    }
+
+    return res.json({
+      success: true,
+      message: 'Subscription downgraded successfully'
+    });
+  } catch (error: any) {
+    logger.error('Downgrade subscription error:', error);
+    return res.status(500).json({ error: 'Failed to downgrade subscription' });
+  }
+}
+

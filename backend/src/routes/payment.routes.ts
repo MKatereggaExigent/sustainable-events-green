@@ -56,5 +56,12 @@ router.post(
   paymentController.cancelSubscription
 );
 
+// POST /api/payments/subscription/downgrade - Downgrade subscription
+router.post(
+  '/subscription/downgrade',
+  requirePermission('payment:manage'),
+  paymentController.downgradeSubscription
+);
+
 export default router;
 

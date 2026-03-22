@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Check, Sparkles, Crown, Rocket, Zap, ArrowRight, Loader2 } from 'lucide-react';
+import { Check, Sparkles, Crown, Rocket, Zap, ArrowRight, Loader2, TrendingDown } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '@/components/ecobserve/Navbar';
 import Footer from '@/components/ecobserve/Footer';
+import DowngradeModal from '@/components/ecobserve/DowngradeModal';
 
 interface Plan {
   id: string;
@@ -19,11 +20,15 @@ interface Plan {
 }
 
 const Pricing: React.FC = () => {
-  const { user, subscriptionTier, isAuthenticated } = useAuth();
+  const { user, subscriptionTier, isAuthenticated, refreshSubscription } = useAuth();
   const navigate = useNavigate();
   const [plans, setPlans] = useState<Plan[]>([]);
   const [loading, setLoading] = useState(true);
   const [processingPlan, setProcessingPlan] = useState<string | null>(null);
+  const [downgradeModal, setDowngradeModal] = useState<{ isOpen: boolean; plan: Plan | null }>({
+    isOpen: false,
+    plan: null,
+  });
 
   useEffect(() => {
     fetchPlans();
@@ -168,6 +173,26 @@ const Pricing: React.FC = () => {
       return;
     }
 
+    // Check if this is a downgrade
+    const tierHierarchy: Record<string, number> = {
+      explorer: 0,
+      planner: 1,
+      impact: 2,
+      enterprise: 3,
+    };
+
+    const currentTierLevel = tierHierarchy[subscriptionTier] || 0;
+    const targetTierLevel = tierHierarchy[planCode === 'impact_leader' ? 'impact' : planCode] || 0;
+
+    if (targetTierLevel < currentTierLevel) {
+      // This is a downgrade - show modal
+      const plan = plans.find(p => p.code === planCode);
+      if (plan) {
+        setDowngradeModal({ isOpen: true, plan });
+      }
+      return;
+    }
+
     setProcessingPlan(planCode);
 
     try {
@@ -209,6 +234,41 @@ const Pricing: React.FC = () => {
       alert('An error occurred. Please try again.');
     } finally {
       setProcessingPlan(null);
+    }
+  };
+
+  const handleDowngrade = async (reason: string) => {
+    if (!downgradeModal.plan) return;
+
+    try {
+      const token = localStorage.getItem('accessToken');
+      const apiUrl = window.location.hostname === 'localhost'
+        ? 'http://localhost:8035'
+        : `${window.location.protocol}//${window.location.hostname}`;
+
+      const response = await fetch(`${apiUrl}/api/payments/subscription/downgrade`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          planCode: downgradeModal.plan.code,
+          reason,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        alert('Subscription downgraded successfully!');
+        await refreshSubscription();
+        setDowngradeModal({ isOpen: false, plan: null });
+      } else {
+        throw new Error(data.error || 'Failed to downgrade subscription');
+      }
+    } catch (error: any) {
+      throw error;
     }
   };
 
@@ -354,12 +414,30 @@ const Pricing: React.FC = () => {
                           Contact Sales
                           <ArrowRight className="w-4 h-4" />
                         </>
-                      ) : (
-                        <>
-                          {plan.amount === 0 ? 'Get Started' : 'Upgrade Now'}
-                          <ArrowRight className="w-4 h-4" />
-                        </>
-                      )}
+                      ) : (() => {
+                          const tierHierarchy: Record<string, number> = {
+                            explorer: 0,
+                            planner: 1,
+                            impact: 2,
+                            enterprise: 3,
+                          };
+                          const currentTierLevel = tierHierarchy[subscriptionTier] || 0;
+                          const targetTierLevel = tierHierarchy[plan.code === 'impact_leader' ? 'impact' : plan.code] || 0;
+                          const isDowngrade = targetTierLevel < currentTierLevel;
+
+                          return isDowngrade ? (
+                            <>
+                              <TrendingDown className="w-4 h-4" />
+                              Downgrade
+                            </>
+                          ) : (
+                            <>
+                              {plan.amount === 0 ? 'Get Started' : 'Upgrade Now'}
+                              <ArrowRight className="w-4 h-4" />
+                            </>
+                          );
+                        })()
+                      }
                     </button>
 
                     {/* Features */}
@@ -400,6 +478,17 @@ const Pricing: React.FC = () => {
       </div>
 
       <Footer />
+
+      {/* Downgrade Modal */}
+      {downgradeModal.plan && (
+        <DowngradeModal
+          isOpen={downgradeModal.isOpen}
+          onClose={() => setDowngradeModal({ isOpen: false, plan: null })}
+          currentTier={subscriptionTier}
+          targetPlan={downgradeModal.plan}
+          onConfirm={handleDowngrade}
+        />
+      )}
     </div>
   );
 };

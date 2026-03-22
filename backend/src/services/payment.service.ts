@@ -256,10 +256,15 @@ async function updateSubscriptionAfterPayment(
     );
 
     // Update organization subscription tier and expiry
+    // Map plan codes to subscription tiers
     const tierMap: Record<string, string> = {
-      free: 'free',
-      premium_monthly: 'premium',
-      premium_yearly: 'premium',
+      explorer: 'explorer',
+      planner: 'planner',
+      planner_monthly: 'planner',
+      planner_yearly: 'planner',
+      impact_leader: 'impact',
+      impact_monthly: 'impact',
+      impact_yearly: 'impact',
       enterprise: 'enterprise',
     };
 
@@ -269,7 +274,7 @@ async function updateSubscriptionAfterPayment(
            subscription_expires_at = $2,
            updated_at = CURRENT_TIMESTAMP
        WHERE id = $3`,
-      [tierMap[plan.code] || 'free', nextPaymentDate, transaction.organization_id]
+      [tierMap[plan.code] || 'explorer', nextPaymentDate, transaction.organization_id]
     );
 
     await client.query('COMMIT');
@@ -427,7 +432,7 @@ export async function cancelSubscription(
   // Revert organization to free tier
   await pool.query(
     `UPDATE organizations
-     SET subscription_tier = 'free',
+     SET subscription_tier = 'explorer',
          subscription_expires_at = NULL,
          updated_at = CURRENT_TIMESTAMP
      WHERE id = $1`,
@@ -435,5 +440,139 @@ export async function cancelSubscription(
   );
 
   logger.info('Subscription cancelled', { organizationId });
+}
+
+/**
+ * Downgrade subscription to a lower tier
+ */
+export async function downgradeSubscription(
+  pool: Pool,
+  organizationId: string,
+  userId: string,
+  newPlanCode: string,
+  reason: string
+): Promise<{ success: boolean; error?: string }> {
+  const client = await pool.connect();
+
+  try {
+    await client.query('BEGIN');
+
+    // Get current organization tier
+    const orgResult = await client.query(
+      'SELECT subscription_tier FROM organizations WHERE id = $1',
+      [organizationId]
+    );
+
+    if (orgResult.rows.length === 0) {
+      throw new Error('Organization not found');
+    }
+
+    const currentTier = orgResult.rows[0].subscription_tier;
+
+    // Get new plan details
+    const planResult = await client.query(
+      'SELECT * FROM subscription_plans WHERE code = $1 AND is_active = true',
+      [newPlanCode]
+    );
+
+    if (planResult.rows.length === 0) {
+      throw new Error('Invalid subscription plan');
+    }
+
+    const newPlan = planResult.rows[0];
+
+    // Map plan codes to tier hierarchy
+    const tierHierarchy: Record<string, number> = {
+      explorer: 0,
+      planner: 1,
+      impact: 2,
+      enterprise: 3,
+    };
+
+    const tierMap: Record<string, string> = {
+      explorer: 'explorer',
+      planner: 'planner',
+      impact_leader: 'impact',
+      enterprise: 'enterprise',
+    };
+
+    const newTier = tierMap[newPlan.code] || 'explorer';
+
+    // Verify it's actually a downgrade
+    if (tierHierarchy[newTier] >= tierHierarchy[currentTier]) {
+      return { success: false, error: 'This is not a downgrade. Please use the upgrade flow.' };
+    }
+
+    // Check downgrade limit (max 3 downgrades in 12 months)
+    const downgradeCountResult = await client.query(
+      'SELECT get_recent_downgrade_count($1) as count',
+      [organizationId]
+    );
+
+    const recentDowngrades = downgradeCountResult.rows[0].count;
+
+    if (recentDowngrades >= 3) {
+      return {
+        success: false,
+        error: 'You have reached the maximum number of downgrades (3) in the last 12 months. Please contact support.',
+      };
+    }
+
+    // Record the downgrade
+    await client.query(
+      `INSERT INTO subscription_changes (organization_id, user_id, from_tier, to_tier, change_type, reason)
+       VALUES ($1, $2, $3, $4, 'downgrade', $5)`,
+      [organizationId, userId, currentTier, newTier, reason]
+    );
+
+    // Update organization tier
+    await client.query(
+      `UPDATE organizations
+       SET subscription_tier = $1,
+           downgrade_count = downgrade_count + 1,
+           last_downgrade_at = CURRENT_TIMESTAMP,
+           updated_at = CURRENT_TIMESTAMP
+       WHERE id = $2`,
+      [newTier, organizationId]
+    );
+
+    // Cancel current subscription
+    await client.query(
+      `UPDATE subscriptions
+       SET status = 'cancelled',
+           cancelled_at = CURRENT_TIMESTAMP,
+           updated_at = CURRENT_TIMESTAMP
+       WHERE organization_id = $1 AND status = 'active'`,
+      [organizationId]
+    );
+
+    // If downgrading to a paid tier, create new subscription
+    if (newPlan.amount > 0) {
+      const nextPaymentDate = new Date();
+      if (newPlan.interval === 'yearly') {
+        nextPaymentDate.setFullYear(nextPaymentDate.getFullYear() + 1);
+      } else {
+        nextPaymentDate.setMonth(nextPaymentDate.getMonth() + 1);
+      }
+
+      await client.query(
+        `INSERT INTO subscriptions
+         (organization_id, plan_code, plan_name, amount, currency, interval, status, next_payment_date)
+         VALUES ($1, $2, $3, $4, $5, $6, 'active', $7)`,
+        [organizationId, newPlan.code, newPlan.name, newPlan.amount, newPlan.currency, newPlan.interval, nextPaymentDate]
+      );
+    }
+
+    await client.query('COMMIT');
+    logger.info('Subscription downgraded', { organizationId, from: currentTier, to: newTier, reason });
+
+    return { success: true };
+  } catch (error: any) {
+    await client.query('ROLLBACK');
+    logger.error('Downgrade subscription error:', error);
+    return { success: false, error: error.message };
+  } finally {
+    client.release();
+  }
 }
 

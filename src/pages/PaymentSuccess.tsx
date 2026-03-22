@@ -114,13 +114,16 @@ const PaymentSuccess: React.FC = () => {
             {/* Action Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <button
-                onClick={() => navigate('/')}
+                onClick={() => {
+                  // Force a full page reload to clear any cached state
+                  window.location.href = '/';
+                }}
                 className="px-8 py-3 bg-gradient-to-r from-emerald-500 to-teal-500 text-white rounded-xl font-semibold hover:shadow-lg transition-all flex items-center justify-center gap-2"
               >
                 Start Using Features
                 <ArrowRight className="w-5 h-5" />
               </button>
-              
+
               <button
                 onClick={() => navigate('/pricing')}
                 className="px-8 py-3 bg-gray-100 text-gray-700 rounded-xl font-semibold hover:bg-gray-200 transition-all"
