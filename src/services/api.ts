@@ -1,4 +1,5 @@
 // API Client for EcobServe Backend
+import { getDeviceFingerprint } from '@/lib/fingerprint';
 
 // Use relative path for production (nginx will proxy), absolute for local dev
 const API_URL = import.meta.env.VITE_API_URL || '/api';
@@ -10,6 +11,14 @@ interface ApiResponse<T> {
 
 let accessToken: string | null = null;
 let organizationId: string | null = null;
+let deviceFingerprint: string | null = null;
+
+// Initialize device fingerprint on app load
+getDeviceFingerprint().then(fp => {
+  deviceFingerprint = fp;
+}).catch(err => {
+  console.error('Failed to initialize device fingerprint:', err);
+});
 
 // Token management
 export function setAccessToken(token: string | null) {
@@ -63,6 +72,9 @@ async function apiFetch<T>(
   }
   if (orgId) {
     (headers as Record<string, string>)['X-Organization-Id'] = orgId;
+  }
+  if (deviceFingerprint) {
+    (headers as Record<string, string>)['X-Device-Fingerprint'] = deviceFingerprint;
   }
 
   try {
@@ -293,3 +305,18 @@ export function isAuthenticated(): boolean {
   return !!getAccessToken();
 }
 
+// Generic API helper
+export const api = {
+  get: <T = any>(endpoint: string) => apiFetch<T>(endpoint),
+  post: <T = any>(endpoint: string, data?: any) => apiFetch<T>(endpoint, {
+    method: 'POST',
+    body: data ? JSON.stringify(data) : undefined,
+  }),
+  put: <T = any>(endpoint: string, data?: any) => apiFetch<T>(endpoint, {
+    method: 'PUT',
+    body: data ? JSON.stringify(data) : undefined,
+  }),
+  delete: <T = any>(endpoint: string) => apiFetch<T>(endpoint, {
+    method: 'DELETE',
+  }),
+};

@@ -1,33 +1,23 @@
 import { Router } from 'express';
-import rateLimit from 'express-rate-limit';
 import * as authController from '../controllers/auth.controller';
 import { authenticate, optionalAuth } from '../middleware/auth';
 import { loadUserPermissions } from '../middleware/rbac';
+import { authRateLimiter, passwordResetRateLimiter } from '../middleware/rate-limiter';
 
 const router = Router();
 
-// Specific rate limiter for login/register to prevent brute force
-const authLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 20, // 20 login/register attempts per 15 minutes per IP
-  message: { error: 'Too many authentication attempts, please try again later' },
-  standardHeaders: true,
-  legacyHeaders: false,
-  skipSuccessfulRequests: true, // Don't count successful logins
-});
-
-// Public routes
-router.post('/register', authLimiter, authController.registerValidation, authController.register);
-router.post('/login', authLimiter, authController.loginValidation, authController.login);
+// Public routes with enhanced rate limiting
+router.post('/register', authRateLimiter, authController.registerValidation, authController.register);
+router.post('/login', authRateLimiter, authController.loginValidation, authController.login);
 router.post('/refresh', authController.refresh);
 
 // Email verification
 router.post('/verify-email', authController.verifyEmailValidation, authController.verifyEmail);
-router.post('/resend-verification', authLimiter, authController.resendVerificationValidation, authController.resendVerification);
+router.post('/resend-verification', authRateLimiter, authController.resendVerificationValidation, authController.resendVerification);
 
-// Password reset
-router.post('/forgot-password', authLimiter, authController.forgotPasswordValidation, authController.forgotPassword);
-router.post('/reset-password', authController.resetPasswordValidation, authController.resetPassword);
+// Password reset with strict rate limiting
+router.post('/forgot-password', passwordResetRateLimiter, authController.forgotPasswordValidation, authController.forgotPassword);
+router.post('/reset-password', passwordResetRateLimiter, authController.resetPasswordValidation, authController.resetPassword);
 
 // Protected routes
 router.post('/logout', authenticate, authController.logout);

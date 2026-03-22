@@ -24,5 +24,11 @@ router.get(
   analyticsController.getConversionStats
 );
 
+// GET /api/analytics/logins - Get login analytics
+router.get(
+  '/logins',
+  analyticsController.getLoginAnalytics
+);
+
 export default router;
 
