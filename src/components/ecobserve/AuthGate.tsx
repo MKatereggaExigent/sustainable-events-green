@@ -41,6 +41,7 @@ const AuthGate: React.FC<AuthGateProps> = ({
 
   // Get tier information for display
   const tierInfo = {
+    explorer: { name: 'Explorer', price: 'Free', icon: Sparkles, color: 'emerald' },
     planner: { name: 'Planner', price: 'R499/mo', icon: Zap, color: 'emerald' },
     impact: { name: 'Impact Leader', price: 'R1,999/mo', icon: Crown, color: 'purple' },
     enterprise: { name: 'Enterprise', price: 'Custom', icon: Sparkles, color: 'blue' },
@@ -120,10 +121,10 @@ const AuthGate: React.FC<AuthGateProps> = ({
     <section className="py-16 px-4 bg-gradient-to-br from-gray-50 to-emerald-50/30">
       <div className="max-w-4xl mx-auto">
         <div className="bg-white rounded-3xl shadow-xl border border-emerald-100 overflow-hidden">
-          {/* Premium badge */}
+          {/* Tier badge */}
           <div className="bg-gradient-to-r from-emerald-600 to-teal-600 px-6 py-3 flex items-center justify-center gap-2">
-            <Sparkles className="w-5 h-5 text-white" />
-            <span className="text-white font-semibold">Premium Feature</span>
+            <TierIcon className="w-5 h-5 text-white" />
+            <span className="text-white font-semibold">{requiredTierInfo.name} Tier Feature</span>
           </div>
           
           <div className="p-8 md:p-12 text-center">
