@@ -183,13 +183,38 @@ class ImpactDashboardService {
       event_count: parseInt(row.event_count),
     }));
 
-    // By emission source (simplified - you can enhance this based on your data model)
-    const by_emission_source = [
-      { source: 'Transportation', carbon: totalCarbon * 0.4, percentage: 40 },
-      { source: 'Energy', carbon: totalCarbon * 0.3, percentage: 30 },
-      { source: 'Food & Catering', carbon: totalCarbon * 0.2, percentage: 20 },
-      { source: 'Waste', carbon: totalCarbon * 0.1, percentage: 10 },
-    ];
+    // By emission source - calculate from actual event data
+    const emissionSourceResult = await pool.query(`
+      SELECT
+        'Transportation' as source,
+        COALESCE(SUM(travel_carbon), 0) as carbon
+      FROM events
+      WHERE organization_id = $1 AND deleted_at IS NULL
+      UNION ALL
+      SELECT
+        'Energy' as source,
+        COALESCE(SUM(venue_carbon), 0) as carbon
+      FROM events
+      WHERE organization_id = $1 AND deleted_at IS NULL
+      UNION ALL
+      SELECT
+        'Food & Catering' as source,
+        COALESCE(SUM(catering_carbon), 0) as carbon
+      FROM events
+      WHERE organization_id = $1 AND deleted_at IS NULL
+      UNION ALL
+      SELECT
+        'Waste' as source,
+        COALESCE(SUM(waste_carbon), 0) as carbon
+      FROM events
+      WHERE organization_id = $1 AND deleted_at IS NULL
+    `, [organizationId]);
+
+    const by_emission_source = emissionSourceResult.rows.map(row => ({
+      source: row.source,
+      carbon: parseFloat(row.carbon),
+      percentage: totalCarbon > 0 ? (parseFloat(row.carbon) / totalCarbon) * 100 : 0,
+    }));
 
     return {
       by_category,
@@ -201,18 +226,82 @@ class ImpactDashboardService {
    * Get performance metrics (AI-powered)
    */
   private async getPerformanceMetrics(organizationId: string) {
-    // Placeholder - will be enhanced with AI research
+    // Calculate actual average carbon per attendee
+    const avgResult = await pool.query(`
+      SELECT
+        CASE
+          WHEN SUM(attendees) > 0 THEN SUM(total_carbon) / SUM(attendees)
+          ELSE 0
+        END as your_average
+      FROM events
+      WHERE organization_id = $1 AND deleted_at IS NULL AND attendees > 0
+    `, [organizationId]);
+
+    const your_average = parseFloat(avgResult.rows[0]?.your_average || '0');
+
+    // Get industry benchmark from database (if available) or use calculated average from all orgs
+    const industryResult = await pool.query(`
+      SELECT
+        CASE
+          WHEN SUM(attendees) > 0 THEN SUM(total_carbon) / SUM(attendees)
+          ELSE 62.5
+        END as industry_average
+      FROM events
+      WHERE deleted_at IS NULL AND attendees > 0
+    `);
+
+    const industry_average = parseFloat(industryResult.rows[0]?.industry_average || '62.5');
+
+    // Calculate performance rating
+    let performance_rating: 'excellent' | 'good' | 'average' | 'needs_improvement' = 'average';
+    let percentile = 50;
+
+    if (your_average > 0 && industry_average > 0) {
+      const ratio = your_average / industry_average;
+      if (ratio <= 0.5) {
+        performance_rating = 'excellent';
+        percentile = 90;
+      } else if (ratio <= 0.8) {
+        performance_rating = 'good';
+        percentile = 75;
+      } else if (ratio <= 1.2) {
+        performance_rating = 'average';
+        percentile = 50;
+      } else {
+        performance_rating = 'needs_improvement';
+        percentile = 25;
+      }
+    }
+
+    // Get SDG alignment from events table
+    const sdgResult = await pool.query(`
+      SELECT
+        sdg_alignments
+      FROM events
+      WHERE organization_id = $1 AND deleted_at IS NULL AND sdg_alignments IS NOT NULL
+      ORDER BY created_at DESC
+      LIMIT 1
+    `, [organizationId]);
+
+    let sdg_alignment: Array<{ sdg_number: number; sdg_name: string; alignment_score: number }> = [];
+
+    if (sdgResult.rows.length > 0 && sdgResult.rows[0].sdg_alignments) {
+      try {
+        sdg_alignment = JSON.parse(sdgResult.rows[0].sdg_alignments);
+      } catch (e) {
+        // If parsing fails, return empty array
+        sdg_alignment = [];
+      }
+    }
+
     return {
       industry_benchmark: {
-        your_average: 45.2,
-        industry_average: 62.5,
-        performance_rating: 'good' as const,
-        percentile: 72,
+        your_average,
+        industry_average,
+        performance_rating,
+        percentile,
       },
-      sdg_alignment: [
-        { sdg_number: 7, sdg_name: 'Affordable and Clean Energy', alignment_score: 85 },
-        { sdg_number: 13, sdg_name: 'Climate Action', alignment_score: 92 },
-      ],
+      sdg_alignment,
     };
   }
 
@@ -220,14 +309,54 @@ class ImpactDashboardService {
    * Get predictions (AI-powered)
    */
   private async getPredictions(organizationId: string, trends: any) {
+    // Calculate next month prediction based on trend
+    const avgMonthlyCarbon = trends.monthly_data.length > 0
+      ? trends.monthly_data.reduce((sum: number, m: any) => sum + m.carbon, 0) / trends.monthly_data.length
+      : 0;
+
+    const next_month_carbon = Math.round(avgMonthlyCarbon * (1 + (trends.percentage_change / 100)));
+
+    // Project year-end based on current trend
+    const monthsRemaining = 12 - new Date().getMonth();
+    const year_end_projection = Math.round(
+      trends.monthly_data.reduce((sum: number, m: any) => sum + m.carbon, 0) +
+      (next_month_carbon * monthsRemaining)
+    );
+
+    // Get reduction opportunities from recent events
+    const reduction_opportunities: string[] = [];
+
+    const highCarbonEvents = await pool.query(`
+      SELECT category, AVG(total_carbon / NULLIF(attendees, 0)) as avg_per_attendee
+      FROM events
+      WHERE organization_id = $1 AND deleted_at IS NULL AND attendees > 0
+      GROUP BY category
+      HAVING AVG(total_carbon / NULLIF(attendees, 0)) > 50
+      ORDER BY avg_per_attendee DESC
+      LIMIT 3
+    `, [organizationId]);
+
+    if (highCarbonEvents.rows.length > 0) {
+      highCarbonEvents.rows.forEach(row => {
+        reduction_opportunities.push(
+          `Optimize ${row.category} events - currently ${Math.round(row.avg_per_attendee)}kg CO2e per attendee`
+        );
+      });
+    }
+
+    // Add generic opportunities if we don't have enough specific ones
+    if (reduction_opportunities.length === 0) {
+      reduction_opportunities.push(
+        'Track more events to get personalized reduction opportunities',
+        'Consider renewable energy options for venues',
+        'Implement virtual attendance to reduce travel emissions'
+      );
+    }
+
     return {
-      next_month_carbon: 1250,
-      year_end_projection: 15000,
-      reduction_opportunities: [
-        'Switch to renewable energy sources',
-        'Implement virtual attendance options',
-        'Use local suppliers to reduce transportation',
-      ],
+      next_month_carbon,
+      year_end_projection,
+      reduction_opportunities,
     };
   }
 }

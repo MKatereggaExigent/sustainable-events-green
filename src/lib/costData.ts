@@ -18,13 +18,13 @@ export interface CostInputs {
 }
 
 export const defaultCostInputs: CostInputs = {
-  venueCost: 5000,
-  energyCost: 1500,
-  cateringCost: 8000,
-  transportCost: 3000,
-  materialsCost: 2000,
-  wasteDisposalCost: 500,
-  region: 'us',
+  venueCost: 0,
+  energyCost: 0,
+  cateringCost: 0,
+  transportCost: 0,
+  materialsCost: 0,
+  wasteDisposalCost: 0,
+  region: 'za',  // Default to South Africa
   attendeeCount: 100,
   eventDurationHours: 8,
   sustainabilityLevel: 'moderate',
@@ -68,31 +68,34 @@ export interface TaxIncentive {
 }
 
 // ============================================
-// INDUSTRY-STANDARD PRICING & FACTORS (2024)
+// REGIONAL COST FACTORS
 // ============================================
+// NOTE: These are fallback values only. The system fetches real-time
+// regional cost factors from the database via API.
+// These values should match the database defaults in migration 014.
 
-// Carbon pricing (EU ETS average 2024: €80-90/tonne, US voluntary: $15-50/tonne)
 const CARBON_PRICES: Record<string, number> = {
-  us: 0.025,    // $25/tonne = $0.025/kg (voluntary market average)
-  eu: 0.085,    // €85/tonne = €0.085/kg (EU ETS)
+  za: 0.159,    // R159/ton (South Africa Carbon Tax 2026)
+  us: 0.025,    // $25/tonne (voluntary market average)
+  eu: 0.085,    // €85/tonne (EU ETS)
   uk: 0.075,    // £75/tonne (UK ETS)
   ca: 0.065,    // CAD 65/tonne (Canadian carbon tax)
   au: 0.030,    // AUD 30/tonne (safeguard mechanism)
 };
 
-// Water costs by region (per liter)
 const WATER_COSTS: Record<string, number> = {
+  za: 0.072,    // R per liter (SA municipal average)
   us: 0.004,
   eu: 0.006,
   uk: 0.005,
   ca: 0.003,
-  au: 0.008,  // Higher due to scarcity
+  au: 0.008,
 };
 
-// Waste disposal costs by region (per kg)
 const WASTE_COSTS: Record<string, number> = {
+  za: 2.16,     // R per kg (SA waste disposal)
   us: 0.12,
-  eu: 0.18,   // Higher due to stricter regulations
+  eu: 0.18,
   uk: 0.15,
   ca: 0.10,
   au: 0.14,
@@ -434,7 +437,41 @@ export function calculateCostSavings(
 import { incentivesApi } from '../services/api';
 
 // Fallback tax incentives (used when API is unavailable or user is not authenticated)
+// NOTE: The system fetches real incentives from the database via API.
+// These are fallback values only and should match database records.
 const FALLBACK_INCENTIVES: Omit<TaxIncentive, 'estimatedValue'>[] = [
+  // South Africa
+  {
+    id: 'za-section-12l',
+    name: 'Section 12L Energy Efficiency Tax Incentive',
+    description: 'R0.95 per kWh saved through energy efficiency improvements',
+    region: 'za',
+    category: 'energy',
+    percentageCredit: 95,
+    maxCredit: 18000000,
+    eligibilityCriteria: ['Achieve measurable energy savings', 'Submit application to SANEDI'],
+  },
+  {
+    id: 'za-section-12b',
+    name: 'Section 12B Renewable Energy Depreciation',
+    description: '50% accelerated depreciation in year 1 for renewable energy equipment',
+    region: 'za',
+    category: 'energy',
+    percentageCredit: 50,
+    maxCredit: 50000000,
+    eligibilityCriteria: ['Install renewable energy equipment', 'Equipment must be new'],
+  },
+  {
+    id: 'za-carbon-tax-allowance',
+    name: 'Carbon Tax Basic Tax-Free Allowance',
+    description: '60% tax-free allowance on carbon emissions',
+    region: 'za',
+    category: 'carbon',
+    percentageCredit: 60,
+    maxCredit: 10000000,
+    eligibilityCriteria: ['Register as carbon taxpayer', 'Submit annual emissions report'],
+  },
+  // United States
   {
     id: 'us-renewable-credit',
     name: 'Renewable Energy Tax Credit',
@@ -455,6 +492,7 @@ const FALLBACK_INCENTIVES: Omit<TaxIncentive, 'estimatedValue'>[] = [
     maxCredit: 5000,
     eligibilityCriteria: ['Purchase verified carbon offsets', 'Document emissions reduced'],
   },
+  // European Union
   {
     id: 'eu-green-event',
     name: 'EU Green Event Certification Grant',
@@ -465,6 +503,7 @@ const FALLBACK_INCENTIVES: Omit<TaxIncentive, 'estimatedValue'>[] = [
     maxCredit: 15000,
     eligibilityCriteria: ['Meet EU Ecolabel standards', 'Complete certification process'],
   },
+  // United Kingdom
   {
     id: 'uk-energy-savings',
     name: 'UK Energy Savings Opportunity Scheme',
@@ -475,6 +514,7 @@ const FALLBACK_INCENTIVES: Omit<TaxIncentive, 'estimatedValue'>[] = [
     maxCredit: 8000,
     eligibilityCriteria: ['Submit energy audit', 'Implement efficiency measures'],
   },
+  // Canada
   {
     id: 'ca-green-business',
     name: 'Canada Green Business Credit',
@@ -484,6 +524,39 @@ const FALLBACK_INCENTIVES: Omit<TaxIncentive, 'estimatedValue'>[] = [
     percentageCredit: 15,
     maxCredit: 7500,
     eligibilityCriteria: ['Register as green business', 'Annual sustainability reporting'],
+  },
+  // Australia
+  {
+    id: 'au-emissions-reduction',
+    name: 'Emissions Reduction Fund',
+    description: 'Credits for verified emissions reduction projects',
+    region: 'au',
+    category: 'carbon',
+    percentageCredit: 25,
+    maxCredit: 12000,
+    eligibilityCriteria: ['Register project with Clean Energy Regulator', 'Achieve verified reductions'],
+  },
+  // Nigeria
+  {
+    id: 'ng-renewable-energy-credit',
+    name: 'Pioneer Status Tax Holiday',
+    description: '100% tax holiday for renewable energy projects',
+    region: 'ng',
+    category: 'energy',
+    percentageCredit: 100,
+    maxCredit: 500000000,
+    eligibilityCriteria: ['Invest in renewable energy', 'Register with NIPC'],
+  },
+  // Kenya
+  {
+    id: 'ke-vat-exemption',
+    name: 'VAT Exemption on Solar Equipment',
+    description: 'VAT exemption on solar and renewable energy equipment',
+    region: 'ke',
+    category: 'energy',
+    percentageCredit: 16,
+    maxCredit: 10000000,
+    eligibilityCriteria: ['Purchase certified solar equipment', 'Equipment for business use'],
   },
 ];
 
@@ -538,10 +611,38 @@ export function formatCurrency(amount: number, currency: string = 'USD'): string
 }
 
 export const REGION_OPTIONS = [
+  // Africa
+  { value: 'za', label: 'South Africa', currency: 'ZAR' },
+  { value: 'ng', label: 'Nigeria', currency: 'NGN' },
+  { value: 'ke', label: 'Kenya', currency: 'KES' },
+  { value: 'eg', label: 'Egypt', currency: 'EGP' },
+  { value: 'gh', label: 'Ghana', currency: 'GHS' },
+
+  // North America
   { value: 'us', label: 'United States', currency: 'USD' },
+  { value: 'ca', label: 'Canada', currency: 'CAD' },
+  { value: 'mx', label: 'Mexico', currency: 'MXN' },
+
+  // Europe
   { value: 'eu', label: 'European Union', currency: 'EUR' },
   { value: 'uk', label: 'United Kingdom', currency: 'GBP' },
-  { value: 'ca', label: 'Canada', currency: 'CAD' },
+  { value: 'ch', label: 'Switzerland', currency: 'CHF' },
+
+  // Asia-Pacific
   { value: 'au', label: 'Australia', currency: 'AUD' },
+  { value: 'nz', label: 'New Zealand', currency: 'NZD' },
+  { value: 'jp', label: 'Japan', currency: 'JPY' },
+  { value: 'cn', label: 'China', currency: 'CNY' },
+  { value: 'in', label: 'India', currency: 'INR' },
+  { value: 'sg', label: 'Singapore', currency: 'SGD' },
+
+  // Middle East
+  { value: 'ae', label: 'United Arab Emirates', currency: 'AED' },
+  { value: 'sa', label: 'Saudi Arabia', currency: 'SAR' },
+
+  // South America
+  { value: 'br', label: 'Brazil', currency: 'BRL' },
+  { value: 'ar', label: 'Argentina', currency: 'ARS' },
+  { value: 'cl', label: 'Chile', currency: 'CLP' },
 ];
 
