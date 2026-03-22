@@ -36,10 +36,24 @@
     <script>
       (function() {
         var APP_VERSION = 'BUILD_VERSION_PLACEHOLDER';
+        var RELOAD_KEY = 'last_reload_time';
+        var MIN_RELOAD_INTERVAL = 5000; // 5 seconds minimum between reloads
 
-        // Clear all caches
+        console.log('🔍 Version check: APP_VERSION=' + APP_VERSION);
+
+        // Prevent reload loops
+        var lastReload = localStorage.getItem(RELOAD_KEY);
+        var now = Date.now();
+        if (lastReload && (now - parseInt(lastReload)) < MIN_RELOAD_INTERVAL) {
+          console.warn('⚠️ Skipping reload - too soon after last reload');
+          localStorage.setItem('app_version', APP_VERSION);
+          return;
+        }
+
+        // Clear all caches aggressively
         if ('caches' in window) {
           caches.keys().then(function(names) {
+            console.log('🗑️ Clearing ' + names.length + ' cache(s)');
             names.forEach(function(name) {
               caches.delete(name);
             });
@@ -49,6 +63,7 @@
         // Unregister service workers
         if ('serviceWorker' in navigator) {
           navigator.serviceWorker.getRegistrations().then(function(registrations) {
+            console.log('🗑️ Unregistering ' + registrations.length + ' service worker(s)');
             for(var i = 0; i < registrations.length; i++) {
               registrations[i].unregister();
             }
@@ -57,14 +72,33 @@
 
         // Check version and force reload if changed
         var storedVersion = localStorage.getItem('app_version');
+        console.log('📦 Stored version: ' + storedVersion);
+
         if (storedVersion && storedVersion !== APP_VERSION) {
-          console.log('New version detected, clearing cache and reloading...');
+          console.log('🔄 NEW VERSION DETECTED! Forcing hard reload...');
+          console.log('   Old: ' + storedVersion);
+          console.log('   New: ' + APP_VERSION);
+
+          // Mark reload time
+          localStorage.setItem(RELOAD_KEY, now.toString());
+
+          // Clear storage
+          var tempVersion = APP_VERSION;
+          var tempReload = now.toString();
           localStorage.clear();
           sessionStorage.clear();
-          localStorage.setItem('app_version', APP_VERSION);
-          window.location.reload(true);
+
+          // Restore version and reload time
+          localStorage.setItem('app_version', tempVersion);
+          localStorage.setItem(RELOAD_KEY, tempReload);
+
+          // Force hard reload with cache bypass
+          window.location.href = window.location.href.split('?')[0] + '?v=' + APP_VERSION + '&t=' + now;
         } else if (!storedVersion) {
+          console.log('✅ First visit - storing version');
           localStorage.setItem('app_version', APP_VERSION);
+        } else {
+          console.log('✅ Version match - no reload needed');
         }
       })();
     </script>
