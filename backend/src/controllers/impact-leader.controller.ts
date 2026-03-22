@@ -11,12 +11,13 @@ import logger from '../utils/logger';
 /**
  * Get comprehensive impact dashboard
  */
-export async function getDashboard(req: Request, res: Response) {
+export async function getDashboard(req: Request, res: Response): Promise<void> {
   try {
     const organizationId = req.user?.organizationId;
-    
+
     if (!organizationId) {
-      return res.status(400).json({ error: 'Organization ID required' });
+      res.status(400).json({ error: 'Organization ID required' });
+      return;
     }
 
     const dashboard = await impactDashboardService.getDashboardMetrics(organizationId);
@@ -34,13 +35,14 @@ export async function getDashboard(req: Request, res: Response) {
 /**
  * Generate industry research and benchmarking
  */
-export async function generateResearch(req: Request, res: Response) {
+export async function generateResearch(req: Request, res: Response): Promise<void> {
   try {
     const organizationId = req.user?.organizationId;
     const { industry, event_type, attendees, carbon_footprint, location } = req.body;
 
     if (!organizationId) {
-      return res.status(400).json({ error: 'Organization ID required' });
+      res.status(400).json({ error: 'Organization ID required' });
+      return;
     }
 
     const research = await aiResearchService.generateIndustryResearch({
@@ -64,18 +66,20 @@ export async function generateResearch(req: Request, res: Response) {
 /**
  * Chat with AI assistant
  */
-export async function chat(req: Request, res: Response) {
+export async function chat(req: Request, res: Response): Promise<void> {
   try {
     const userId = req.user?.userId;
     const organizationId = req.user?.organizationId;
     const { message, conversation_history } = req.body;
 
     if (!userId || !organizationId) {
-      return res.status(400).json({ error: 'User and organization required' });
+      res.status(400).json({ error: 'User and organization required' });
+      return;
     }
 
     if (!message) {
-      return res.status(400).json({ error: 'Message is required' });
+      res.status(400).json({ error: 'Message is required' });
+      return;
     }
 
     const response = await chatbotService.chat(
@@ -101,13 +105,14 @@ export async function chat(req: Request, res: Response) {
 /**
  * Get suggested questions for chatbot
  */
-export async function getSuggestedQuestions(req: Request, res: Response) {
+export async function getSuggestedQuestions(req: Request, res: Response): Promise<void> {
   try {
     const userId = req.user?.userId;
     const organizationId = req.user?.organizationId;
 
     if (!userId || !organizationId) {
-      return res.status(400).json({ error: 'User and organization required' });
+      res.status(400).json({ error: 'User and organization required' });
+      return;
     }
 
     const questions = await chatbotService.getSuggestedQuestions(userId, organizationId);
@@ -125,12 +130,13 @@ export async function getSuggestedQuestions(req: Request, res: Response) {
 /**
  * Monitor an event and get scorecard
  */
-export async function monitorEvent(req: Request, res: Response) {
+export async function monitorEvent(req: Request, res: Response): Promise<void> {
   try {
     const { eventId } = req.params;
 
     if (!eventId) {
-      return res.status(400).json({ error: 'Event ID required' });
+      res.status(400).json({ error: 'Event ID required' });
+      return;
     }
 
     const scorecard = await eventMonitoringService.monitorEvent(eventId);
@@ -148,14 +154,15 @@ export async function monitorEvent(req: Request, res: Response) {
 /**
  * Generate executive report
  */
-export async function generateReport(req: Request, res: Response) {
+export async function generateReport(req: Request, res: Response): Promise<void> {
   try {
     const userId = req.user?.userId;
     const organizationId = req.user?.organizationId;
     const { start_date, end_date, include_charts, include_recommendations } = req.body;
 
     if (!userId || !organizationId) {
-      return res.status(400).json({ error: 'User and organization required' });
+      res.status(400).json({ error: 'User and organization required' });
+      return;
     }
 
     const report = await reportGenerationService.generateExecutiveReport(
@@ -182,12 +189,13 @@ export async function generateReport(req: Request, res: Response) {
 /**
  * Generate sustainability badge
  */
-export async function generateBadge(req: Request, res: Response) {
+export async function generateBadge(req: Request, res: Response): Promise<void> {
   try {
     const organizationId = req.user?.organizationId;
 
     if (!organizationId) {
-      return res.status(400).json({ error: 'Organization ID required' });
+      res.status(400).json({ error: 'Organization ID required' });
+      return;
     }
 
     const badge = await badgeService.generateBadge(organizationId);
@@ -205,7 +213,7 @@ export async function generateBadge(req: Request, res: Response) {
 /**
  * Get badge embed code
  */
-export async function getBadgeEmbed(req: Request, res: Response) {
+export async function getBadgeEmbed(req: Request, res: Response): Promise<void> {
   try {
     const { badgeId } = req.params;
     const { theme, size, show_metrics } = req.query;
@@ -229,12 +237,13 @@ export async function getBadgeEmbed(req: Request, res: Response) {
 /**
  * Get weather data for event location
  */
-export async function getWeather(req: Request, res: Response) {
+export async function getWeather(req: Request, res: Response): Promise<void> {
   try {
     const { location } = req.query;
 
     if (!location) {
-      return res.status(400).json({ error: 'Location is required' });
+      res.status(400).json({ error: 'Location is required' });
+      return;
     }
 
     const weather = await weatherService.getCurrentWeather(location as string);

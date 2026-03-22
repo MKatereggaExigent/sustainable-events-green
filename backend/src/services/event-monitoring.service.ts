@@ -1,6 +1,6 @@
 import { pool } from '../config/database';
 import logger from '../utils/logger';
-import notificationService from './notification.service';
+import { sendApproachingLimitNotification, sendLimitReachedNotification } from './notification.service';
 
 type AlertLevel = 'normal' | 'high' | 'critical';
 

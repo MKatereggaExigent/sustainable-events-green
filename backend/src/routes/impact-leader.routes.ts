@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import * as impactLeaderController from '../controllers/impact-leader.controller';
-import { authenticate } from '../middleware/auth.middleware';
-import { requireTier } from '../middleware/subscription.middleware';
+import { authenticate } from '../middleware/auth';
+import { requireTier } from '../middleware/subscription';
 
 const router = Router();
 
