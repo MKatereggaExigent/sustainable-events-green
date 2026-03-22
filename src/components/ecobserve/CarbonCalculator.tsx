@@ -713,138 +713,138 @@ const CarbonCalculator: React.FC<CarbonCalculatorProps> = ({ onComplete, inputs,
                 </div>
               </div>
             </div>
+          </div>
+        </div>
 
-            {/* Three-Column Layout: Emission Breakdown, Quick Wins, Environmental Impact */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-              {/* Breakdown Chart */}
-              <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-5">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-sm font-semibold text-gray-700">Emission Breakdown</h3>
-                  <div className="flex gap-1 p-1 bg-gray-100 rounded-lg">
-                    <button
-                      onClick={() => setShowBreakdown('pie')}
-                      className={`px-2 py-1 rounded text-xs font-medium transition-all ${showBreakdown === 'pie' ? 'bg-white shadow text-gray-900' : 'text-gray-500'}`}
-                    >
-                      <PieChartIcon className="w-3.5 h-3.5" />
-                    </button>
-                    <button
-                      onClick={() => setShowBreakdown('bar')}
-                      className={`px-2 py-1 rounded text-xs font-medium transition-all ${showBreakdown === 'bar' ? 'bg-white shadow text-gray-900' : 'text-gray-500'}`}
-                    >
-                      <BarChart3 className="w-3.5 h-3.5" />
-                    </button>
-                  </div>
-                </div>
-                <div className="h-40">
-                  <ResponsiveContainer width="100%" height="100%">
-                    {showBreakdown === 'pie' ? (
-                      <PieChart>
-                        <Pie
-                          data={pieData}
-                          cx="50%"
-                          cy="50%"
-                          innerRadius={35}
-                          outerRadius={55}
-                          paddingAngle={3}
-                          dataKey="value"
-                        >
-                          {pieData.map((entry, index) => (
-                            <Cell key={`cell-${index}`} fill={entry.color} />
-                          ))}
-                        </Pie>
-                        <Tooltip
-                          formatter={(value: number) => [`${maskValue(Math.round(convertValue(value, 'weight')).toLocaleString())} ${getUnit('weight')}`, '']}
-                          contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
-                        />
-                      </PieChart>
-                    ) : (
-                      <BarChart data={pieData} layout="vertical">
-                        <XAxis type="number" hide />
-                        <YAxis type="category" dataKey="name" width={60} tick={{ fontSize: 11 }} />
-                        <Tooltip
-                          formatter={(value: number) => [`${maskValue(Math.round(convertValue(value, 'weight')).toLocaleString())} ${getUnit('weight')} CO₂`, '']}
-                          contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
-                        />
-                        <Bar dataKey="value" radius={[0, 4, 4, 0]}>
-                          {pieData.map((entry, index) => (
-                            <Cell key={`cell-${index}`} fill={entry.color} />
-                          ))}
-                        </Bar>
-                      </BarChart>
-                    )}
-                  </ResponsiveContainer>
-                </div>
-                <div className="grid grid-cols-2 gap-2 mt-3">
-                  {pieData.map((item, i) => (
-                    <div key={i} className="flex items-center gap-2 text-xs">
-                      <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: item.color }} />
-                      <span className="text-gray-600">{item.name}</span>
-                      <span className="text-gray-400 ml-auto">{maskValue(Math.round((item.value / result.carbonKg) * 100))}%</span>
-                    </div>
-                  ))}
-                </div>
+        {/* Three-Column Layout: Emission Breakdown, Quick Wins, Environmental Impact */}
+        <div className="mt-8 grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Breakdown Chart */}
+          <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-5">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-sm font-semibold text-gray-700">Emission Breakdown</h3>
+              <div className="flex gap-1 p-1 bg-gray-100 rounded-lg">
+                <button
+                  onClick={() => setShowBreakdown('pie')}
+                  className={`px-2 py-1 rounded text-xs font-medium transition-all ${showBreakdown === 'pie' ? 'bg-white shadow text-gray-900' : 'text-gray-500'}`}
+                >
+                  <PieChartIcon className="w-3.5 h-3.5" />
+                </button>
+                <button
+                  onClick={() => setShowBreakdown('bar')}
+                  className={`px-2 py-1 rounded text-xs font-medium transition-all ${showBreakdown === 'bar' ? 'bg-white shadow text-gray-900' : 'text-gray-500'}`}
+                >
+                  <BarChart3 className="w-3.5 h-3.5" />
+                </button>
               </div>
-
-              {/* Smart Recommendations */}
-              {recommendations.length > 0 && (
-                <div className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-2xl shadow-lg border border-amber-100 p-5">
-                  <div className="flex items-center gap-2 mb-4">
-                    <Lightbulb className="w-5 h-5 text-amber-600" />
-                    <h3 className="text-sm font-semibold text-gray-700">Quick Wins</h3>
-                    <span className="ml-auto text-xs text-amber-600 font-medium">
-                      Save {maskValue(Math.round(convertValue(totalPotentialSavings, 'weight')).toLocaleString())} {getUnit('weight')} CO₂
-                    </span>
-                  </div>
-                  <div className="space-y-2">
-                    {recommendations.map((rec, i) => {
-                      const RecIcon = rec.icon;
-                      return (
-                        <div key={i} className="flex items-start gap-3 p-3 bg-white rounded-xl border border-amber-100 hover:border-amber-200 transition-colors">
-                          <div className="w-8 h-8 bg-amber-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                            <RecIcon className="w-4 h-4 text-amber-600" />
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <div className="text-sm font-medium text-gray-800">{rec.tip}</div>
-                            <div className="text-xs text-gray-500">{rec.category}</div>
-                          </div>
-                          <div className="text-xs font-semibold text-emerald-600 whitespace-nowrap">
-                            -{maskValue(Math.round(convertValue(rec.savings, 'weight')).toLocaleString())} {getUnit('weight')}
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
+            </div>
+            <div className="h-40">
+              <ResponsiveContainer width="100%" height="100%">
+                {showBreakdown === 'pie' ? (
+                  <PieChart>
+                    <Pie
+                      data={pieData}
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={35}
+                      outerRadius={55}
+                      paddingAngle={3}
+                      dataKey="value"
+                    >
+                      {pieData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={entry.color} />
+                      ))}
+                    </Pie>
+                    <Tooltip
+                      formatter={(value: number) => [`${maskValue(Math.round(convertValue(value, 'weight')).toLocaleString())} ${getUnit('weight')}`, '']}
+                      contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
+                    />
+                  </PieChart>
+                ) : (
+                  <BarChart data={pieData} layout="vertical">
+                    <XAxis type="number" hide />
+                    <YAxis type="category" dataKey="name" width={60} tick={{ fontSize: 11 }} />
+                    <Tooltip
+                      formatter={(value: number) => [`${maskValue(Math.round(convertValue(value, 'weight')).toLocaleString())} ${getUnit('weight')} CO₂`, '']}
+                      contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
+                    />
+                    <Bar dataKey="value" radius={[0, 4, 4, 0]}>
+                      {pieData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={entry.color} />
+                      ))}
+                    </Bar>
+                  </BarChart>
+                )}
+              </ResponsiveContainer>
+            </div>
+            <div className="grid grid-cols-2 gap-2 mt-3">
+              {pieData.map((item, i) => (
+                <div key={i} className="flex items-center gap-2 text-xs">
+                  <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: item.color }} />
+                  <span className="text-gray-600">{item.name}</span>
+                  <span className="text-gray-400 ml-auto">{maskValue(Math.round((item.value / result.carbonKg) * 100))}%</span>
                 </div>
-              )}
+              ))}
+            </div>
+          </div>
 
-              {/* Environmental Equivalents */}
-              <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-5">
-                <h3 className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
-                  <Globe className="w-4 h-4 text-emerald-500" />
-                  Environmental Impact
-                </h3>
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="p-3 bg-emerald-50 rounded-xl text-center">
-                    <TreePine className="w-5 h-5 text-emerald-600 mx-auto mb-1" />
-                    <div className="text-lg font-bold text-gray-900">{Math.round(result.carbonKg / 22)}</div>
-                    <div className="text-xs text-gray-500">Trees to offset</div>
-                  </div>
-                  <div className="p-3 bg-blue-50 rounded-xl text-center">
-                    <Car className="w-5 h-5 text-blue-600 mx-auto mb-1" />
-                    <div className="text-lg font-bold text-gray-900">{maskValue(Math.round(convertValue(result.carbonKg / 0.21, 'distance') / 1000))}k</div>
-                    <div className="text-xs text-gray-500">{getUnit('distance')} driving</div>
-                  </div>
-                  <div className="p-3 bg-cyan-50 rounded-xl text-center">
-                    <Droplets className="w-5 h-5 text-cyan-600 mx-auto mb-1" />
-                    <div className="text-lg font-bold text-gray-900">{maskValue(Math.round(convertValue(animatedWater, 'volume')).toLocaleString())}</div>
-                    <div className="text-xs text-gray-500">{getUnit('volume')} water used</div>
-                  </div>
-                  <div className="p-3 bg-amber-50 rounded-xl text-center">
-                    <Trash2 className="w-5 h-5 text-amber-600 mx-auto mb-1" />
-                    <div className="text-lg font-bold text-gray-900">{maskValue(Math.round(convertValue(animatedWaste, 'weight')))}</div>
-                    <div className="text-xs text-gray-500">{getUnit('weight')} waste</div>
-                  </div>
-                </div>
+          {/* Smart Recommendations */}
+          {recommendations.length > 0 && (
+            <div className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-2xl shadow-lg border border-amber-100 p-5">
+              <div className="flex items-center gap-2 mb-4">
+                <Lightbulb className="w-5 h-5 text-amber-600" />
+                <h3 className="text-sm font-semibold text-gray-700">Quick Wins</h3>
+                <span className="ml-auto text-xs text-amber-600 font-medium">
+                  Save {maskValue(Math.round(convertValue(totalPotentialSavings, 'weight')).toLocaleString())} {getUnit('weight')} CO₂
+                </span>
+              </div>
+              <div className="space-y-2">
+                {recommendations.map((rec, i) => {
+                  const RecIcon = rec.icon;
+                  return (
+                    <div key={i} className="flex items-start gap-3 p-3 bg-white rounded-xl border border-amber-100 hover:border-amber-200 transition-colors">
+                      <div className="w-8 h-8 bg-amber-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                        <RecIcon className="w-4 h-4 text-amber-600" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="text-sm font-medium text-gray-800">{rec.tip}</div>
+                        <div className="text-xs text-gray-500">{rec.category}</div>
+                      </div>
+                      <div className="text-xs font-semibold text-emerald-600 whitespace-nowrap">
+                        -{maskValue(Math.round(convertValue(rec.savings, 'weight')).toLocaleString())} {getUnit('weight')}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* Environmental Equivalents */}
+          <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-5">
+            <h3 className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
+              <Globe className="w-4 h-4 text-emerald-500" />
+              Environmental Impact
+            </h3>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="p-3 bg-emerald-50 rounded-xl text-center">
+                <TreePine className="w-5 h-5 text-emerald-600 mx-auto mb-1" />
+                <div className="text-lg font-bold text-gray-900">{Math.round(result.carbonKg / 22)}</div>
+                <div className="text-xs text-gray-500">Trees to offset</div>
+              </div>
+              <div className="p-3 bg-blue-50 rounded-xl text-center">
+                <Car className="w-5 h-5 text-blue-600 mx-auto mb-1" />
+                <div className="text-lg font-bold text-gray-900">{maskValue(Math.round(convertValue(result.carbonKg / 0.21, 'distance') / 1000))}k</div>
+                <div className="text-xs text-gray-500">{getUnit('distance')} driving</div>
+              </div>
+              <div className="p-3 bg-cyan-50 rounded-xl text-center">
+                <Droplets className="w-5 h-5 text-cyan-600 mx-auto mb-1" />
+                <div className="text-lg font-bold text-gray-900">{maskValue(Math.round(convertValue(animatedWater, 'volume')).toLocaleString())}</div>
+                <div className="text-xs text-gray-500">{getUnit('volume')} water used</div>
+              </div>
+              <div className="p-3 bg-amber-50 rounded-xl text-center">
+                <Trash2 className="w-5 h-5 text-amber-600 mx-auto mb-1" />
+                <div className="text-lg font-bold text-gray-900">{maskValue(Math.round(convertValue(animatedWaste, 'weight')))}</div>
+                <div className="text-xs text-gray-500">{getUnit('weight')} waste</div>
               </div>
             </div>
           </div>
