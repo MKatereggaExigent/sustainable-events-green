@@ -321,7 +321,43 @@ const Pricing: React.FC = () => {
             </p>
           </div>
 
-
+          {/* Current Subscription Banner */}
+          {isAuthenticated && (
+            <div className="mb-8 max-w-2xl mx-auto">
+              <div className="bg-gradient-to-r from-emerald-500 to-teal-500 rounded-2xl p-6 text-white shadow-lg">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium opacity-90 mb-1">Your Current Plan</p>
+                    <div className="flex items-center gap-3">
+                      <h3 className="text-2xl font-bold">
+                        {subscriptionTier === 'explorer' && 'Explorer'}
+                        {subscriptionTier === 'planner' && 'Planner'}
+                        {subscriptionTier === 'impact' && 'Impact Leader'}
+                        {subscriptionTier === 'enterprise' && 'Enterprise'}
+                      </h3>
+                      {subscriptionTier === 'explorer' && <Sparkles className="w-6 h-6" />}
+                      {subscriptionTier === 'planner' && <Zap className="w-6 h-6" />}
+                      {subscriptionTier === 'impact' && <Crown className="w-6 h-6" />}
+                      {subscriptionTier === 'enterprise' && <Rocket className="w-6 h-6" />}
+                    </div>
+                  </div>
+                  {subscriptionTier !== 'enterprise' && (
+                    <button
+                      onClick={() => {
+                        const nextTier = subscriptionTier === 'explorer' ? 'planner' : 'impact_leader';
+                        const element = document.getElementById(`plan-${nextTier}`);
+                        element?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                      }}
+                      className="px-4 py-2 bg-white text-emerald-600 rounded-lg font-semibold hover:bg-gray-50 transition-all flex items-center gap-2"
+                    >
+                      <TrendingUp className="w-4 h-4" />
+                      Upgrade
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Pricing Cards */}
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -334,6 +370,7 @@ const Pricing: React.FC = () => {
               return (
                 <div
                   key={plan.id}
+                  id={`plan-${plan.code}`}
                   className={`relative bg-white rounded-2xl shadow-lg border-2 transition-all hover:shadow-2xl ${
                     isPopular ? 'border-emerald-500 scale-105' : 'border-gray-200'
                   }`}
