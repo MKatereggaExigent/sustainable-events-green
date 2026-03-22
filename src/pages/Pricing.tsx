@@ -197,7 +197,7 @@ const Pricing: React.FC = () => {
       const token = localStorage.getItem('accessToken');
       const API_URL = import.meta.env.VITE_API_URL || '/api';
 
-      console.log('Initializing payment:', { planCode, email: user?.email });
+      console.log('🔵 Initializing payment:', { planCode, email: user?.email });
 
       const response = await fetch(`${API_URL}/payments/initialize`, {
         method: 'POST',
@@ -211,22 +211,48 @@ const Pricing: React.FC = () => {
         }),
       });
 
-      console.log('Payment response status:', response.status);
-      const data = await response.json();
-      console.log('Payment response data:', data);
+      console.log('🔵 Payment response status:', response.status);
 
-      if (data.success && data.data.authorizationUrl) {
-        // Redirect to Paystack
-        console.log('Redirecting to:', data.data.authorizationUrl);
-        window.location.href = data.data.authorizationUrl;
-      } else {
-        console.error('Payment initialization failed:', data);
-        alert(`Failed to initialize payment: ${data.error || 'Please try again.'}`);
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('❌ Payment initialization failed - HTTP error:', response.status, errorText);
+        alert(`Failed to initialize payment (HTTP ${response.status}). Please try again or contact support.`);
+        setProcessingPlan(null);
+        return;
       }
-    } catch (error) {
-      console.error('Payment initialization error:', error);
-      alert('An error occurred. Please try again.');
-    } finally {
+
+      const data = await response.json();
+      console.log('🔵 Payment response data:', data);
+
+      if (!data.success) {
+        console.error('❌ Payment initialization failed:', data.error);
+        alert(`Failed to initialize payment: ${data.error || 'Unknown error. Please try again.'}`);
+        setProcessingPlan(null);
+        return;
+      }
+
+      if (!data.data || !data.data.authorizationUrl) {
+        console.error('❌ No authorization URL in response:', data);
+        alert('Payment gateway did not return a payment URL. Please contact support.');
+        setProcessingPlan(null);
+        return;
+      }
+
+      // Redirect to Paystack
+      console.log('✅ Redirecting to Paystack:', data.data.authorizationUrl);
+      console.log('⏳ If you are not redirected, the payment gateway may be misconfigured.');
+
+      // Give user feedback before redirect
+      setProcessingPlan(null);
+
+      // Redirect after a brief moment
+      setTimeout(() => {
+        window.location.href = data.data.authorizationUrl;
+      }, 500);
+
+    } catch (error: any) {
+      console.error('❌ Payment initialization error:', error);
+      alert(`An error occurred: ${error.message || 'Please try again or contact support.'}`);
       setProcessingPlan(null);
     }
   };

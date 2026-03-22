@@ -68,7 +68,19 @@ export async function initializePayment(
       ]
     );
 
+    // Validate Paystack configuration
+    if (!config.paystack.secretKey || config.paystack.secretKey === '') {
+      throw new Error('Paystack secret key is not configured. Please contact support.');
+    }
+
     // Initialize payment with Paystack
+    logger.info('Initializing Paystack payment', {
+      reference,
+      amount: params.amount,
+      email: params.email,
+      planCode: params.planCode
+    });
+
     const paystackResponse = await paystack.transaction.initialize({
       email: params.email,
       amount: params.amount,
@@ -82,11 +94,24 @@ export async function initializePayment(
       },
     });
 
+    logger.info('Paystack response received', {
+      status: paystackResponse.status,
+      hasAuthUrl: !!paystackResponse.data?.authorization_url
+    });
+
     if (!paystackResponse.status) {
       throw new Error(paystackResponse.message || 'Failed to initialize payment');
     }
 
-    logger.info('Payment initialized', { reference, organizationId: params.organizationId });
+    if (!paystackResponse.data?.authorization_url) {
+      throw new Error('Paystack did not return an authorization URL');
+    }
+
+    logger.info('Payment initialized successfully', {
+      reference,
+      organizationId: params.organizationId,
+      authUrl: paystackResponse.data.authorization_url
+    });
 
     return {
       authorizationUrl: paystackResponse.data.authorization_url,
@@ -94,7 +119,12 @@ export async function initializePayment(
       reference: paystackResponse.data.reference,
     };
   } catch (error: any) {
-    logger.error('Initialize payment error:', error);
+    logger.error('Initialize payment error:', {
+      error: error.message,
+      stack: error.stack,
+      reference,
+      organizationId: params.organizationId
+    });
     throw error;
   }
 }
