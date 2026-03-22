@@ -107,9 +107,7 @@ INSERT INTO tax_incentives (id, name, description, region, category, percentage_
 ('ng-renewable-energy-credit', 'Pioneer Status Tax Holiday', '100% tax holiday for renewable energy projects', 'ng', 'energy', 100, 500000000, ARRAY['Invest in renewable energy', 'Register with NIPC', 'Meet minimum investment threshold'], true),
 
 -- Kenya
-('ke-vat-exemption', 'VAT Exemption on Solar Equipment', 'VAT exemption on solar and renewable energy equipment', 'ke', 'energy', 16, 10000000, ARRAY['Purchase certified solar equipment', 'Equipment for business use'], true),
-
--- Additional regions (existing ones remain)
+('ke-vat-exemption', 'VAT Exemption on Solar Equipment', 'VAT exemption on solar and renewable energy equipment', 'ke', 'energy', 16, 10000000, ARRAY['Purchase certified solar equipment', 'Equipment for business use'], true)
 ON CONFLICT (id) DO NOTHING;
 
 -- ============================================
