@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import Navbar from '@/components/ecobserve/Navbar';
 import Footer from '@/components/ecobserve/Footer';
 import DowngradeModal from '@/components/ecobserve/DowngradeModal';
+import AllFeaturesShowcase from '@/components/features/AllFeaturesShowcase';
 
 interface Plan {
   id: string;
@@ -515,20 +516,26 @@ const Pricing: React.FC = () => {
             })}
           </div>
 
-          {/* FAQ Section */}
-          <div className="mt-20 text-center">
-            <h2 className="text-3xl font-bold mb-4">Frequently Asked Questions</h2>
-            <p className="text-gray-600 mb-8">
-              Have questions? Check out our{' '}
-              <a href="/faq" className="text-emerald-600 hover:underline">
-                comprehensive FAQ page
-              </a>
-              {' '}or contact us at{' '}
-              <a href="mailto:support@ecobserve.com" className="text-emerald-600 hover:underline">
-                support@ecobserve.com
-              </a>
-            </p>
-          </div>
+        </div>
+      </div>
+
+      {/* All Features Showcase */}
+      <AllFeaturesShowcase />
+
+      {/* FAQ Section */}
+      <div className="py-16 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h2 className="text-3xl font-bold mb-4">Frequently Asked Questions</h2>
+          <p className="text-gray-600 mb-8">
+            Have questions? Check out our{' '}
+            <a href="/faq" className="text-emerald-600 hover:underline">
+              comprehensive FAQ page
+            </a>
+            {' '}or contact us at{' '}
+            <a href="mailto:support@ecobserve.com" className="text-emerald-600 hover:underline">
+              support@ecobserve.com
+            </a>
+          </p>
         </div>
       </div>
 

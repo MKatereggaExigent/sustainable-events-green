@@ -280,11 +280,17 @@ const Navbar: React.FC<NavbarProps> = ({ onNavigate, activeSection }) => {
                 <div className="w-8 h-8 rounded-full bg-gray-200 animate-pulse" />
               ) : isAuthenticated && user ? (
                 <>
-                  {/* Upgrade button for free/planner users */}
-                  {(subscriptionTier === 'explorer' || subscriptionTier === 'planner') && (
+                  {/* Current Tier Badge - Always visible */}
+                  <div className="hidden md:block">
+                    <SubscriptionBadge tier={subscriptionTier} size="sm" />
+                  </div>
+
+                  {/* Upgrade button for non-enterprise users */}
+                  {subscriptionTier !== 'enterprise' && (
                     <button
                       onClick={() => navigate('/pricing')}
                       className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:from-purple-700 hover:to-pink-700 transition-all shadow-md hover:shadow-lg"
+                      title="Upgrade your subscription"
                     >
                       <Crown className="w-3.5 h-3.5" />
                       <span className="hidden xl:inline">Upgrade</span>
@@ -486,11 +492,22 @@ const Navbar: React.FC<NavbarProps> = ({ onNavigate, activeSection }) => {
                     <div className="w-8 h-8 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-full flex items-center justify-center text-white font-semibold text-sm">
                       {user.email?.charAt(0).toUpperCase()}
                     </div>
-                    <div>
+                    <div className="flex-1">
                       <p className="text-sm font-medium text-gray-900 truncate">{user.email}</p>
-                      <p className="text-xs text-emerald-600">Premium Member</p>
+                      <div className="mt-1">
+                        <SubscriptionBadge tier={subscriptionTier} size="sm" />
+                      </div>
                     </div>
                   </div>
+                  {subscriptionTier !== 'enterprise' && (
+                    <button
+                      onClick={() => { navigate('/pricing'); setMobileOpen(false); }}
+                      className="w-full mx-4 mb-2 px-4 py-2.5 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl text-sm font-semibold flex items-center justify-center gap-2 hover:from-purple-700 hover:to-pink-700"
+                    >
+                      <Crown className="w-4 h-4" />
+                      Upgrade Plan
+                    </button>
+                  )}
                   <button
                     onClick={() => { setShowSettings(true); setMobileOpen(false); }}
                     className="w-full mt-2 px-4 py-2.5 text-gray-700 rounded-xl text-sm font-semibold flex items-center justify-center gap-2 hover:bg-emerald-50"
