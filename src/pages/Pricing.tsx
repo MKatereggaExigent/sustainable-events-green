@@ -23,7 +23,6 @@ const Pricing: React.FC = () => {
   const navigate = useNavigate();
   const [plans, setPlans] = useState<Plan[]>([]);
   const [loading, setLoading] = useState(true);
-  const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('monthly');
   const [processingPlan, setProcessingPlan] = useState<string | null>(null);
 
   useEffect(() => {
@@ -75,10 +74,10 @@ const Pricing: React.FC = () => {
           'View calculation results',
         ],
       },
-      // 2. Planner Monthly - Professional tier
+      // 2. Planner - Professional tier (R499/month, 6 events/year)
       {
         id: '2',
-        code: 'planner_monthly',
+        code: 'planner',
         name: 'Planner',
         description: 'Perfect for professional event planners who need advanced sustainability tools and AI-powered recommendations',
         amount: 499,
@@ -100,36 +99,10 @@ const Pricing: React.FC = () => {
           'Priority email support',
         ],
       },
-      // 3. Planner Yearly - Annual plan with savings
+      // 3. Impact Leader - Corporate tier
       {
         id: '3',
-        code: 'planner_yearly',
-        name: 'Planner',
-        description: 'Annual plan with 17% savings',
-        amount: 4990,
-        currency: 'ZAR',
-        interval: 'yearly',
-        maxEvents: 72,
-        maxUsers: 3,
-        features: [
-          'Everything in Explorer',
-          '72 event calculations per year (6/month)',
-          'Cost & Savings Calculator with ROI',
-          'Save & manage events (My Events)',
-          'Smart AI-powered recommendations (GPT)',
-          'Green Score Card certificates',
-          'Tax Incentive Calculator (SA)',
-          'Carbon Offset Marketplace',
-          'Supplier Carbon Tracking',
-          'Benchmark Comparison',
-          'Priority email support',
-          'Save R1,000 annually',
-        ],
-      },
-      // 4. Impact Leader Monthly - Corporate tier
-      {
-        id: '4',
-        code: 'impact_monthly',
+        code: 'impact_leader',
         name: 'Impact Leader',
         description: 'For large agencies and corporate teams',
         amount: 1999,
@@ -151,35 +124,9 @@ const Pricing: React.FC = () => {
           'Custom event categories',
         ],
       },
-      // 5. Impact Leader Yearly - Annual enterprise plan
+      // 4. Enterprise Custom - Contact sales
       {
-        id: '5',
-        code: 'impact_yearly',
-        name: 'Impact Leader',
-        description: 'Annual enterprise plan with savings',
-        amount: 19990,
-        currency: 'ZAR',
-        interval: 'yearly',
-        maxEvents: -1,
-        maxUsers: -1,
-        features: [
-          'Everything in Planner',
-          'Impact Dashboard with visual analytics',
-          'Industry benchmarking',
-          'Portfolio sustainability tracking',
-          'UN SDG alignment reporting',
-          'Unlimited team members',
-          'Custom branded reports',
-          'Advanced data export (CSV, Excel)',
-          'Priority support',
-          'Multi-location tracking',
-          'Custom event categories',
-          'Save R4,000 annually',
-        ],
-      },
-      // 6. Enterprise Custom - Contact sales
-      {
-        id: '6',
+        id: '4',
         code: 'enterprise',
         name: 'Enterprise',
         description: 'Custom solution for large organizations',
@@ -287,10 +234,8 @@ const Pricing: React.FC = () => {
     return false;
   };
 
-  const filteredPlans = plans.filter(plan => {
-    if (plan.code === 'explorer' || plan.code === 'enterprise') return true;
-    return plan.interval === billingCycle;
-  });
+  // Show all plans (no filtering needed since we don't have monthly/yearly variants)
+  const filteredPlans = plans;
 
   if (loading) {
     return (
@@ -316,34 +261,7 @@ const Pricing: React.FC = () => {
             </p>
           </div>
 
-          {/* Billing Toggle */}
-          <div className="flex justify-center mb-12">
-            <div className="bg-white rounded-full p-1 shadow-md inline-flex">
-              <button
-                onClick={() => setBillingCycle('monthly')}
-                className={`px-6 py-2 rounded-full transition-all ${
-                  billingCycle === 'monthly'
-                    ? 'bg-emerald-500 text-white'
-                    : 'text-gray-600 hover:text-gray-900'
-                }`}
-              >
-                Monthly
-              </button>
-              <button
-                onClick={() => setBillingCycle('yearly')}
-                className={`px-6 py-2 rounded-full transition-all ${
-                  billingCycle === 'yearly'
-                    ? 'bg-emerald-500 text-white'
-                    : 'text-gray-600 hover:text-gray-900'
-                }`}
-              >
-                Yearly
-                <span className="ml-2 text-xs bg-emerald-100 text-emerald-700 px-2 py-1 rounded-full">
-                  Save 17%
-                </span>
-              </button>
-            </div>
-          </div>
+
 
           {/* Pricing Cards */}
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
