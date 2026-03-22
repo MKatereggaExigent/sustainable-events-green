@@ -10,7 +10,7 @@ import { logger } from '../utils/logger';
 export const authRateLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 10, // 10 attempts per 15 minutes per IP
-  message: { 
+  message: {
     error: 'Too many authentication attempts from this IP, please try again after 15 minutes',
     retryAfter: 15 * 60 // seconds
   },
@@ -19,7 +19,7 @@ export const authRateLimiter = rateLimit({
   skipSuccessfulRequests: true, // Don't count successful logins
   store: new RedisStore({
     // @ts-expect-error - RedisStore types are not fully compatible
-    client: redisClient,
+    sendCommand: (...args: string[]) => redisClient.call(...args),
     prefix: 'rl:auth:',
   }),
   handler: (req, res) => {
@@ -38,7 +38,7 @@ export const authRateLimiter = rateLimit({
 export const passwordResetRateLimiter = rateLimit({
   windowMs: 60 * 60 * 1000, // 1 hour
   max: 3, // 3 attempts per hour per IP
-  message: { 
+  message: {
     error: 'Too many password reset attempts, please try again after 1 hour',
     retryAfter: 60 * 60
   },
@@ -46,7 +46,7 @@ export const passwordResetRateLimiter = rateLimit({
   legacyHeaders: false,
   store: new RedisStore({
     // @ts-expect-error - RedisStore types are not fully compatible
-    client: redisClient,
+    sendCommand: (...args: string[]) => redisClient.call(...args),
     prefix: 'rl:pwd:',
   }),
   handler: (req, res) => {
@@ -65,7 +65,7 @@ export const passwordResetRateLimiter = rateLimit({
 export const apiRateLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 100, // 100 requests per 15 minutes per IP
-  message: { 
+  message: {
     error: 'Too many requests from this IP, please try again later',
     retryAfter: 15 * 60
   },
@@ -73,7 +73,7 @@ export const apiRateLimiter = rateLimit({
   legacyHeaders: false,
   store: new RedisStore({
     // @ts-expect-error - RedisStore types are not fully compatible
-    client: redisClient,
+    sendCommand: (...args: string[]) => redisClient.call(...args),
     prefix: 'rl:api:',
   }),
   handler: (req, res) => {
@@ -92,7 +92,7 @@ export const apiRateLimiter = rateLimit({
 export const calculatorRateLimiter = rateLimit({
   windowMs: 24 * 60 * 60 * 1000, // 24 hours
   max: 5, // 5 calculations per day per IP (generous for testing)
-  message: { 
+  message: {
     error: 'Daily calculation limit reached. Upgrade to Planner for unlimited calculations.',
     retryAfter: 24 * 60 * 60
   },
@@ -100,7 +100,7 @@ export const calculatorRateLimiter = rateLimit({
   legacyHeaders: false,
   store: new RedisStore({
     // @ts-expect-error - RedisStore types are not fully compatible
-    client: redisClient,
+    sendCommand: (...args: string[]) => redisClient.call(...args),
     prefix: 'rl:calc:',
   }),
   handler: (req, res) => {
